@@ -1,0 +1,74 @@
+{
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^u--(.*)": "uview-plus/components/u-$1/u-$1.vue",
+			"^up-(.*)": "uview-plus/components/u-$1/u-$1.vue",
+	        "^u-([^-].*)": "uview-plus/components/u-$1/u-$1.vue"
+		}
+	},
+	"pages": [
+		{
+			"path": "pages/home/index"
+		},
+		{
+			"path": "pages/index/index"
+		},
+		{
+			"path": "pages/tabbar/watch"
+		},
+		{
+			"path": "pages/tabbar/add"
+		},
+		{
+			"path": "pages/tabbar/car"
+		},
+		{
+			"path": "pages/tabbar/my"
+		}
+	],
+	"tabBar": {
+		"color": "#bfbfbf",
+		"selectedColor": "#d81e06",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/home/index",
+				"iconPath": "static/tabbar/home.png",
+				"selectedIconPath": "static/tabbar/ahome.png",
+				"text": "首页"
+			}, 
+			{
+				"pagePath": "pages/tabbar/watch",
+				"iconPath": "static/tabbar/watch.png",
+				"selectedIconPath": "static/tabbar/awatch.png",
+				"text": "发现"
+			},
+			{
+				"pagePath": "pages/tabbar/add",
+				"iconPath": "static/tabbar/add.png",
+				"selectedIconPath": "static/tabbar/add.png",
+				"text": ""
+			},
+			{
+				"pagePath": "pages/tabbar/car",
+				"iconPath": "static/tabbar/car.png",
+				"selectedIconPath": "static/tabbar/acar.png",
+				"text": "购物车"
+			},
+			{
+				"pagePath": "pages/tabbar/my",
+				"iconPath": "static/tabbar/my.png",
+				"selectedIconPath": "static/tabbar/amy.png",
+				"text": "我的"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "绾青丝汉服社",
+		"navigationBarBackgroundColor": "#7494D1",
+		"backgroundColor": "#F8F8F8"
+	}
+}
