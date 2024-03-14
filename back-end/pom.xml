@@ -5,8 +5,13 @@
   <groupId>com.aks</groupId>
   <artifactId>clothes-mall</artifactId>
   <version>${revision}</version>
+  <packaging>pom</packaging>
 
-  <name>back-end</name>
+  <name>clothes-mall</name>
+  <modules>
+    <module>application</module>
+    <module>sdk</module>
+  </modules>
 
   <properties>
     <!--  统一版本管理      -->
@@ -21,7 +26,7 @@
     <spring.boot.version>3.0.2</spring.boot.version>
     <com.github.xiaoymin.version>4.2.0</com.github.xiaoymin.version>
     <com.baomidou.version>3.5.3.1</com.baomidou.version>
-    <cn.hutool.version>5.8.20</cn.hutool.version>
+    <cn.hutool.version>5.8.23</cn.hutool.version>
     <ip2region.version>2.7.0</ip2region.version>
     <sa.token.version>1.37.0</sa.token.version>
     <!-- 插件版本   -->
@@ -69,6 +74,12 @@
         <artifactId>ip2region</artifactId>
         <version>${ip2region.version}</version>
       </dependency>
+      <!--  模块依赖    -->
+      <dependency>
+        <groupId>com.aks</groupId>
+        <artifactId>sdk</artifactId>
+        <version>${revision}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -82,6 +93,11 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
+    </dependency>
+    <!-- sdk全局共享   -->
+    <dependency>
+      <groupId>com.aks</groupId>
+      <artifactId>sdk</artifactId>
     </dependency>
   </dependencies>
 
