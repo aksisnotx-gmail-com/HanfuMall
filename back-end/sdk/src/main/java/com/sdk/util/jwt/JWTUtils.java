@@ -44,4 +44,8 @@ public class JWTUtils {
         }
         return false;
     }
+
+    public static String getUserId() {
+        return LOCAL.get();
+    }
 }

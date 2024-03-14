@@ -2,6 +2,7 @@ package com.app.config;
 
 import cn.hutool.core.util.StrUtil;
 import com.sdk.util.asserts.AssertUtils;
+import com.sdk.util.jwt.JWTUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
@@ -40,7 +41,7 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
         String token = request.getHeader(tokenName);
         token = StrUtil.isBlank(token) ? request.getHeader(tokenName.toLowerCase()) : token;
         AssertUtils.assertTrue(!StrUtil.isBlank(token),"token不存在");
-        return com.xxl.sdk.util.jwt.JWTUtils.verifyToken(token);
+        return JWTUtils.verifyToken(token);
     }
 
     @Override
