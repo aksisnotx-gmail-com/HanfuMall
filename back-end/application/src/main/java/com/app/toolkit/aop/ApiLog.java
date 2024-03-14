@@ -1,7 +1,7 @@
-package com.aks.toolkit.log;
+package com.app.toolkit.aop;
 
 import cn.hutool.json.JSONUtil;
-import com.common.log.AsyncLogger;
+import com.xxl.sdk.log.AsyncLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
@@ -49,9 +49,8 @@ public class ApiLog {
         try {
             proceed = point.proceed();
         } finally {
-            Object finalProceed = proceed;
             String requestUri = request.getRequestURI();
-            logger.info(this.getClass(),"[ 请求API: {} , 请求参数: {} , 返回结果: {} ]",requestUri, point.getArgs(), JSONUtil.toJsonStr(finalProceed));
+            logger.info(this.getClass(),"[ 请求API: {} , 请求参数: {} , 返回结果: {} ]",requestUri, point.getArgs(), JSONUtil.toJsonStr(proceed));
         }
         return proceed;
     }

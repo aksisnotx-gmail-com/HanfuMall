@@ -1,10 +1,12 @@
-package com.aks;
+package com.app;
 
+import com.sdk.util.thead.TheadUtils;
+import com.xxl.sdk.log.AsyncLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -12,9 +14,9 @@ import org.springframework.stereotype.Indexed;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- *
- * @author xxl
- * @since 2024/3/14
+ * @author: anyone
+ * @since: 2023/9/16
+ * @description:  启动类
  */
 @EnableAspectJAutoProxy
 @EnableAsync
@@ -25,12 +27,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("**.mapper")
 @SpringBootApplication
 public class Application {
-    public static void main( String[] args ) {
+
+    public static void main(String[] args) {
         try {
             SpringApplication.run(Application.class, args);
-            log.info("项目启动成功");
+            log.info("项目启动成功(ง ˙o˙)ว");
         } catch (Exception e) {
             log.error("启动失败:",e);
         }
+    }
+
+    @Bean
+    public AsyncLogger logger() {
+        return new AsyncLogger(TheadUtils.createThreadPool());
     }
 }

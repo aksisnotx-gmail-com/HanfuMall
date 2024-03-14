@@ -1,4 +1,4 @@
-package com.aks.toolkit.service;
+package com.app.toolkit.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;

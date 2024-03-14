@@ -1,10 +1,10 @@
-package com.aks.toolkit.utils;
+package com.app.toolkit.web;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.common.exception.ChatException;
+import com.sdk.exception.GlobalException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,11 +27,11 @@ public class CommonPageRequestUtils {
 
     private static final Integer PAGE_SIZE_MAX_VALUE = 100;
 
-    public static <T> Page<T> defaultPage() throws ChatException {
+    public static <T> Page<T> defaultPage() throws GlobalException {
         return defaultPage(null);
     }
 
-    public static <T> Page<T> defaultPage(List<OrderItem> orderItemList) throws ChatException {
+    public static <T> Page<T> defaultPage(List<OrderItem> orderItemList) throws GlobalException {
 
         int size = 20;
 
@@ -74,7 +74,7 @@ public class CommonPageRequestUtils {
      * @author xuyuxiang
      * @date 2021/10/14 10:44
      **/
-    public static String getParamFromRequest(String paramName) throws ChatException {
+    public static String getParamFromRequest(String paramName) throws GlobalException {
         HttpServletRequest request = getRequest();
 
         // 1. 尝试从请求体里面读取
@@ -100,31 +100,31 @@ public class CommonPageRequestUtils {
         return paramValue;
     }
 
-    public static HttpServletRequest getRequest() throws ChatException {
+    public static HttpServletRequest getRequest() throws GlobalException {
         ServletRequestAttributes servletRequestAttributes;
         try {
             servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         } catch (Exception e) {
             log.error(">>> 非Web上下文无法获取Request：", e);
-            throw new ChatException("非Web上下文无法获取Request");
+            throw new GlobalException("非Web上下文无法获取Request");
         }
         if (servletRequestAttributes == null) {
-            throw new ChatException("非Web上下文无法获取Request");
+            throw new GlobalException("非Web上下文无法获取Request");
         } else {
             return servletRequestAttributes.getRequest();
         }
     }
 
-    public static HttpServletResponse getResponse() throws ChatException {
+    public static HttpServletResponse getResponse() throws GlobalException {
         ServletRequestAttributes servletRequestAttributes;
         try {
             servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         } catch (Exception e) {
             log.error(">>> 非Web上下文无法获取Response：", e);
-            throw new ChatException("非Web上下文无法获取Response");
+            throw new GlobalException("非Web上下文无法获取Response");
         }
         if (servletRequestAttributes == null) {
-            throw new ChatException("非Web上下文无法获取Response");
+            throw new GlobalException("非Web上下文无法获取Response");
         } else {
             return servletRequestAttributes.getResponse();
         }

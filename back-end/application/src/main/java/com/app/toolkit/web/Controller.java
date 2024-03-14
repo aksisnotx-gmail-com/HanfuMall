@@ -1,5 +1,7 @@
-package com.aks.toolkit.web;
+package com.app.toolkit.web;
 
+
+import com.sdk.resp.RespEntity;
 
 /**
  * 统一控制器
@@ -13,19 +15,19 @@ package com.aks.toolkit.web;
  */
 public interface Controller<E,C,R,U,D> {
 
-    default  E insert(C param){
+    default RespEntity<E> insert(C param){
         return null;
     }
 
-    default  E delete(D id) {
+    default  RespEntity<E> delete(D id) {
         return null;
     }
 
-    default  E update(U param) {
+    default  RespEntity<E> update(U param) {
         return null;
     }
 
-    default  E query(R param) {
+    default  RespEntity<E> query(R param) {
         return null;
     }
 }

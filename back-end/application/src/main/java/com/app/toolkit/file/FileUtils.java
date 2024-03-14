@@ -1,11 +1,11 @@
-package com.aks.toolkit.utils;
+package com.app.toolkit.file;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
-import com.common.exception.ChatException;
+import com.sdk.exception.GlobalException;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.*;
@@ -24,9 +24,9 @@ public class FileUtils {
      * @param file     文件
      * @param savePath 保存路径
      * @return 字符串
-     * @throws ChatException 使用
+     * @throws GlobalException 使用
      */
-    public static String upload(InputStream file, String savePath) throws ChatException {
+    public static String upload(InputStream file, String savePath) throws GlobalException {
         if (ObjectUtil.isNull(file) || StrUtil.isBlank(savePath)) {
             return  null;
         }
@@ -37,7 +37,7 @@ public class FileUtils {
             file.close();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ChatException("FileUtils：文件写出失败");
+            throw new GlobalException("FileUtils：文件写出失败");
         }
         return touch.getPath();
     }
@@ -47,19 +47,19 @@ public class FileUtils {
      *
      * @param filePath 文件路径
      * @return 字节[]
-     * @throws ChatException 使用
+     * @throws GlobalException 使用
      */
-    public static byte[] download(String filePath) throws ChatException {
+    public static byte[] download(String filePath) throws GlobalException {
         //路径不存就创建
         File touch = FileUtil.touch(new File(filePath));
         if (!touch.exists()) {
-            throw new ChatException(String.format("%s不存在",filePath));
+            throw new GlobalException(String.format("%s不存在",filePath));
         }
         try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(touch))){
             return inputStream.readAllBytes();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new ChatException("FileUtils：文件读入失败");
+            throw new GlobalException("FileUtils：文件读入失败");
         }
     }
 
@@ -69,9 +69,9 @@ public class FileUtils {
      * @param filePath 文件路径
      * @param response 响应
      * @param fileName 文件名
-     * @throws ChatException 使用
+     * @throws GlobalException 使用
      */
-    public static void webDownload(String filePath, HttpServletResponse response,String fileName) throws ChatException {
+    public static void webDownload(String filePath, HttpServletResponse response,String fileName) throws GlobalException {
         try {
             byte[] download = download(filePath);
             response.setHeader("Content-Disposition", "attachment;filename=" + URLUtil.encode(fileName));
@@ -80,9 +80,9 @@ public class FileUtils {
             response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
             response.setContentType("application/octet-stream;charset=UTF-8");
             IoUtil.write(response.getOutputStream(), true, download);
-        } catch (ChatException | IOException e) {
+        } catch (GlobalException | IOException e) {
             e.printStackTrace();
-            throw new ChatException("web下载失败");
+            throw new GlobalException("web下载失败");
         }
     }
 
