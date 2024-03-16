@@ -1,10 +1,12 @@
 package com.app.controller;
 
+import com.app.toolkit.redis.RedisUtils;
 import com.sdk.resp.RespEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/test", produces = "application/json")
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "测试API")
 public class TestController {
     /**
@@ -32,8 +35,7 @@ public class TestController {
         return RespEntity.base(200,"success",null);
     }
 
-    @Resource
-    RedisTemplate<String, Object> redisTemplate;
+    private final RedisUtils redisUtils;
     /**
      * 测试redis
      * @param key
@@ -43,10 +45,8 @@ public class TestController {
     @Operation(summary = "测试redis")
     @Parameter(name = "key",description = "redis的key")
     public RespEntity<String> redis(@RequestParam("key")String key) {
-        redisTemplate.opsForValue().set("username","xxl");
-        Object o = redisTemplate.opsForValue().get(key);
-        log.info("查询：key=>{},value=>{}",key,o);
-        redisTemplate.keys("*").forEach(dto -> log.info("key=>{},value=>{}",dto,redisTemplate.opsForValue().get(dto)));
+        redisUtils.opsForValue(key,"value=================",20);
+        log.info("查询：key=>{},value=>{}",key,redisUtils.get(key, String.class));
         return RespEntity.base(200,"success",null);
     }
 }

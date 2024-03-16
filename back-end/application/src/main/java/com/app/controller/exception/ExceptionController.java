@@ -1,6 +1,8 @@
 package com.app.controller.exception;
 
 
+import com.sdk.exception.GlobalException;
+import com.sdk.resp.RespEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -20,7 +22,7 @@ public class ExceptionController {
      */
     @ExceptionHandler(Exception.class)
     public RespEntity<?> exception(Exception exception) {
-        if (exception instanceof CommonException com) {
+        if (exception instanceof GlobalException com) {
             return RespEntity.fail(com.getCode(), com.getMsg());
         } else if (exception instanceof BindException bindException) {
             return RespEntity.fail(bindException.getFieldErrors().

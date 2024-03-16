@@ -36,12 +36,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!--  sa-token  -->
-      <dependency>
-        <groupId>cn.dev33</groupId>
-        <artifactId>sa-token-spring-boot3-starter</artifactId>
-        <version>${sa.token.version}</version>
-      </dependency>
       <!--   spring boot 依赖  spring boot管理    -->
       <dependency>
         <groupId>org.springframework.boot</groupId>

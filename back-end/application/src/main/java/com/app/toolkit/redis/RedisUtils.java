@@ -2,6 +2,8 @@ package com.app.toolkit.redis;
 
 import cn.hutool.core.convert.Convert;
 import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.connection.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,10 +19,18 @@ import java.util.function.Function;
  * @author xxl
  * @since 2023/11/10
  */
+@Getter
 @Component
+@RequiredArgsConstructor
 public class RedisUtils {
-    @Resource
-    RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * -- GETTER --
+     *  获取 redisTemplate
+     *
+     * @return redisTemplate
+     */
+    private final RedisTemplate<String, Object> redisTemplate;
 
     /*========================================*/
     /*===============common===================*/
@@ -33,15 +43,6 @@ public class RedisUtils {
      */
     public Set<String> keys() {
         return redisTemplate.keys("*");
-    }
-
-    /**
-     * 获取 redisTemplate
-     *
-     * @return redisTemplate
-     */
-    public RedisTemplate<String, Object> getRedisTemplate() {
-        return redisTemplate;
     }
 
     /**
@@ -118,6 +119,7 @@ public class RedisUtils {
     public Long getExpire(String key) {
        return   redisTemplate.getExpire(key);
     }
+
 
     /**
      * 查看某个键的类型

@@ -36,9 +36,4 @@ public class Application {
             log.error("启动失败:",e);
         }
     }
-
-    @Bean
-    public AsyncLogger logger() {
-        return new AsyncLogger(TheadUtils.createThreadPool());
-    }
 }

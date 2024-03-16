@@ -1,8 +1,13 @@
 package com.app.config;
 
 import cn.hutool.core.util.StrUtil;
+import com.app.repository.entities.LoginUser;
+import com.app.toolkit.redis.RedisUtils;
 import com.sdk.util.asserts.AssertUtils;
 import com.sdk.util.jwt.JWTUtils;
+import com.sdk.util.thead.TheadUtils;
+import com.xxl.sdk.log.AsyncLogger;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
@@ -26,7 +31,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @ConfigurationProperties(prefix = "auth-path")
 @Configuration
-@RequiredArgsConstructor
 @Data
 public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
 
@@ -40,8 +44,9 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader(tokenName);
         token = StrUtil.isBlank(token) ? request.getHeader(tokenName.toLowerCase()) : token;
-        AssertUtils.assertTrue(!StrUtil.isBlank(token),"token不存在");
-        return JWTUtils.verifyToken(token);
+        AssertUtils.notNull(token, "TOKEN不存在请先登录");
+        LoginUser.check(token);
+        return true;
     }
 
     @Override
@@ -65,5 +70,15 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public LoginUser setRedisUtils(RedisUtils redisUtils) {
+        return new LoginUser(redisUtils);
+    }
+
+    @Bean
+    public AsyncLogger logger() {
+        return new AsyncLogger(TheadUtils.createThreadPool());
     }
 }
