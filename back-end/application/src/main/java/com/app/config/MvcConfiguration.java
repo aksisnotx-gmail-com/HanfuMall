@@ -49,12 +49,12 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
         return true;
     }
 
-    @Override
+   /* @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration authInterceptorRegistration = registry.addInterceptor(this);
         authInterceptorRegistration.addPathPatterns(PATH);
         authInterceptorRegistration.excludePathPatterns(exclude);
-    }
+    }*/
 
     /**
      * 跨域配置
