@@ -2,7 +2,7 @@ package com.app.controller;
 
 import com.app.domain.file.service.FileService;
 import com.app.domain.product.service.ProductDetailsService;
-import com.app.domain.user.service.UserLoginService;
+import com.app.domain.user.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.Data;
 
@@ -16,7 +16,7 @@ import lombok.Data;
 public class Controller {
 
     @Resource
-    protected UserLoginService userLoginService;
+    protected UserService userLoginService;
 
     @Resource
     protected ProductDetailsService productDetailsService;

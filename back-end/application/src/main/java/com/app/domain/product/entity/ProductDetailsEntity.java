@@ -1,6 +1,7 @@
 package com.app.domain.product.entity;
 
 import com.app.domain.base.Entity;
+import com.app.domain.product.enums.ShippingType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,7 +36,7 @@ public class ProductDetailsEntity extends Entity {
 
     //发货类型
     @Schema(description = "发货类型")
-    private String shippingType;
+    private ShippingType shippingType;
 
     //商品描述,图片都是为json
     @Schema(description = "商品描述")
