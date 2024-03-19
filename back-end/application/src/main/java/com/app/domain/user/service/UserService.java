@@ -4,6 +4,8 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.app.domain.base.AbstractService;
+import com.app.domain.user.mapper.UserMapper;
 import com.app.domain.user.param.WeChatLoginParam;
 import com.app.domain.user.entity.UserEntity;
 import com.sdk.exception.GlobalException;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Slf4j
-public class UserLoginService {
+public class UserService extends AbstractService<UserMapper,UserEntity> {
 
     // 微信提供的API接口URL，需要替换为实际值
     private static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";

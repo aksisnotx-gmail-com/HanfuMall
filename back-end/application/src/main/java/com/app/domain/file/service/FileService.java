@@ -57,7 +57,7 @@ public class FileService extends AbstractService<FileMapper, FileEntity> {
     }
 
     private void check(String fileSavePath, FileMagicNumber...type)  {
-        boolean match = Arrays.stream(type).anyMatch(t -> t.getExtension().equalsIgnoreCase(FileUtils.getFileSuffix(songName)));
+        boolean match = Arrays.stream(type).anyMatch(t -> t.getExtension().equalsIgnoreCase(FileUtils.getFileSuffix(fileSavePath)));
         Assert.isTrue(match,"不支持的文件格式 = "+ FileUtils.getFileSuffix(fileSavePath));
     }
 

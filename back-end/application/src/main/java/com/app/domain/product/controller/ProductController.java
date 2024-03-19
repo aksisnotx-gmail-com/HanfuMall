@@ -18,5 +18,7 @@ public class ProductController {
 
     //添加商品详情
     //删除商品详情
+    //获取商品详情
+    //获取所有商品详情
 
 }
