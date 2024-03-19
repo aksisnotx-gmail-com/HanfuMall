@@ -193,7 +193,7 @@ public interface IServiceEx<E> extends IService<E> {
      */
     @Transactional(rollbackFor = RuntimeException.class)
     default <T> boolean saveOrUpdateBatchAround(List<T> ts, SFunction<E,?> idFunc, @Nullable BiConsumer<T,E> before, @Nullable TConsumer<T,E,Boolean> after) {
-        return ts.parallelStream().
+        return ts.stream().
                 allMatch(t -> {
                     E convert = convert(t);
 
@@ -202,9 +202,9 @@ public interface IServiceEx<E> extends IService<E> {
                         before.accept(t,convert);
                     }
                     boolean isSuccess = this.saveOrUpdate(convert, idFunc);
-
                     //更新/插入后
                     if (after != null) {
+                        //t 插入之前 convert 更新之后
                         after.accept(t,convert,isSuccess);
                     }
 

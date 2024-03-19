@@ -1,6 +1,8 @@
 package com.app.domain.product.entity;
 
+import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
+import com.app.domain.product.param.ProductDetailParam;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -47,5 +49,13 @@ public class ProductSkuEntity extends Entity {
     //其他属性
     @Schema(description = "其他属性")
     private String otherAttribute;
+
+    public void setAttribute(ProductDetailParam.ProductStyle style) {
+        this.otherAttribute = JSONUtil.toJsonStr(style);
+    }
+
+    public ProductDetailParam.ProductStyle getAttribute() {
+        return JSONUtil.toBean(this.otherAttribute, ProductDetailParam.ProductStyle.class);
+    }
 }
 

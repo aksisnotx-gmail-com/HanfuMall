@@ -1,10 +1,10 @@
 package com.app.domain.product.param;
 
 import com.app.domain.product.enums.ProductType;
-import com.app.domain.product.enums.ShippingType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,15 +31,10 @@ public class ProductDetailParam implements Serializable {
     @Schema(description = "商品名称")
     private String productName;
 
-    //发货类型
-    @Schema(description = "发货类型")
-    @NotBlank(message = "发货类型不能为空")
-    private ShippingType shippingType;
-
     //商品描述,图片都是为json
     @Schema(description = "商品描述")
     @NotBlank(message = "商品描述不能为空")
-    private String productDescription;
+    private List<String> descUrls;
 
     //商品类型：汉服、首饰
     @Schema(description = "商品类型")
@@ -49,16 +44,19 @@ public class ProductDetailParam implements Serializable {
     @Schema(description = "折扣")
     private Double discount;
 
+
+    @Schema(description = "sku")
+    private List<Sku> sku;
+
     /**
      * sku 尺码信息
      */
+    @EqualsAndHashCode(callSuper = true)
     @Schema(description = "sku")
     @Data
-    public static class Sku {
-
-        @Schema(description = "图片")
-        private String carouselUrl;
-
+    public static class Sku extends ProductStyle implements Serializable {
+        @Serial
+        private static final long serialVersionUID = 5070470961911810329L;
         //价格
         @Schema(description = "价格")
         private Double price;
@@ -70,19 +68,21 @@ public class ProductDetailParam implements Serializable {
         //尺码
         @Schema(description = "尺码")
         private String size;
+    }
+
+    @Schema(description = "样式")
+    @Data
+    public static class ProductStyle  implements Serializable  {
+
+        @Serial
+        private static final long serialVersionUID = -936197310719796446L;
 
         //其他属性
         @Schema(description = "样式描述")
         private String desc;
-    }
 
-    @Schema(description = "商品描述")
-    @Data
-    public static class ProductDesc {
-
-        @Schema(description = "设计灵感")
-        private String designInspiration;
-
-        private String babyInformation;
+        //图片
+        @Schema(description = "图片")
+        private String carouselUrl;
     }
 }

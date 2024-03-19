@@ -1,12 +1,14 @@
 package com.app.domain.product.entity;
 
+import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
-import com.app.domain.product.enums.ShippingType;
+import com.app.domain.product.enums.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.util.List;
 
 /**
  * 商品详情(SysProductDetails)表实体类
@@ -34,10 +36,6 @@ public class ProductDetailsEntity extends Entity {
     @Schema(description = "商品名称")
     private String productName;
 
-    //发货类型
-    @Schema(description = "发货类型")
-    private ShippingType shippingType;
-
     //商品描述,图片都是为json
     @Schema(description = "商品描述")
     private String productDescription;
@@ -49,5 +47,22 @@ public class ProductDetailsEntity extends Entity {
     //折扣
     @Schema(description = "折扣")
     private Double discount;
+
+    public void setProductDesc(List<String> descUrls) {
+        this.productDescription = JSONUtil.toJsonStr(descUrls);
+    }
+
+    public List<String> getProductDesc() {
+        return JSONUtil.toList(this.productDescription, String.class);
+    }
+
+    public void setProductType(List<ProductType> productTypes) {
+        List<String> list = productTypes.parallelStream().map(ProductType::name).toList();
+        this.productTypes = JSONUtil.toJsonStr(list);
+    }
+
+    public List<ProductType> getProductType() {
+        return JSONUtil.toList(this.productTypes, String.class).parallelStream().map(ProductType::valueOf).toList();
+    }
 }
 
