@@ -20,17 +20,28 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class LoginController extends Controller {
 
-    @PostMapping("/wechat/login/")
+    @PostMapping("/login/wechat")
     @Operation(summary = "微信小程序授权登录")
     public RespEntity<UserEntity> wechatLogin(@RequestBody WeChatLoginParam param) {
-        return wechatLoginService.loginWithWechat(param);
+        return userLoginService.loginWithWechat(param);
     }
 
-    @PostMapping("/wechat/login/")
+    @PostMapping("/login/")
     @Operation(summary = "前台商家登录")
-    public RespEntity<UserEntity> wechatLogin(@RequestBody WeChatLoginParam param) {
-        return wechatLoginService.login(param);
+    public RespEntity<UserEntity> login(@RequestBody Object param) {
+        return userLoginService.login(param);
     }
 
+    @PostMapping("/login/")
+    @Operation(summary = "前台商家注册")
+    public RespEntity<UserEntity> register(@RequestBody Object param) {
+        return userLoginService.register(param);
+    }
+
+    @PostMapping("/getInfo/")
+    @Operation(summary = "获取个人信息")
+    public RespEntity<UserEntity> getInfo() {
+        return userLoginService.getInfo(param);
+    }
 
 }

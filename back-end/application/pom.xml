@@ -8,7 +8,10 @@
     </parent>
 
     <artifactId>application</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+    <modules>
+        <module>product</module>
+    </modules>
 
 
     <dependencies>

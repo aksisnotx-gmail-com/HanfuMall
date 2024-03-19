@@ -1,6 +1,6 @@
 package com.app.controller.base;
 
-import com.app.domain.user.service.WechatLoginServiceImpl;
+import com.app.domain.user.service.UserLoginServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.Data;
 
@@ -14,6 +14,6 @@ import lombok.Data;
 public class Controller {
 
     @Resource
-    protected   WechatLoginServiceImpl wechatLoginService;
+    protected UserLoginServiceImpl userLoginService;
 
 }
