@@ -1,4 +1,4 @@
-package com.app.repository.entities;
+package com.app.domain.user.entity;
 
 import com.app.toolkit.redis.RedisUtils;
 import com.sdk.util.asserts.AssertUtils;

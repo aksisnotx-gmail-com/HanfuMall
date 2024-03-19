@@ -1,20 +1,21 @@
 package com.app.config;
 
 import cn.hutool.core.util.StrUtil;
-import com.app.repository.entities.LoginUser;
+import com.app.domain.user.entity.LoginUser;
 import com.app.toolkit.redis.RedisUtils;
 import com.sdk.util.asserts.AssertUtils;
-import com.sdk.util.jwt.JWTUtils;
 import com.sdk.util.thead.TheadUtils;
 import com.xxl.sdk.log.AsyncLogger;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @ConfigurationProperties(prefix = "auth-path")
 @Configuration
+@EnableAspectJAutoProxy
 @Data
 public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
 
@@ -40,8 +42,16 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
 
     private String tokenName;
 
+    /**
+     * 是否开启校验
+     */
+    private boolean enable;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (!enable) {
+            return true;
+        }
         String token = request.getHeader(tokenName);
         token = StrUtil.isBlank(token) ? request.getHeader(tokenName.toLowerCase()) : token;
         AssertUtils.notNull(token, "TOKEN不存在请先登录");
@@ -49,12 +59,12 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
         return true;
     }
 
-   /* @Override
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration authInterceptorRegistration = registry.addInterceptor(this);
         authInterceptorRegistration.addPathPatterns(PATH);
         authInterceptorRegistration.excludePathPatterns(exclude);
-    }*/
+    }
 
     /**
      * 跨域配置

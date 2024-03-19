@@ -13,7 +13,7 @@ import com.sdk.resp.RespEntity;
  * @param <U> 更新
  * @param <D> 插入
  */
-public interface Controller<E,C,R,U,D> {
+public interface IController<E,C,R,U,D> {
 
     default RespEntity<E> insert(C param){
         return null;

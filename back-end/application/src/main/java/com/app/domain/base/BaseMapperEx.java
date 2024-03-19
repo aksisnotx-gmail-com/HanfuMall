@@ -1,4 +1,4 @@
-package com.app.mapper.ex;
+package com.app.domain.base;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

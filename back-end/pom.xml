@@ -88,11 +88,6 @@
       <artifactId>lombok</artifactId>
       <optional>true</optional>
     </dependency>
-    <!-- sdk全局共享   -->
-    <dependency>
-      <groupId>com.aks</groupId>
-      <artifactId>sdk</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

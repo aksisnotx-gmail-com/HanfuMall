@@ -1,10 +1,6 @@
-package com.app.controller;
+package com.app.domain.user.controller;
 
 import com.app.controller.base.Controller;
-import com.app.domain.user.param.WeChatLoginParam;
-import com.app.repository.entities.UserEntity;
-import com.sdk.resp.RespEntity;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class LoginController extends Controller {
 
-    @PostMapping("/login/wechat")
+/*    @PostMapping("/login/wechat")
     @Operation(summary = "微信小程序授权登录")
     public RespEntity<UserEntity> wechatLogin(@RequestBody WeChatLoginParam param) {
         return userLoginService.loginWithWechat(param);
@@ -42,6 +38,6 @@ public class LoginController extends Controller {
     @Operation(summary = "获取个人信息")
     public RespEntity<UserEntity> getInfo() {
         return userLoginService.getInfo(param);
-    }
+    }*/
 
 }

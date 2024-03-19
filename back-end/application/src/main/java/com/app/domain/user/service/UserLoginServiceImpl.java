@@ -5,7 +5,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.app.domain.user.param.WeChatLoginParam;
-import com.app.repository.entities.UserEntity;
+import com.app.domain.user.entity.UserEntity;
 import com.sdk.exception.GlobalException;
 import com.sdk.resp.RespEntity;
 import lombok.extern.slf4j.Slf4j;

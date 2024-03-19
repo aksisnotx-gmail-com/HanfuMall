@@ -1,6 +1,6 @@
-package com.app.repository.entities;
+package com.app.domain.user.entity;
 
-import com.app.repository.entities.common.Entity;
+import com.app.domain.base.Entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
