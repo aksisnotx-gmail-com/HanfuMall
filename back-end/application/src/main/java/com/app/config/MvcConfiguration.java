@@ -3,6 +3,7 @@ package com.app.config;
 import cn.hutool.core.util.StrUtil;
 import com.app.domain.user.entity.LoginUser;
 import com.app.toolkit.redis.RedisUtils;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.sdk.util.asserts.AssertUtils;
 import com.sdk.util.thead.TheadUtils;
 import com.xxl.sdk.log.AsyncLogger;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.Date;
+
 /**
  * mvc配置
  *
@@ -34,7 +38,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableAspectJAutoProxy
 @Data
-public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
+public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor, MetaObjectHandler {
 
     private static final String PATH = "/**";
 
@@ -90,5 +94,15 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor {
     @Bean
     public AsyncLogger logger() {
         return new AsyncLogger(TheadUtils.createThreadPool());
+    }
+
+    @Override
+    public void insertFill(MetaObject metaObject) {
+        metaObject.setValue("createTime",new Date());
+    }
+
+    @Override
+    public void updateFill(MetaObject metaObject) {
+        metaObject.setValue("updateTime",new Date());
     }
 }

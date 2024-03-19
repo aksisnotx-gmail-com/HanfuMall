@@ -1,9 +1,7 @@
 package com.app.domain.product.controller;
 
-import com.app.controller.base.Controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
  * @author xxl
  * @since 2024/3/19
  */
-@Tag(name = "商品接口")
-@RequestMapping("/product")
+
+@Tag(name = "商品相关接口")
+@RequestMapping("/auth/")
 @RestController
 @Validated
-public class ProductController extends Controller {
+public class ProductController {
 
-    //发布商品
-    //删除商品
-    //获取所有商品列表
+    //添加商品详情
+    //删除商品详情
 
 }

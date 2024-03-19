@@ -79,5 +79,8 @@ auth-path:
     - /**/v3/**
     - /**/auth/**
   token-name: token
-  enable: false
+  enable: true
+file:
+  save:
+    path: @save.path@
 
