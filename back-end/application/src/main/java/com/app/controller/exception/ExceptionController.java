@@ -31,6 +31,8 @@ public class ExceptionController {
                     distinct().
                     toList().
                     toString());
+        }else if (exception instanceof IllegalArgumentException){
+            return RespEntity.fail(exception.getMessage());
         }
         return RespEntity.fail();
     }

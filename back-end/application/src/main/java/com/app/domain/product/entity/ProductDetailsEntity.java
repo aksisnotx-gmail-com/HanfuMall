@@ -1,8 +1,10 @@
 package com.app.domain.product.entity;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
 import com.app.domain.product.enums.ProductType;
+import com.app.domain.product.param.ProductDetailModifyParam;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
