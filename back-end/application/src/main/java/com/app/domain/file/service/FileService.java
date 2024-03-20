@@ -2,6 +2,7 @@ package com.app.domain.file.service;
 
 import cn.hutool.core.io.FileMagicNumber;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.IdUtil;
 import com.app.domain.base.AbstractService;
 import com.app.domain.file.entity.FileEntity;
 import com.app.domain.file.mapper.FileMapper;
@@ -40,9 +41,11 @@ public class FileService extends AbstractService<FileMapper, FileEntity> {
     public String saveFile(MultipartFile file) {
         try {
             FileEntity entity = new FileEntity();
-            String downloadId = FileUtils.upload(file.getInputStream(), savePath);
-            entity.setId(downloadId);
-            entity.setUrl(getUrl(request) + downloadId);
+            String path = FileUtils.upload(file.getInputStream(), savePath + file.getOriginalFilename());
+            String simpleId = IdUtil.simpleUUID();
+            entity.setId(simpleId);
+            entity.setPath(path);
+            entity.setUrl(getUrl(request) + simpleId);
             this.save(entity);
             return entity.getUrl();
         } catch (IOException e) {
@@ -50,7 +53,7 @@ public class FileService extends AbstractService<FileMapper, FileEntity> {
         }
     }
 
-    public void dowload(String id)  {
+    public void download(String id)  {
         FileEntity entity = this.getById(id);
         AssertUtils.notNull(entity,"文件不存在");
         FileUtils.webDownload(entity.getPath(),response,FileUtils.getFileSuffix(entity.getPath()));

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Matcher;
 
 /**
  * 异步记录日志
@@ -49,7 +50,7 @@ public final class AsyncLogger {
             if (text == null) {
                 continue;
             }
-            result = result.replaceFirst("\\{\\}",text);
+            result = result.replaceFirst("\\{}", Matcher.quoteReplacement(text));
         }
         return result;
     }

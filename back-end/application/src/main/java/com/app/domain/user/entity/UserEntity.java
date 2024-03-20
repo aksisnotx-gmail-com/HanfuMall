@@ -3,6 +3,7 @@ package com.app.domain.user.entity;
 import com.app.domain.base.Entity;
 import com.app.domain.user.enums.Role;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,6 +15,7 @@ import java.io.Serial;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@TableName("sys_user")
 public class UserEntity extends Entity {
 
     @Serial

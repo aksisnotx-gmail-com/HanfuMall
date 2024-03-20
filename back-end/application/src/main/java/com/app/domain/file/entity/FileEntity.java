@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.util.Date;
 
 import com.app.domain.base.Entity;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.io.Serializable;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@TableName("sys_file")
 @Schema(description = "文件实体类")
 public class FileEntity extends Entity {
 

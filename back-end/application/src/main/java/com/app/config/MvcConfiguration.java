@@ -3,7 +3,10 @@ package com.app.config;
 import cn.hutool.core.util.StrUtil;
 import com.app.domain.user.entity.LoginUser;
 import com.app.toolkit.redis.RedisUtils;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.sdk.util.asserts.AssertUtils;
 import com.sdk.util.thead.TheadUtils;
 import com.xxl.sdk.log.AsyncLogger;
@@ -103,6 +106,14 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor, M
 
     @Override
     public void updateFill(MetaObject metaObject) {
+
         metaObject.setValue("updateTime",new Date());
+    }
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return interceptor;
     }
 }

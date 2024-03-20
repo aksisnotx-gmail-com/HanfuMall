@@ -3,16 +3,16 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     #用于连接本地数据库测试是否能正确运行
-    url: mpw:2lcQAYsfwxTCA01l9k60E/6Fj6eAuX0dVmEa2Mq7OVoBkpTTrVfQr2WJx2wA9Z/svalzwEapYrUNaDjYLdAuBMcxqcOyLHak5/auN3oJTeWJpEtq66kjG5EAilfuxiUInUr8eHictRXX76vZP8O01cVbkl+8yqqOQ9PVhZ5309M=
-    username: mpw:h3gmHVCJFcFPfeZ7DReYpw==
-    password: mpw:HCQusJ+fyXYmL3k8haYXfQ==
+    url: mpw:yRGWr2PTwM1cvGeyXG//+CjDDOS46t2Za9aljwqJmLE+YIL7YpPzlsiU+QSXdxK+l6u7F9+iWxvJkoytUgBph1GK3TQI8DqwtcesrywTU+zlvGS9KU4Pr8sVwIL6/gBHG+6DlIb6eIz8nIHDoPeS3a98XYpnDWeQMFrvQ6yLAIzw+Q1FJm5kGn3/1ORPw9Sd
+    username: mpw:8CHsrExP577psDGCMOserw==
+    password: mpw:QhqG0x6ldu/8ZaprvAY7Ew==
     hikari:
       max-lifetime: 1800000  #连接的最大生命周期，表示一个连接在被关闭之前的最长使用时间。设置为30分钟（1800000毫秒）
   data:
     redis:
       port: 6379
-      host: mpw:3gpw306DSQiUTJbJPcW76Q==
-      password: mpw:HCQusJ+fyXYmL3k8haYXfQ==
+      host: mpw:umXTsuG6xuuTwH9DBbJyvg==
+      password: mpw:QhqG0x6ldu/8ZaprvAY7Ew==
       database: 0
       connect-timeout: 10s
       lettuce:

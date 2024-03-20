@@ -1,16 +1,15 @@
 package com.app.domain.product.entity;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
 import com.app.domain.product.param.ProductDetailParam;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * (SysProductSku)表实体类
@@ -21,6 +20,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "商品sku")
 @Data
+@TableName("sys_product_sku")
 public class ProductSkuEntity extends Entity {
 
     @Serial
@@ -56,6 +56,13 @@ public class ProductSkuEntity extends Entity {
 
     public ProductDetailParam.ProductStyle getAttribute() {
         return JSONUtil.toBean(this.otherAttribute, ProductDetailParam.ProductStyle.class);
+    }
+
+    public static ProductSkuEntity  create(ProductDetailParam.Sku sku) {
+        ProductSkuEntity entity = new ProductSkuEntity();
+        BeanUtil.copyProperties(sku,entity);
+        entity.setAttribute(sku.getStyle());
+        return entity;
     }
 }
 
