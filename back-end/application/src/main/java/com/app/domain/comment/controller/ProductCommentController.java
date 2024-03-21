@@ -25,7 +25,9 @@ public class ProductCommentController extends Controller {
     //发布评论,需要查看当前用户是否有这个评论
     @PostMapping("/publish")
     @Operation(summary = "发布评论")
-    public RespEntity<Boolean> publishComment(@RequestBody @Validated(Entity.INSERT.class) @JsonView(Entity.INSERT.class) ProductCommentEntity param) {
+    public RespEntity<Boolean> publishComment(@RequestBody
+                                                  @Validated(Entity.INSERT.class)
+                                                  @JsonView(Entity.INSERT.class) ProductCommentEntity param) {
         return RespEntity.success(commentService.publishComment(param, LoginUser.getLoginUserId()));
     }
 
@@ -40,6 +42,6 @@ public class ProductCommentController extends Controller {
     @GetMapping("/delete/")
     @Operation(summary = "删除评论")
     public RespEntity<Boolean> deleteComment(@RequestParam String productId,@RequestParam String commentId) {
-        return RespEntity.success(commentService.deleteComment(productId,commentId, LoginUser.getLoginUser()));
+        return RespEntity.success(commentService.deleteComment(productId,commentId,LoginUser.getLoginUser()));
     }
 }

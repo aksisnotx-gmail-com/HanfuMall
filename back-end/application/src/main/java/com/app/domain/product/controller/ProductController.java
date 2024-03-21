@@ -79,7 +79,7 @@ public class ProductController extends Controller {
     //增加尺码信息
     @PostMapping("/detail/size/add")
     @Operation(summary = "增加商品详情中的尺码信息")
-    public RespEntity<Boolean> addDetailSize(@RequestBody @Validated  ProductSizeModifyParam param) {
+    public RespEntity<Boolean> addDetailSize(@RequestBody @Validated ProductSizeModifyParam param) {
         return RespEntity.success(productDetailsService.addDetailSize(param));
     }
 

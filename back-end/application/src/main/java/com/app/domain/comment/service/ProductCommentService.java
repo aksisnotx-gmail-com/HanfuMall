@@ -8,6 +8,7 @@ import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.enums.Role;
+import com.app.domain.user.service.UserService;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
@@ -36,6 +37,8 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
 
     private final OrderService orderService;
 
+    private final UserService userService;
+
     @CacheEvict(key = "#param.productId")
     public Boolean publishComment(ProductCommentEntity param, String loginUserId) {
         ProductDetailsEntity productDetail = detailsService.getById(param.getProductId());
@@ -54,20 +57,21 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         List<ProductCommentEntity> list = page.getRecords().stream().peek(t -> {
             //把图片url json形式改为list形式
             t.setImgUrlStrToList(t.getCommentImgUrl());
+            t.setUser(userService.getById(t.getUserId()));
         }).toList();
         page.setRecords(list);
         return page;
     }
 
 
-    @Cacheable(key = "#productId")
+    @CacheEvict(key = "#productId")
     public Boolean deleteComment(String productId, String commentId, UserEntity loginUser) {
         ProductCommentEntity one = this.lambdaQuery()
                 .eq(ProductCommentEntity::getProductId, productId)
                 .eq(ProductCommentEntity::getId, commentId).one();
         AssertUtils.notNull(one, "评论不存在");
 
-        //是管理员的话
+        //管理员
         if (Role.ADMIN.equals(loginUser.getRole())) {
             return this.removeById(commentId);
         }

@@ -1,13 +1,10 @@
 package com.app.domain.comment.entity;
 
-import java.io.Serial;
-import java.util.Date;
-
 import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
+import com.app.domain.user.entity.UserEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -15,10 +12,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import org.hibernate.validator.constraints.Length;
 
-import java.io.Serializable;
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -63,6 +58,7 @@ public class ProductCommentEntity extends Entity {
     //商品ID
     @Schema(description = "商品ID")
     @NotBlank(message = "商品ID不能为空",groups = INSERT.class)
+    @JsonView(INSERT.class)
     private String productId;
 
     @TableField(exist = false)
@@ -70,11 +66,17 @@ public class ProductCommentEntity extends Entity {
     @JsonView(INSERT.class)
     private List<String> commentImgUrlList;
 
+    @TableField(exist = false)
+    @Schema(description = "用户信息")
+    @JsonView(IGNORE.class)
+    private UserEntity user;
 
+    @JsonView(IGNORE.class)
     public void setImgUrlListToStr(List<String> urlList) {
         this.commentImgUrl = JSONUtil.toJsonStr(urlList);
     }
 
+    @JsonView(IGNORE.class)
     public void setImgUrlStrToList(String urlStr) {
         this.commentImgUrlList = JSONUtil.toList(urlStr,String.class);
     }

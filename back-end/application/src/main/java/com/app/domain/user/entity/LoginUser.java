@@ -36,7 +36,7 @@ public  class LoginUser {
         UserEntity user = null;
         try {
             user = LOCAL.get();
-            AssertUtils.isNull(user, "token异常，请重新登录");
+            AssertUtils.notNull(user, "token异常，请重新登录");
             return user;
         } catch (GlobalException e) {
             log.error(e.getMsg());

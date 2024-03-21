@@ -106,7 +106,6 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor, M
 
     @Override
     public void updateFill(MetaObject metaObject) {
-
         metaObject.setValue("updateTime",new Date());
     }
 
