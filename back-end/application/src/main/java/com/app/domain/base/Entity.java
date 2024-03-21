@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serial;
@@ -23,6 +24,8 @@ public class Entity implements Serializable {
     private static final long serialVersionUID = -1284347847778673827L;
 
     @TableId
+    @JsonView({UPDATE.class})
+    @NotBlank(message = "id不能为空",groups = {UPDATE.class})
     private String id;
 
     @JsonView({IGNORE.class})

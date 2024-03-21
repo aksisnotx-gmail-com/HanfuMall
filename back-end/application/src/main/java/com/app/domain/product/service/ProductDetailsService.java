@@ -29,10 +29,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductDetailsService extends AbstractService<ProductDetailsMapper,ProductDetailsEntity> {
 
+    private static final String CACHE_KEY = "PRODUCT_DETAIL";
+
     private final ProductSkuService skuService;
 
     @Transactional(rollbackFor = RuntimeException.class)
-    @CacheEvict(cacheNames = "ProductDetail",allEntries = true)
+    @CacheEvict(cacheNames = CACHE_KEY,allEntries = true)
     public Boolean publishDetail(ProductDetailParam param) {
         ProductDetailsEntity entity = new ProductDetailsEntity();
         BeanUtil.copyProperties(param,entity);
@@ -54,7 +56,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         });
     }
 
-    @Cacheable(cacheNames = "ProductDetail",key = "#productId")
+    @Cacheable(cacheNames = CACHE_KEY,key = "#productId")
     public ProductVO getDetail(String productId) {
         ProductDetailsEntity productDetail = this.getById(productId);
         AssertUtils.notNull(productDetail,"商品详情不存在");
@@ -63,7 +65,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return ProductVO.create(productDetail,list);
     }
 
-    @Cacheable(cacheNames = "ProductDetail")
+    @Cacheable(cacheNames = CACHE_KEY)
     public Page<ProductVO> getAllDetail() {
         Page<ProductDetailsEntity> page = this.page(CommonPageRequestUtils.defaultPage());
         Page<ProductVO> voPage = new Page<>();
@@ -74,12 +76,12 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    @CacheEvict(cacheNames = "ProductDetail",allEntries = true)
+    @CacheEvict(cacheNames = CACHE_KEY,allEntries = true)
     public Boolean deleteProductById(String id) {
         return this.removeById(id);
     }
 
-    @CacheEvict(cacheNames = "ProductDetail",allEntries = true)
+    @CacheEvict(cacheNames = CACHE_KEY,allEntries = true)
     public Boolean modifyDetail(ProductDetailModifyParam param) {
         ProductDetailsEntity entity = this.getById(param.getId());
         AssertUtils.notNull(entity,"商品详情不存在");
@@ -90,12 +92,12 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return  this.updateById(entity);
     }
 
-    @CacheEvict(cacheNames = "ProductDetail",allEntries = true)
+    @CacheEvict(cacheNames = CACHE_KEY,allEntries = true)
     public Boolean deleteDetailSize(String productId, String sizeId) {
         return skuService.lambdaUpdate().eq(ProductSkuEntity::getProductId,productId).eq(ProductSkuEntity::getId,sizeId).remove();
     }
 
-    @CacheEvict(cacheNames = "ProductDetail",allEntries = true)
+    @CacheEvict(cacheNames = CACHE_KEY,allEntries = true)
     public Boolean modifyDetailSize(ProductSizeModifyParam param) {
         ProductSkuEntity one = skuService.lambdaQuery().eq(ProductSkuEntity::getProductId, param.getProductId()).eq(ProductSkuEntity::getId, param.getId()).one();
         AssertUtils.notNull(one,"商品尺码不存在");
@@ -104,7 +106,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return skuService.updateById(one);
     }
 
-    @CacheEvict(cacheNames = "ProductDetail",allEntries = true)
+    @CacheEvict(cacheNames = CACHE_KEY,allEntries = true)
     public Boolean addDetailSize(ProductSizeModifyParam param) {
         ProductSkuEntity sku = new ProductSkuEntity();
         BeanUtil.copyProperties(param, sku);

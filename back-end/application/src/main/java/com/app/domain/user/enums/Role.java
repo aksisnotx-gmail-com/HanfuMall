@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.annotation.IEnum;
  */
 public enum Role implements IEnum<String> {
     /**
-     * 商家
+     * 管理员
      */
-    MERCHANT,
+    ADMIN,
 
     /**
      * 买家
