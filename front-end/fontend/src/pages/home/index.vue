@@ -1,4 +1,5 @@
 <script setup>
+    import { useGoodsStore } from '@/store/modules/goods.js'
     const swiperList = ref([
         'https://cdn.uviewui.com/uview/swiper/swiper3.png',
         'https://cdn.uviewui.com/uview/swiper/swiper2.png',
@@ -7,19 +8,46 @@
 
     const noticeText = ref('欢迎同胞们来到绾青丝汉服社!')
 
-    const list = [{
-                    thumb: "https://cdn.uviewui.com/uview/goods/1.jpg"
-                }, {
-                    thumb: "https://cdn.uviewui.com/uview/goods/2.jpg"
-                }, {
-                    thumb: "https://cdn.uviewui.com/uview/goods/3.jpg"
-                }, {
-                    thumb: "https://cdn.uviewui.com/uview/goods/4.jpg"
-                }, {
-                    thumb: "https://cdn.uviewui.com/uview/goods/5.jpg"
-                }]
-</script>
+    const list = [
+        {
+            thumb: "https://cdn.uviewui.com/uview/goods/1.jpg"
+        }, 
+        {
+            thumb: "https://cdn.uviewui.com/uview/goods/2.jpg"
+        }, 
+        {
+            thumb: "https://cdn.uviewui.com/uview/goods/3.jpg"
+        }, 
+        {
+            thumb: "https://cdn.uviewui.com/uview/goods/4.jpg"
+        }, 
+        {
+            thumb: "https://cdn.uviewui.com/uview/goods/5.jpg"
+        }
+    ]
 
+    const goodsStore = useGoodsStore()
+    const toDetail = (item) => {
+        console.log(item, 'item');
+        goodsStore.goodsItem = { ...item }
+        // TODO item
+        uni.navigateTo({
+            url: '/pagesA/pages/goodsItem/index'
+        })
+    }
+
+    const JumpClassify = (index) => {
+        uni.navigateTo({
+            url: `/pagesA/pages/classify/index?index=${index}`
+        })
+    }
+
+    const JumpAllProduct = () => {
+        uni.navigateTo({
+            url: `/pagesA/pages/allProduct/index`
+        })
+    }
+</script>
 
 <template>
     <view class="bg-#C1C1C1">
@@ -42,21 +70,21 @@
         </view>
         <view class="flex justify-center gap-6 py-6 bg-#fff">
             <view class="flex flex-col gap-6">
-                <button class="nav">
+                <button class="nav" @click="JumpClassify(0)">
                     <image class="w-12 h-12" src="@/static/nav/hf.png" mode="aspectFit" />
                     <text class="font-600 text-4.5">汉服专区</text>
                 </button>
-                <button class="nav">
-                    <image class="w-12 h-12" src="@/static/nav/hy.png" mode="aspectFit" />
-                    <text class="font-600 text-4.5">汉元素</text>
-                </button>
-            </view>
-            <view class="flex flex-col gap-6">
-                <button class="nav">
+                <button class="nav" @click="JumpClassify(2)">
                     <image class="w-12 h-12" src="@/static/nav/fan.png" mode="aspectFit" />
                     <text class="font-600 text-4.5">配饰周边</text>
                 </button>
-                <button class="nav">
+            </view>
+            <view class="flex flex-col gap-6">
+                <button class="nav px-10" @click="JumpClassify(1)">
+                    <image class="w-12 h-12" src="@/static/nav/hy.png" mode="aspectFit" />
+                    <text class="font-600 text-4.5">汉元素</text>
+                </button>
+                <button class="nav" @click="JumpAllProduct">
                     <image class="w-12 h-12" src="@/static/nav/all.png" mode="aspectFit" />
                     <text class="font-600 text-4.5">全部商品</text>
                 </button>
@@ -71,7 +99,12 @@
             <u-scroll-list
                 :indicator="false"
             >
-                <view v-for="(item, index) in list" :key="index" class="goods_item bg-hotpink">
+                <view 
+                    v-for="(item, index) in list" 
+                    :key="index" 
+                    class="goods_item bg-hotpink"
+                    @click="toDetail(item)"
+                >
                     <view class="p-3">
                         <image :src="item.thumb" mode="aspectFit" class="w-30 h-30" />
                         <text class="color-#999">
@@ -88,7 +121,7 @@
         </view>
         <view class="bg-#fff px-4">
             <view class="text-5 font-600">热门推荐</view>
-            <view>
+            <view class="pb-2">
                 <view class="hot_card layout-slide">
                     <image src="https://cdn.uviewui.com/uview/goods/1.jpg" mode="aspectFit" class="h-30" />
                     <view class="flex flex-col">
@@ -122,9 +155,8 @@
     }
 
     .nav {
-        width: 170px;
+        min-width: 170px;
         display: flex;
-        align-items: center;
         padding: 10px 18px;
         color: #090909;
         font-size: 18px;
