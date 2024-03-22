@@ -22,7 +22,7 @@ public  class LoginUser {
 
     private static RedisUtils redisUtils;
 
-    private static final ThreadLocal<UserEntity> LOCAL = new ThreadLocal<>();
+    private static final ThreadLocal<String> LOCAL = new ThreadLocal<>();
 
     private static UserEntity entity;
 
@@ -33,20 +33,11 @@ public  class LoginUser {
     }
 
     public static UserEntity getLoginUser() {
-        UserEntity user = null;
-        try {
-            user = LOCAL.get();
-            AssertUtils.notNull(user, "token异常，请重新登录");
-            return user;
-        } catch (GlobalException e) {
-            log.error(e.getMsg());
-        }
-
-        //暂时测试使用
-        user = new UserEntity();
-        user.setRole(ADMIN);
-        user.setId(IdUtil.simpleUUID());
-        return user;
+        String token = LOCAL.get();
+        AssertUtils.notNull(token, "TOKEN异常请重新登录");
+        //从redis中获取查看key是否过时
+        AssertUtils.assertTrue(redisUtils.hasKey(token), "TOKEN失效，请重新登录");
+        return redisUtils.get(token, UserEntity.class);
     }
 
     public static String getLoginUserId() {
@@ -57,21 +48,27 @@ public  class LoginUser {
         return  getLoginUser().getRole();
     }
 
-    public static void check(String token) {
-        AssertUtils.assertTrue(redisUtils.hasKey(token), "TOKEN异常/失效，请重新登录");
-        UserEntity user = redisUtils.get(token, UserEntity.class);
-        user.setToken(token);
-        LOCAL.set(user);
+    public static String getToken() {
+        return  getLoginUser().getToken();
     }
 
-    public static UserEntity store(UserEntity user,long time) {
-        final String token = UUID.randomUUID().toString();
-        user.setToken(token);
-        redisUtils.opsForValue(token,user,time);
-        return redisUtils.get(token,UserEntity.class);
+    public static void checkToken(String token){
+        AssertUtils.assertTrue(redisUtils.hasKey(token), "TOKEN失效，请重新登录");
+        LOCAL.set(token);
     }
 
     public static UserEntity store(UserEntity user) {
-       return store(user,HALF_MONTH);
+        final String token = UUID.randomUUID().toString();
+        user.setToken(token);
+        redisUtils.opsForValue(token,user,HALF_MONTH);
+        //存到本地内存中
+        LOCAL.set(token);
+        return getLoginUser();
+    }
+
+    public static UserEntity update(UserEntity user) {
+        //更新用户
+        redisUtils.opsForValue(user.getToken(),user);
+        return getLoginUser();
     }
 }

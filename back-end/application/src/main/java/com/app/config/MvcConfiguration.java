@@ -13,14 +13,11 @@ import com.xxl.sdk.log.AsyncLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -61,8 +58,8 @@ public class MvcConfiguration implements WebMvcConfigurer, HandlerInterceptor, M
         }
         String token = request.getHeader(tokenName);
         token = StrUtil.isBlank(token) ? request.getHeader(tokenName.toLowerCase()) : token;
-        AssertUtils.notNull(token, "TOKEN不存在请先登录");
-        LoginUser.check(token);
+        AssertUtils.notNull(token, "TOKEN不存在");
+        LoginUser.checkToken(token);
         return true;
     }
 

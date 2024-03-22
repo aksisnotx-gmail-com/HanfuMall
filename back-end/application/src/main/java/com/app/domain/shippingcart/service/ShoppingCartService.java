@@ -8,6 +8,7 @@ import com.app.domain.shippingcart.mapper.ShoppingCartMapper;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.exception.GlobalException;
+import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,6 +34,7 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
     public synchronized Boolean addSku(ShoppingCartEntity entity, String loginUserId) {
         //购物数量
         Integer number = entity.getNumber();
+        AssertUtils.assertTrue(number > 0, "购买数量不能小于等于0");
         //库存数量
         Integer stock = skuService.getById(entity.getProductSkuId()).getStock();
         if (number > stock) {

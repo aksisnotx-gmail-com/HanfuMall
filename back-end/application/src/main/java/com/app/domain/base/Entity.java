@@ -39,4 +39,6 @@ public class Entity implements Serializable {
     public interface INSERT {}
     public interface IGNORE {}
     public interface UPDATE {}
+
+    public interface LOGIN{}
 }

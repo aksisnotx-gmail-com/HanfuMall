@@ -3,6 +3,8 @@ package com.app.domain.product.enums;
 import com.baomidou.mybatisplus.annotation.IEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
+
 /**
  * @author xxl
  * @since 2024/3/19

@@ -35,7 +35,7 @@ public final class AsyncLogger {
 
     public  void error(Class<?> targetClass,String msg,Object... params) {
         final Logger logger = getLogger(targetClass);
-        service.execute(()->logger.info(groupTransfer(msg,params)));
+        service.execute(()->logger.error(groupTransfer(msg,params)));
     }
 
     private Logger getLogger(Class<?> targetClass) {

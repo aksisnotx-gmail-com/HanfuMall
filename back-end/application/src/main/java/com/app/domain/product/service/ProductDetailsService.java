@@ -135,12 +135,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {
-        Page<ProductVO> voPage = new Page<>();
-        BeanUtil.copyProperties(page,voPage);
-        return voPage;
-    }
-
     @Cacheable(key = "#skuId")
     public Map<String, Object> getProductBySkuId(String skuId) {
         //获取SKU信息
@@ -149,5 +143,13 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         ProductDetailsEntity entity = this.getById(sku.getProductId());
         return Map.of(PRODUCT,entity,SKU,sku);
     }
+
+    private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {
+        Page<ProductVO> voPage = new Page<>();
+        BeanUtil.copyProperties(page,voPage);
+        return voPage;
+    }
+
+
 
 }
