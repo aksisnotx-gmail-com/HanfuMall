@@ -51,13 +51,6 @@ public class ProductDiscoveryController extends Controller {
         return RespEntity.success(discoveryService.cancelLike(discoveryId,LoginUser.getLoginUserId()));
     }
 
-    //根据ID查询具体的评论
-    @GetMapping("/get/{discoveryId}")
-    @Operation(summary = "根据ID查询具体的评论")
-    public RespEntity<DiscoveryEntity> getDiscoveryById(@PathVariable String discoveryId) {
-        return RespEntity.success(discoveryService.getDiscoveryById(discoveryId));
-    }
-
     //查询所有的发现
     @GetMapping("/getAll/discovery")
     @Operation(summary = "查询所有的发现")
@@ -67,15 +60,29 @@ public class ProductDiscoveryController extends Controller {
 
     //评论发现
     @PostMapping("/comment/publish")
-    @Operation(summary = "评论发现/或者回复评论")
+    @Operation(summary = "评论-回复")
     public RespEntity<Boolean> commentDiscovery(@RequestBody @JsonView(Entity.INSERT.class) @Validated(Entity.INSERT.class) DiscoveryCommentEntity entity) {
         return RespEntity.success(discoveryService.commentDiscovery(entity,LoginUser.getLoginUserId()));
     }
 
     //查询发现中的所有评论
     @GetMapping("/getAll/comment/{discoveryId}")
-    @Operation(summary = "评论发现中的评论")
-    public RespEntity<Page<DiscoveryCommentEntity>> getAllComment(@PathVariable String discoveryId) {
+    @Operation(summary = "查询所有的评论")
+    public RespEntity<DiscoveryEntity> getAllComment(@PathVariable String discoveryId) {
         return RespEntity.success(discoveryService.getAllComment(discoveryId));
     }
+
+    //删除评论
+    @GetMapping("/delete/comment/{commentId}")
+    @Operation(summary = "删除评论")
+    public RespEntity<Boolean> deleteComment(@PathVariable String commentId) {
+        return RespEntity.success(discoveryService.deleteCommentById(commentId,LoginUser.getLoginUser()));
+    }
+
+    //已读信息
+    /*@GetMapping("/read/comment/{commentId}")
+    @Operation(summary = "已读信息")
+    public RespEntity<Boolean> readComment(@PathVariable String commentId) {
+        return RespEntity.success(discoveryService.readComment(commentId,LoginUser.getLoginUser()));
+    }*/
 }

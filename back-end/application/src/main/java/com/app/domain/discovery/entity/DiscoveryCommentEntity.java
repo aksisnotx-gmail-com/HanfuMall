@@ -2,16 +2,20 @@ package com.app.domain.discovery.entity;
 
 import com.app.domain.base.Entity;
 import com.app.domain.discovery.enums.CommentType;
+import com.app.domain.user.entity.UserEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 评论内容(SysDiscoveryComment)表实体类
@@ -51,6 +55,17 @@ public class DiscoveryCommentEntity extends Entity {
 
     @Schema(description = "评论类型")
     @JsonView(INSERT.class)
+    @NotNull(message = "评论类型不能为空",groups = INSERT.class)
     private CommentType commentType;
+
+    @Schema(description = "用户信息")
+    @JsonView(IGNORE.class)
+    @TableField(exist = false)
+    private UserEntity user;
+
+    @Schema(description = "回复")
+    @JsonView(IGNORE.class)
+    @TableField(exist = false)
+    private List<DiscoveryCommentEntity> replies;
 }
 

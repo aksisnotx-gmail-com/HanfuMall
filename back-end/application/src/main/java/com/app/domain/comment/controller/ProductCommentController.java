@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author xxl
  * @since 2024/3/20
  */
-@Tag(name = "商品评论相关接口")
+@Tag(name = "评论")
 @RequestMapping("/product/comment")
 @RestController
 @Validated
@@ -24,7 +24,7 @@ public class ProductCommentController extends Controller {
 
     //发布评论,需要查看当前用户是否有这个评论
     @PostMapping("/publish")
-    @Operation(summary = "发布评论")
+    @Operation(summary = "评论")
     public RespEntity<Boolean> publishComment(@RequestBody @Validated(Entity.INSERT.class) @JsonView(Entity.INSERT.class) ProductCommentEntity param) {
         return RespEntity.success(commentService.publishComment(param, LoginUser.getLoginUserId()));
     }

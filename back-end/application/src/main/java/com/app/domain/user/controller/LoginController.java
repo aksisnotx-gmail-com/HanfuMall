@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024/3/16
  */
 
-@Tag(name = "用户接口")
+@Tag(name = "我的")
 @RequestMapping("/auth/")
 @RestController
 @Validated

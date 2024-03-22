@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/file")
 @Validated
-@Tag(name = "文件接口")
+@Tag(name = "文件")
 public class FileController extends Controller {
 
 
