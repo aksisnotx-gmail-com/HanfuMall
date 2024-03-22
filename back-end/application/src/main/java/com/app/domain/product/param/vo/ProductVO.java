@@ -39,7 +39,7 @@ public class ProductVO extends Entity {
 
     //商品类型：汉服、首饰
     @Schema(description = "商品类型")
-    private List<ProductType> productType;
+    private List<ProductType> productTypes;
 
     //商品描述,图片都是为json
     @Schema(description = "商品描述")

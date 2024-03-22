@@ -45,7 +45,6 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         AssertUtils.notNull(productDetail, "商品不存在");
         AssertUtils.assertTrue(orderService.hasProduct(loginUserId, param.getProductId()), "未改买的商品无法评论");
         param.setUserId(loginUserId);
-        param.setImgUrlListToStr(param.getCommentImgUrlList());
         return this.save(param);
     }
 
@@ -56,7 +55,6 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
                 .page(CommonPageRequestUtils.defaultPage());
         List<ProductCommentEntity> list = page.getRecords().stream().peek(t -> {
             //把图片url json形式改为list形式
-            t.setImgUrlStrToList(t.getCommentImgUrl());
             t.setUser(userService.getById(t.getUserId()));
         }).toList();
         page.setRecords(list);

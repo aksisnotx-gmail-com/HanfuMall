@@ -92,7 +92,7 @@ public class ProductController extends Controller {
 
 
     @GetMapping("/detail/search")
-    @Operation(summary = "根据商品名字获取搜索商品")
+    @Operation(summary = "根据商品名字搜索商品")
     public RespEntity<Page<ProductVO>> search(@RequestParam String productName) {
         return RespEntity.success(productDetailsService.search(productName));
     }

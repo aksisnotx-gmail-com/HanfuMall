@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.app.domain.product.service.ProductDetailsService.CACHE_KEY;
 
@@ -37,6 +38,11 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     public static final String CACHE_KEY = "PRODUCT_DETAIL";
 
     private final ProductSkuService skuService;
+
+    private static final String PRODUCT = "PRODUCT";
+
+    private static final String SKU = "SKU";
+
 
     @Transactional(rollbackFor = RuntimeException.class)
     @CacheEvict(allEntries = true)
@@ -67,8 +73,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     @Cacheable
     public Page<ProductVO> getAllDetail() {
         Page<ProductDetailsEntity> page = this.page(CommonPageRequestUtils.defaultPage());
-        Page<ProductVO> voPage = new Page<>();
-        BeanUtil.copyProperties(page,voPage);
+        Page<ProductVO> voPage = entityPageToVoPage(page);
         //把entity转换为vo
         List<ProductVO> list = page.getRecords().stream().map(t -> getDetail(t.getId())).toList();
         voPage.setRecords(list);
@@ -114,20 +119,35 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     @Cacheable(key = "#type")
     public Page<ProductVO> getDetailByType(ProductType type) {
         Page<ProductVO> detail = getAllDetail();
-        List<ProductVO> list = detail.getRecords().stream().filter(t -> t.getProductType().contains(type)).toList();
+        List<ProductVO> list = detail.getRecords().stream().filter(t -> t.getProductTypes().contains(type)).toList();
+        detail.setTotal(list.size());
         detail.setRecords(list);
         return detail;
     }
 
     @Cacheable(key = "#productName")
-    @SuppressWarnings("all")
     public Page<ProductVO> search(String productName) {
         Page<ProductDetailsEntity> page = this.lambdaQuery().like(ProductDetailsEntity::getProductName, productName).page(CommonPageRequestUtils.defaultPage());
-        Page<ProductVO> voPage = new Page<>();
-        BeanUtil.copyProperties(page,voPage);
+        Page<ProductVO> voPage = entityPageToVoPage(page);
         //把entity转换为vo
         List<ProductVO> list = page.getRecords().stream().map(t -> getDetail(t.getId())).toList();
         voPage.setRecords(list);
         return voPage;
     }
+
+    private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {
+        Page<ProductVO> voPage = new Page<>();
+        BeanUtil.copyProperties(page,voPage);
+        return voPage;
+    }
+
+    @Cacheable(key = "#skuId")
+    public Map<String, Object> getProductBySkuId(String skuId) {
+        //获取SKU信息
+        ProductSkuEntity sku = skuService.getById(skuId);
+        //获取产品信息
+        ProductDetailsEntity entity = this.getById(sku.getProductId());
+        return Map.of(PRODUCT,entity,SKU,sku);
+    }
+
 }
