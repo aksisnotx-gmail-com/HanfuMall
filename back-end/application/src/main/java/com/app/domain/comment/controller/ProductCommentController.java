@@ -25,9 +25,7 @@ public class ProductCommentController extends Controller {
     //发布评论,需要查看当前用户是否有这个评论
     @PostMapping("/publish")
     @Operation(summary = "发布评论")
-    public RespEntity<Boolean> publishComment(@RequestBody
-                                                  @Validated(Entity.INSERT.class)
-                                                  @JsonView(Entity.INSERT.class) ProductCommentEntity param) {
+    public RespEntity<Boolean> publishComment(@RequestBody @Validated(Entity.INSERT.class) @JsonView(Entity.INSERT.class) ProductCommentEntity param) {
         return RespEntity.success(commentService.publishComment(param, LoginUser.getLoginUserId()));
     }
 

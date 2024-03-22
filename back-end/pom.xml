@@ -31,7 +31,6 @@
     <sa.token.version>1.37.0</sa.token.version>
     <!-- 插件版本   -->
     <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
-
   </properties>
 
   <dependencyManagement>

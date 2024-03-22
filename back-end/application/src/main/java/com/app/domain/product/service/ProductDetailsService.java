@@ -5,6 +5,7 @@ import com.app.domain.base.AbstractService;
 import com.app.domain.base.Entity;
 import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.entity.ProductSkuEntity;
+import com.app.domain.product.enums.ProductType;
 import com.app.domain.product.mapper.ProductDetailsMapper;
 import com.app.domain.product.param.ProductDetailModifyParam;
 import com.app.domain.product.param.ProductDetailParam;
@@ -69,7 +70,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return ProductVO.create(productDetail,list);
     }
 
-    @Cacheable(cacheNames = CACHE_KEY)
+    @Cacheable
     public Page<ProductVO> getAllDetail() {
         Page<ProductDetailsEntity> page = this.page(CommonPageRequestUtils.defaultPage());
         Page<ProductVO> voPage = new Page<>();
@@ -117,5 +118,24 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         BeanUtil.copyProperties(param, sku);
         sku.setAttribute(param.getStyle());
         return skuService.save(sku);
+    }
+
+    @Cacheable(key = "#type")
+    public Page<ProductVO> getDetailByType(ProductType type) {
+        Page<ProductVO> detail = getAllDetail();
+        List<ProductVO> list = detail.getRecords().stream().filter(t -> t.getProductType().contains(type)).toList();
+        detail.setRecords(list);
+        return detail;
+    }
+
+    @Cacheable(key = "#productName")
+    public Page<ProductVO> search(String productName) {
+        Page<ProductDetailsEntity> page = this.lambdaQuery().like(ProductDetailsEntity::getProductName, productName).page(CommonPageRequestUtils.defaultPage());
+        Page<ProductVO> voPage = new Page<>();
+        BeanUtil.copyProperties(page,voPage);
+        //把entity转换为vo
+        List<ProductVO> list = page.getRecords().stream().map(t -> getDetail(t.getId())).toList();
+        voPage.setRecords(list);
+        return voPage;
     }
 }

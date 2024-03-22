@@ -32,7 +32,7 @@ public class FileService extends AbstractService<FileMapper, FileEntity> {
     @Value("${file.save.path}")
     private String savePath;
 
-    private static final String FILE_REQUEST_PATH = "/file/";
+    private static final String FILE_REQUEST_PATH = "/file/download/";
 
     private final HttpServletResponse response;
 
@@ -41,8 +41,8 @@ public class FileService extends AbstractService<FileMapper, FileEntity> {
     public String saveFile(MultipartFile file) {
         try {
             FileEntity entity = new FileEntity();
-            String path = FileUtils.upload(file.getInputStream(), savePath + file.getOriginalFilename());
             String simpleId = IdUtil.simpleUUID();
+            String path = FileUtils.upload(file.getInputStream(), savePath + simpleId + "-"+ file.getOriginalFilename());
             entity.setId(simpleId);
             entity.setPath(path);
             entity.setUrl(getUrl(request) + simpleId);
@@ -56,7 +56,7 @@ public class FileService extends AbstractService<FileMapper, FileEntity> {
     public void download(String id)  {
         FileEntity entity = this.getById(id);
         AssertUtils.notNull(entity,"文件不存在");
-        FileUtils.webDownload(entity.getPath(),response,FileUtils.getFileSuffix(entity.getPath()));
+        FileUtils.webDownload(entity.getPath(),response,FileUtils.getFileName(entity.getPath()));
     }
 
     private void check(String fileSavePath, FileMagicNumber...type)  {

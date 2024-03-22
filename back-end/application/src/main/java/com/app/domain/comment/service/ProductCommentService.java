@@ -63,7 +63,6 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         return page;
     }
 
-
     @CacheEvict(key = "#productId")
     public Boolean deleteComment(String productId, String commentId, UserEntity loginUser) {
         ProductCommentEntity one = this.lambdaQuery()

@@ -3,6 +3,7 @@ package com.app.domain.product.controller;
 import com.app.controller.Controller;
 import com.app.domain.base.Entity;
 import com.app.domain.product.entity.ProductDetailsEntity;
+import com.app.domain.product.enums.ProductType;
 import com.app.domain.product.param.ProductDetailModifyParam;
 import com.app.domain.product.param.ProductDetailParam;
 import com.app.domain.product.param.ProductSizeModifyParam;
@@ -83,4 +84,16 @@ public class ProductController extends Controller {
         return RespEntity.success(productDetailsService.addDetailSize(param));
     }
 
+    @GetMapping("/detail/type")
+    @Operation(summary = "根据类型获取所有商品")
+    public RespEntity<Page<ProductVO>> getDetailByType(@RequestParam ProductType type) {
+        return RespEntity.success(productDetailsService.getDetailByType(type));
+    }
+
+
+    @GetMapping("/detail/search")
+    @Operation(summary = "根据商品名字获取搜索商品")
+    public RespEntity<Page<ProductVO>> search(@RequestParam String productName) {
+        return RespEntity.success(productDetailsService.search(productName));
+    }
 }
