@@ -5,12 +5,14 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.app.domain.base.AbstractService;
+import com.app.domain.user.entity.LoginUser;
 import com.app.domain.user.mapper.UserMapper;
 import com.app.domain.user.param.WeChatLoginParam;
 import com.app.domain.user.entity.UserEntity;
 import com.sdk.exception.GlobalException;
 import com.sdk.resp.RespEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,11 +25,17 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserService extends AbstractService<UserMapper,UserEntity> {
 
+    @Value("${wechat.id}")
+    private String appid;
+
+    @Value("${wechat.secret}")
+    private String secret;
+
     // 微信提供的API接口URL，需要替换为实际值
     private static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";
 
     public RespEntity<UserEntity> loginWithWechat(WeChatLoginParam param) {
-        String url = String.format("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+        /*String url = String.format("%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
                 WECHAT_LOGIN_URL, param.getAppId(), param.getSecret(), param.getCode());
 
         // 使用Hutool发送HTTP GET请求
@@ -46,6 +54,8 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
         } else {
             // 处理请求失败情况
             throw new GlobalException("请求微信授权接口失败");
-        }
+        }*/
+
+        return null;
     }
 }

@@ -11,12 +11,6 @@ import lombok.Data;
 @Schema(name = "微信登录参数")
 public class WeChatLoginParam {
 
-    @Schema(description = "appid")
-    private  String appId;
-
-    @Schema(description = "密钥")
-    private  String secret;
-
     @Schema(description = "票据")
     private String code;
 }

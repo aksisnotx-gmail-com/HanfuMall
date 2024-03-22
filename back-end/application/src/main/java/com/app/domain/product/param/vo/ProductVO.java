@@ -33,7 +33,7 @@ public class ProductVO extends Entity {
     @Serial
     private static final long serialVersionUID = -5972103772272222801L;
 
-    //轮播图来自于sku
+    //轮播图来自于
     @Schema(description = "轮播图")
     private List<String> carousel;
 
@@ -72,13 +72,6 @@ public class ProductVO extends Entity {
     public static ProductVO create(ProductDetailsEntity entity,List<ProductSkuEntity> skuEntities){
         ProductVO vo = new ProductVO();
         BeanUtil.copyProperties(entity,vo);
-        vo.setCarousel(entity.getCarousels());
-        //设置商品描述
-        vo.setDescUrls(entity.getProductDesc());
-        //设置商品类型
-        vo.setProductType(entity.getProductType());
-        //设置轮播图
-        vo.setCarousel(entity.getCarousels());
         //设置sku
         List<SkuVO> list = skuEntities.parallelStream().map(SkuVO::create).toList();
         //设置可供选择的规格组合

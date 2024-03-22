@@ -58,7 +58,7 @@ public class ProductSkuEntity extends Entity {
         return JSONUtil.toBean(this.otherAttribute, ProductDetailParam.ProductStyle.class);
     }
 
-    public static ProductSkuEntity  create(ProductDetailParam.Sku sku) {
+    public static ProductSkuEntity create(ProductDetailParam.Sku sku) {
         ProductSkuEntity entity = new ProductSkuEntity();
         BeanUtil.copyProperties(sku,entity);
         entity.setAttribute(sku.getStyle());

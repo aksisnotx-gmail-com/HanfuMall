@@ -5,6 +5,7 @@ import com.app.domain.base.Entity;
 import com.app.domain.user.entity.UserEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -26,7 +27,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "商品评论")
-@TableName("sys_product_comment")
+@TableName(value = "sys_product_comment",autoResultMap = true)
 public class ProductCommentEntity extends Entity {
 
     @Serial
@@ -52,8 +53,9 @@ public class ProductCommentEntity extends Entity {
 
     //评论图片json形式为多张图片
     @Schema(description = "评论图片json形式为多张图片")
-    @JsonView(IGNORE.class)
-    private String commentImgUrl;
+    @JsonView(INSERT.class)
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> commentImgUrl;
 
     //商品ID
     @Schema(description = "商品ID")
@@ -62,23 +64,8 @@ public class ProductCommentEntity extends Entity {
     private String productId;
 
     @TableField(exist = false)
-    @Schema(description = "评论图片json形式为多张图片")
-    @JsonView(INSERT.class)
-    private List<String> commentImgUrlList;
-
-    @TableField(exist = false)
     @Schema(description = "用户信息")
     @JsonView(IGNORE.class)
     private UserEntity user;
-
-    @JsonView(IGNORE.class)
-    public void setImgUrlListToStr(List<String> urlList) {
-        this.commentImgUrl = JSONUtil.toJsonStr(urlList);
-    }
-
-    @JsonView(IGNORE.class)
-    public void setImgUrlStrToList(String urlStr) {
-        this.commentImgUrlList = JSONUtil.toList(urlStr,String.class);
-    }
 }
 

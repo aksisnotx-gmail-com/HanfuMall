@@ -4,6 +4,7 @@ import com.app.domain.comment.service.ProductCommentService;
 import com.app.domain.discovery.service.ProductDiscoveryService;
 import com.app.domain.file.service.FileService;
 import com.app.domain.product.service.ProductDetailsService;
+import com.app.domain.shippingcart.service.ShoppingCartService;
 import com.app.domain.user.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.Data;
@@ -24,12 +25,15 @@ public class Controller {
     protected ProductDetailsService productDetailsService;
 
     @Resource
-    protected  FileService fileService;
+    protected FileService fileService;
 
     @Resource
     protected ProductCommentService commentService;
 
     @Resource
     protected ProductDiscoveryService discoveryService;
+
+    @Resource
+    protected ShoppingCartService shoppingCartService;
 
 }

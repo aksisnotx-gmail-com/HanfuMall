@@ -43,12 +43,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     public Boolean publishDetail(ProductDetailParam param) {
         ProductDetailsEntity entity = new ProductDetailsEntity();
         BeanUtil.copyProperties(param,entity);
-        //设置图片
-        entity.setCarousels(param.getCarousel());
-        //设置图片
-        entity.setProductDesc(param.getDescUrls());
-        //设置产品类型
-        entity.setProductType(param.getProductTypes());
         return this.saveOrUpdateBatchAround(List.of(entity), Entity::getId,null,(t1, t2, t3)-> {
             //把尺码信息插入到sku表
             List<ProductSkuEntity> list = param.getSkus().stream().map(t -> {
@@ -91,9 +85,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         ProductDetailsEntity entity = this.getById(param.getId());
         AssertUtils.notNull(entity,"商品详情不存在");
         BeanUtil.copyProperties(param,entity);
-        entity.setCarousels(param.getCarousel());
-        entity.setProductDesc(param.getDescUrls());
-        entity.setProductType(param.getProductTypes());
         return  this.updateById(entity);
     }
 
@@ -129,6 +120,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     }
 
     @Cacheable(key = "#productName")
+    @SuppressWarnings("all")
     public Page<ProductVO> search(String productName) {
         Page<ProductDetailsEntity> page = this.lambdaQuery().like(ProductDetailsEntity::getProductName, productName).page(CommonPageRequestUtils.defaultPage());
         Page<ProductVO> voPage = new Page<>();

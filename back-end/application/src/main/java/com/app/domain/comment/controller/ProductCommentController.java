@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author xxl
  * @since 2024/3/20
  */
-@Tag(name = "评论")
+@Tag(name = "首页-评论")
 @RequestMapping("/product/comment")
 @RestController
 @Validated

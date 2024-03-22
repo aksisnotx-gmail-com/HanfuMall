@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024/3/19
  */
 
-@Tag(name = "首页")
+@Tag(name = "首页-商品")
 @RequestMapping("/product")
 @RestController
 @Validated
