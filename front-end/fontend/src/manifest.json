@@ -46,12 +46,14 @@
         "setting" : {
             "urlCheck" : false,
             "es6": true,
-            "minified": true
+            "minified": true,
+            "postcss": true
         },
         "optimization": {
             "subPackages": true
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "lazyCodeLoading": "requiredComponents"
     },
     "mp-alipay" : {
         "usingComponents" : true

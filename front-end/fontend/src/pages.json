@@ -8,23 +8,125 @@
 		}
 	},
 	"pages": [
-		{
-			"path": "pages/home/index"
+		{ "path": "pages/home/index" },
+		{ "path": "pages/index/index" },
+		{ 
+			"path": "pages/tabbar/watch",
+			"style": {
+				"navigationBarTitleText": "发现"
+			}
 		},
 		{
-			"path": "pages/index/index"
+			"path": "pages/tabbar/add",
+			"style": {
+				"navigationBarTitleText": "发图文"
+			}
 		},
 		{
-			"path": "pages/tabbar/watch"
+			"path": "pages/tabbar/car",
+			"style": {
+				"navigationBarTitleText": "购物车"
+			}
 		},
+		{ "path": "pages/tabbar/my" }
+	],
+	"subPackages":[
 		{
-			"path": "pages/tabbar/add"
-		},
-		{
-			"path": "pages/tabbar/car"
-		},
-		{
-			"path": "pages/tabbar/my"
+			"root": "pagesA",
+			"pages": [
+				{ 
+					"path": "pages/goodsItem/index",
+					"style": {
+						"navigationBarTitleText": "商品详情"
+					}
+				},
+				{
+					"path": "pages/comment/index",
+					"style": {
+						"navigationBarTitleText": "商品评论"
+					}
+				},
+				{
+					"path": "pages/classify/index",
+					"style": {
+						"navigationBarTitleText": "商品分类"
+					}
+				},
+				{
+					"path": "pages/allProduct/index",
+					"style": {
+						"navigationBarTitleText": "全部商品",
+						"onReachBottomDistance": 50
+					}
+				},
+				{
+					"path": "pages/wDetail/index",
+					"style": {
+						"navigationBarTitleText": "图文详情",
+						"onReachBottomDistance": 50
+					}
+				},
+				{
+					"path": "pages/balance/index",
+					"style": {
+						"navigationBarTitleText": "结算"
+					}
+				},
+				{
+					"path": "pages/address/receiving",
+					"style": {
+						"navigationBarTitleText": "收货地址"
+					}
+				},
+				{
+					"path": "pages/address/add",
+					"style": {
+						"navigationBarTitleText": "地址编辑"
+					}
+				},
+				{
+					"path": "pages/my/dataEditing",
+					"style": {
+						"navigationBarTitleText": "资料编辑"
+					}
+				},
+				{
+					"path": "pages/my/order",
+					"style": {
+						"navigationBarTitleText": "订单"
+					}
+				},
+				{
+					"path": "pages/my/orderDetail",
+					"style": {
+						"navigationBarTitleText": "订单详情"
+					}
+				},
+				{
+					"path": "pages/my/message",
+					"style": {
+						"navigationBarTitleText": "消息中心"
+					}
+				},
+				{
+					"path": "pages/my/moneny",
+					"style": {
+						"navigationBarTitleText": "汉币中心"
+					}
+				},
+				{
+					"path": "pages/my/reviewed",
+					"style": {
+						"navigationBarTitleText": "已评价"
+					}
+				},
+				{
+					"path": "pages/my/tw",
+					"style": {
+						"navigationBarTitleText": "我的图文"
+					}
+				}
+			]
 		}
 	],
 	"tabBar": {
