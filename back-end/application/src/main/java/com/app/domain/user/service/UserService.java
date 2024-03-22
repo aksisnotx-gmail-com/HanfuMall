@@ -1,5 +1,6 @@
 package com.app.domain.user.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.crypto.Mode;
@@ -43,14 +44,18 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
     @Value("${wechat.secret}")
     private String secret;
 
-    public static final Integer WECHAT_LOGIN = 1;
+    private static final Integer WECHAT_LOGIN = 1;
 
-    public static final Integer UN_WECHAT_LOGIN = 0;
+    private static final Integer UN_WECHAT_LOGIN = 0;
 
     // 微信提供的API接口URL，需要替换为实际值
     private static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";
 
-   /* public UserEntity loginWithWechat(WeChatLoginParam param) {
+    private static final String OPENID = "openid";
+
+    private static final String SESSION_KEY = "session_key";
+
+    public UserEntity loginWithWechat(WeChatLoginParam param) {
         final String resUrl = "%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
         String url = String.format(resUrl, WECHAT_LOGIN_URL, appid, secret, param.getCode());
         // 使用HuTool发送HTTP GET请求
@@ -63,33 +68,34 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
                     // 处理错误情况，例如打印日志、抛出异常等
                     throw new GlobalException("微信授权失败: " + result);
                 }
-
-                String sessionKey = (String) result.get("session_key");
+                String sessionKey = (String) result.get(SESSION_KEY);
                 //用session_key解密
                 String decrypt = decrypt(param.getEncryptedData(), sessionKey, param.getIv());
-                UserEntity.WeChatUser weChatUser = JSONUtil.toBean(decrypt, UserEntity.WeChatUser.class);
-                UserEntity user = new UserEntity();
-                user.setId(weChatUser.getOpenId());
-                user.setAvatar(weChatUser.getAvatarUrl());
-                user.setGender(weChatUser.getGender());
-                user.setPhoneNumber(param.getPhoneNumber());
-                user.setNickname(weChatUser.getNickName());
-
-                //如果ID不存在则注册
-                if (Objects.isNull(getById(user.getId(),false))) {
-                    return register();
+                JSONObject entries = JSONUtil.parseObj(decrypt);
+                //获取OPENID
+                String openId = (String) entries.get(OPENID);
+                //如果手机号不存在则注册
+                UserEntity user = getUserByPhoneNumber(param.getPhoneNumber());
+                if (Objects.isNull(user)) {
+                    //创建用户
+                    UserEntity entity = new UserEntity();
+                    BeanUtil.copyProperties(param, entity);
+                    entity.setId(openId);
+                    entity.setPwd(openId);
+                    //登录
+                    register(entity,true);
+                    //登录
+                    return login(entity.getPhoneNumber(), entity.getPwd());
                 }else {
-
+                    //登录
+                    return login(user.getPhoneNumber(), user.getPwd());
                 }
-
-                //登录
-                return login(user, true);
             }
             throw new GlobalException("请求微信授权接口失败");
         } catch (HttpException | GlobalException e) {
             throw new GlobalException(e.getMessage());
         }
-    }*/
+    }
 
 
     public UserEntity login(String phoneNumber, String password) {

@@ -1,6 +1,5 @@
 package com.app.domain.product.entity;
 
-import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
 import com.app.domain.product.enums.ProductType;
 import com.baomidou.mybatisplus.annotation.TableField;

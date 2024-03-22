@@ -13,14 +13,17 @@ import com.app.domain.product.param.ProductSizeModifyParam;
 import com.app.domain.product.param.vo.ProductVO;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,7 @@ import static com.app.domain.product.service.ProductDetailsService.CACHE_KEY;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @CacheConfig(cacheNames = CACHE_KEY)
 public class ProductDetailsService extends AbstractService<ProductDetailsMapper,ProductDetailsEntity> {
 
@@ -39,10 +43,9 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
 
     private final ProductSkuService skuService;
 
-    private static final String PRODUCT = "PRODUCT";
+    public static final String PRODUCT = "PRODUCT";
 
-    private static final String SKU = "SKU";
-
+    public static final String SKU = "SKU";
 
     @Transactional(rollbackFor = RuntimeException.class)
     @CacheEvict(allEntries = true)
@@ -135,7 +138,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    @Cacheable(key = "#skuId")
+    //@Cacheable(key = "#skuId")
     public Map<String, Object> getProductBySkuId(String skuId) {
         //获取SKU信息
         ProductSkuEntity sku = skuService.getById(skuId);

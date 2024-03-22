@@ -88,16 +88,4 @@ public class UserEntity extends Entity {
     @Min(value = 0,message = "性别 0 是男 1 是女",groups = {INSERT.class,UPDATE.class})
     @Max(value = 1,message = "性别 0 是男 1 是女",groups = {INSERT.class,UPDATE.class})
     public Integer gender;
-
-    @Data
-    public static class WeChatUser {
-
-        private String openId;
-
-        private String nickName;
-
-        private Integer gender;
-
-        private String avatarUrl;
-    }
 }

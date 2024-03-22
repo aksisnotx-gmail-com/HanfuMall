@@ -1,6 +1,9 @@
 package com.app.domain.shippingcart.service;
 
+import cn.hutool.json.JSONUtil;
 import com.app.domain.base.AbstractService;
+import com.app.domain.product.entity.ProductDetailsEntity;
+import com.app.domain.product.entity.ProductSkuEntity;
 import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.product.service.ProductSkuService;
 import com.app.domain.shippingcart.entity.ShoppingCartEntity;
@@ -14,6 +17,11 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+import static com.app.domain.product.service.ProductDetailsService.PRODUCT;
+import static com.app.domain.product.service.ProductDetailsService.SKU;
 
 /**
  * @author xxl
@@ -65,9 +73,10 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
         return this.updateById(entity);
     }
 
-    @Cacheable(key = "#loginUserId")
+    //@Cacheable(key = "#loginUserId")
     public Page<ShoppingCartEntity> getAll(String loginUserId) {
         Page<ShoppingCartEntity> page = this.lambdaQuery().eq(ShoppingCartEntity::getUserId, loginUserId).page(CommonPageRequestUtils.defaultPage());
+        //err: 这里不适用JSON转则会出问题
         page.getRecords().forEach(t -> t.setProductMap(productService.getProductBySkuId(t.getProductSkuId())));
         return page;
     }

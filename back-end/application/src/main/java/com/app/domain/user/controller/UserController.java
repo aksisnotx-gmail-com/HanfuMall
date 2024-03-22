@@ -4,6 +4,7 @@ import com.app.controller.Controller;
 import com.app.domain.base.Entity;
 import com.app.domain.user.entity.LoginUser;
 import com.app.domain.user.entity.UserEntity;
+import com.app.domain.user.param.WeChatLoginParam;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.sdk.resp.RespEntity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,11 +23,11 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class UserController extends Controller {
 
-   /* @PostMapping("/auth/login/wechat")
+    @PostMapping("/auth/login/wechat")
     @Operation(summary = "微信小程序授权登录")
     public RespEntity<UserEntity> wechatLogin(@RequestBody WeChatLoginParam param) {
         return RespEntity.success(userLoginService.loginWithWechat(param));
-    }*/
+    }
 
     @PostMapping("/auth/register")
     @Operation(summary = "后台注册")

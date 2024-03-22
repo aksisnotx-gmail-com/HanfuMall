@@ -5,6 +5,8 @@ import java.util.Date;
 
 import com.app.domain.base.Entity;
 import com.app.domain.product.entity.ProductDetailsEntity;
+import com.app.domain.product.entity.ProductSkuEntity;
+import com.app.domain.product.enums.ProductType;
 import com.app.domain.product.param.vo.ProductVO;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -17,6 +19,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**

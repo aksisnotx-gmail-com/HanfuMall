@@ -7,7 +7,8 @@ spring:
     username: mpw:8CHsrExP577psDGCMOserw==
     password: mpw:QhqG0x6ldu/8ZaprvAY7Ew==
     hikari:
-      max-lifetime: 1800000  #连接的最大生命周期，表示一个连接在被关闭之前的最长使用时间。设置为30分钟（1800000毫秒）
+      max-lifetime: 600000  #连接的最大生命周期，表示一个连接在被关闭之前的最长使用时间。设置为30分钟（1800000毫秒）
+      connection-test-query: "SELECT 1"
   data:
     redis:
       port: 6379
