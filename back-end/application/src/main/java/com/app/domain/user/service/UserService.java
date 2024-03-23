@@ -101,7 +101,7 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
     public Boolean register(UserEntity param,boolean isWeChatLogin) {
         UserEntity user = getUserByPhoneNumber(param.getPhoneNumber());
         AssertUtils.isNull(user, "用户已经存在");
-        param.setRole(isWeChatLogin ? Role.ADMIN : Role.BUYER);
+        param.setRole(isWeChatLogin ? Role.BUYER :  Role.ADMIN);
         param.setIsWechatLogin(isWeChatLogin ? WECHAT_LOGIN : UN_WECHAT_LOGIN);
         param.setPwd(MD5Utils.encrypt(param.getPwd()));
         //保存用户
