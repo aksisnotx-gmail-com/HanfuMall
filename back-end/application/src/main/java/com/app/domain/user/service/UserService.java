@@ -51,8 +51,6 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
     // 微信提供的API接口URL，需要替换为实际值
     private static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";
 
-    private static final String OPENID = "openid";
-
     private static final String SESSION_KEY = "session_key";
 
     public UserEntity loginWithWechat(WeChatLoginParam param) {
@@ -69,19 +67,14 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
                     throw new GlobalException("微信授权失败: " + result);
                 }
                 String sessionKey = (String) result.get(SESSION_KEY);
-                //用session_key解密
-                String decrypt = decrypt(param.getEncryptedData(), sessionKey, param.getIv());
-                JSONObject entries = JSONUtil.parseObj(decrypt);
-                //获取OPENID
-                String openId = (String) entries.get(OPENID);
                 //如果手机号不存在则注册
                 UserEntity user = getUserByPhoneNumber(param.getPhoneNumber());
                 if (Objects.isNull(user)) {
                     //创建用户
                     UserEntity entity = new UserEntity();
                     BeanUtil.copyProperties(param, entity);
-                    entity.setId(openId);
-                    entity.setPwd(openId);
+                    entity.setId(sessionKey);
+                    entity.setPwd(sessionKey);
                     //登录
                     register(entity,true);
                     //登录

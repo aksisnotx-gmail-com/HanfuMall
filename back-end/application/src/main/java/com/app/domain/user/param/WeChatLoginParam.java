@@ -20,14 +20,6 @@ public class WeChatLoginParam {
     @NotBlank(message = "票据不能为空")
     private String code;
 
-    @Schema(description = "加密数据")
-    @NotBlank(message = "加密数据不能为空")
-    private String encryptedData;
-
-    @Schema(description = "加密向量")
-    @NotBlank(message = "加密向量不能为空")
-    private String iv;
-
     @Schema(description = "手机号")
     @NotBlank(message = "手机号不能为空")
     @Length(min = 11, max = 11, message = "手机号格式不正确")
