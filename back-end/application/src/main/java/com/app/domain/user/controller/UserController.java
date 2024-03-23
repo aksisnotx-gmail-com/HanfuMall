@@ -39,7 +39,7 @@ public class UserController extends Controller {
     @PostMapping("/auth/login")
     @Operation(summary = "后台登录")
     public RespEntity<UserEntity> login(@RequestBody @JsonView({Entity.LOGIN.class}) @Validated(Entity.LOGIN.class) UserEntity param) {
-        return RespEntity.success(userLoginService.login(param.getPhoneNumber(),param.getPwd()));
+        return RespEntity.success(userLoginService.login(param.getPhoneNumber(),param.getPwd(),false));
     }
 
     @PostMapping("/modifyUserInfo")

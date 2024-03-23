@@ -74,13 +74,13 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
                     BeanUtil.copyProperties(param, entity);
                     entity.setId(param.getPhoneNumber());
                     entity.setPwd(param.getPhoneNumber());
-                    //登录
+                    //注册
                     register(entity,true);
                     //登录
-                    return login(entity.getPhoneNumber(), entity.getPwd());
+                    return login(entity.getPhoneNumber(), entity.getPwd(),true);
                 }else {
                     //登录
-                    return login(user.getPhoneNumber(), user.getPwd());
+                    return login(user.getPhoneNumber(), user.getPwd(),true);
                 }
             }
             throw new GlobalException("请求微信授权接口失败");
@@ -90,10 +90,11 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
     }
 
 
-    public UserEntity login(String phoneNumber, String password) {
+    public UserEntity login(String phoneNumber, String password,Boolean isWeChatLogin) {
         UserEntity user = getUserByPhoneNumber(phoneNumber);
         AssertUtils.notNull(user, "用户不存在");
-        AssertUtils.assertTrue(MD5Utils.decrypt(password,user.getPwd()), "密码错误");
+        //isWeChatLogin 微信登录则用手机号码解密
+        AssertUtils.assertTrue(MD5Utils.decrypt(isWeChatLogin ? phoneNumber : password,user.getPwd()), "密码错误");
         return LoginUser.store(user);
     }
 

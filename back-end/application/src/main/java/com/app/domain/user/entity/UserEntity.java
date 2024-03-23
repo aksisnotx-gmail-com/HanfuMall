@@ -49,7 +49,7 @@ public class UserEntity extends Entity {
 
     //头像url
     @Schema(description = "头像url")
-    @JsonView({INSERT.class,UPDATE.class})
+    @JsonView({UPDATE.class})
     private String avatar;
 
     //坐标
@@ -69,8 +69,7 @@ public class UserEntity extends Entity {
     private String phoneNumber;
 
     @Schema(description = "邮箱")
-    @JsonView({INSERT.class,UPDATE.class})
-    @Email(message = "邮箱格式不正确",groups = {INSERT.class,UPDATE.class})
+    @JsonView({UPDATE.class})
     private String email;
 
     //是否微信登录 1 是 0 否
@@ -83,9 +82,7 @@ public class UserEntity extends Entity {
     private String token;
 
     //0 是男 1 是女
-    @JsonView({INSERT.class,UPDATE.class})
+    @JsonView({UPDATE.class})
     @Schema(description = "性别 0 是男 1 是女")
-    @Min(value = 0,message = "性别 0 是男 1 是女",groups = {INSERT.class,UPDATE.class})
-    @Max(value = 1,message = "性别 0 是男 1 是女",groups = {INSERT.class,UPDATE.class})
     public Integer gender;
 }
