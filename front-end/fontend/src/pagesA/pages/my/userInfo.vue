@@ -67,11 +67,19 @@
                 ...params,
                 "gender": 0
             })
-            console.log(res, 'res');
-
-            uni.switchTab({
-                url: '/pages/tabbar/my'
+            const { token } = res
+            uni.setStorageSync('token', token)
+            uni.showToast({
+                title: '登录成功',
+                icon: 'success',
+                mask: true
             })
+
+            setTimeout(() => {
+                uni.switchTab({
+                    url: '/pages/tabbar/my'
+                })
+            }, 200)
         }
     }
 

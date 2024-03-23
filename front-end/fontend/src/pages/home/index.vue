@@ -1,10 +1,12 @@
 <script setup>
+    import { getSwiperListApi } from '@/api/home'
     import { useGoodsStore } from '@/store/modules/goods.js'
-    const swiperList = ref([
-        'https://cdn.uviewui.com/uview/swiper/swiper3.png',
-        'https://cdn.uviewui.com/uview/swiper/swiper2.png',
-        'https://cdn.uviewui.com/uview/swiper/swiper1.png',
-    ])
+
+    const swiperList = ref([])
+    const getSwiperList = async () => {
+        const res = await getSwiperListApi()
+        swiperList.value = res.records.map(item => item.bannerUrl)
+    }
 
     const noticeText = ref('欢迎同胞们来到绾青丝汉服社!')
 
@@ -47,6 +49,10 @@
             url: `/pagesA/pages/allProduct/index`
         })
     }
+
+    onMounted(() => {
+        getSwiperList()  
+    })
 </script>
 
 <template>

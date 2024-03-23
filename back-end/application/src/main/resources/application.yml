@@ -81,7 +81,7 @@ auth-path:
     - /**/user/auth/**
     - /**/file/**
   token-name: token
-  enable: false
+  enable: true
 
 # 文件存储位置
 file:

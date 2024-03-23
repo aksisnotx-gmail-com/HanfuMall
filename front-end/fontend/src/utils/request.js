@@ -7,7 +7,7 @@ function service(options = {}) {
 	if (getToken()) {
 		options.header = {
 			'content-type': 'application/json',
-			'Authorization': `${getToken()}`	// 这里是token(可自行修改)
+			'token': `${getToken()}`	// 这里是token(可自行修改)
 		};
 	}
 
@@ -19,15 +19,16 @@ function service(options = {}) {
 				uni.showToast({
 					icon: 'none',
 					duration: 3000,
-					title: `${res.data.msg}`
+					title: `${res.data.message}`
 				});
+
 				// 登陆失效
-				if (res.data.code === 403) {
-					// 清除本地token
-					removeToken()
+				if (res.data.code === 403 || res.data.code === 500) {
+					// 清除本地token等信息
+					uni.clearStorageSync()
 					// 关闭所有页面返回到登录页
 					uni.reLaunch({
-						url: '/pages/login/login'
+						url: '/pages/tabbar/my'
 					})
 				}
 				// 返回错误信息
@@ -38,12 +39,18 @@ function service(options = {}) {
 			}
 		};
 		options.fail = (err) => {
+			// 清除本地token
+			removeToken()
 			// 请求失败弹窗
 			uni.showToast({
 				icon: 'none',
 				duration: 3000,
 				title: '服务器错误,请稍后再试'
 			});
+			// 关闭所有页面返回到登录页
+			uni.reLaunch({
+				url: '/pages/tabbar/my'
+			})
 			rejected(err);
 		};
 		uni.request(options);

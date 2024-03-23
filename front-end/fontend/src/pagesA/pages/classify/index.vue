@@ -1,41 +1,19 @@
 <script setup>
-	const tabbar = [
+	import { getProductByTypeApi } from '@/api/home'
+	const tabbar = reactive([
         {
             name: '汉服',
-            foods: [
-				{
-					name: '南山韵味飞羽汉服',
-					icon: 'https://tse3-mm.cn.bing.net/th/id/OIP-C.gGsRMLZbf8TQMPUUtKr45QHaKI?w=203&h=278&c=7&r=0&o=5&pid=1.7',
-					price: 110
-				},
-				{
-					name: '南山韵味飞羽汉服',
-					icon: 'https://tse3-mm.cn.bing.net/th/id/OIP-C.gGsRMLZbf8TQMPUUtKr45QHaKI?w=203&h=278&c=7&r=0&o=5&pid=1.7',
-					price: 110
-				}
-			]
+            proList: []
         },
         {
             name: '汉元素',
-            foods: [
-				{
-					name: '汉元素',
-					icon: 'https://tse2-mm.cn.bing.net/th/id/OIP-C.058tmjkUCy18632SUeI4RwHaHa?w=220&h=220&c=7&r=0&o=5&pid=1.7',
-					price: 88
-				}
-			]
+            proList: []
         },
 		{
             name: '配饰周边',
-            foods: [
-				{
-					name: '配饰周边',
-					icon: 'https://tse3-mm.cn.bing.net/th/id/OIP-C.hffVI-Fm80xUkVa9Kle_gAHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7',
-					price: 88
-				}
-			]
+            proList: []
         }
-    ]
+    ])
 
     const viewInfo = reactive({
         scrollTop: 0,
@@ -45,7 +23,9 @@
     })
         
     const swichMenu = (index) => {
-        if(index == viewInfo.current) return ;
+        if(index == viewInfo.current) return;
+		getProductByType(typeObj[Number(index)])
+
         viewInfo.current = index;
         // 如果为0，意味着尚未初始化
         if(viewInfo.menuHeight == 0 || viewInfo.menuItemHeight == 0) {
@@ -75,10 +55,29 @@
         })
     }
 
+	const typeObj = {
+		0: "HAN_FU",
+		1: "HAN_YUAN_SU",
+		2: "ACCESSORIES"
+	}
+
     onLoad((option) => {
         const { index } = option
         viewInfo.current = Number(index)
+
+		if(!typeObj[index]) return
+		getProductByType(typeObj[index])
     })
+
+	async function getProductByType (type) {
+		const res = await getProductByTypeApi(type)
+		const records = res.records
+		if(records.length) {
+			records.forEach(item => {
+				tabbar[viewInfo.current].proList = [ ...item.specCombinationList ]
+			})
+		}
+	}
 </script>
 
 
@@ -96,23 +95,28 @@
                 <text class="u-line-1">{{item.name}}</text>
             </view>
         </scroll-view>
-        <block v-for="(item,index) in tabbar" :key="index">
+        <template v-for="(item,index) in tabbar" :key="index">
             <scroll-view scroll-y class="right-box" v-if="viewInfo.current == index">
                 <view class="page-view">
                     <view class="class-item">
                         <view class="item-container">
-                            <view class="thumb-box" v-for="(item1, index1) in item.foods" :key="index1">
-                                <image class="item-menu-image" :src="item1.icon" mode="aspectFit"></image>
-                                <view class="ml-3 h-100% flex flex-col justify-between font-600">
-									<text>{{ item1.name }}</text>
-									<text class="color-#FF0000 text-4.5">¥ {{ item1.price }}</text>
+							<template v-if="!item.proList.length">
+								<text>暂无商品</text>
+							</template>
+                            <template v-else>
+								<view class="thumb-box" v-for="(item1, index1) in item.proList" :key="index1">
+									<image class="item-menu-image" :src="item1.carouselUrl" mode="aspectFit"></image>
+									<view class="ml-3 h-100% flex flex-col justify-between font-600">
+										<text>{{ item1.desc }}</text>
+										<text class="color-#FF0000 text-4.5">¥ {{ item1.price }}</text>
+									</view>
 								</view>
-                            </view>
+							</template>
                         </view>
                     </view>
                 </view>
             </scroll-view>
-        </block>
+        </template>
     </view>
 </template>
 
