@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import com.app.domain.banner.service.BannerService;
 import com.app.domain.comment.service.ProductCommentService;
 import com.app.domain.discovery.service.ProductDiscoveryService;
 import com.app.domain.file.service.FileService;
@@ -35,5 +36,8 @@ public class Controller {
 
     @Resource
     protected ShoppingCartService shoppingCartService;
+
+    @Resource
+    protected BannerService bannerService;
 
 }
