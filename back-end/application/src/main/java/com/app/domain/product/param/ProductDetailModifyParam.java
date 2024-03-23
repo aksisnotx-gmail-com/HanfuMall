@@ -50,8 +50,4 @@ public class ProductDetailModifyParam implements Serializable {
     @Schema(description = "商品类型URL")
     @NotEmpty(message = "商品类型不能为空")
     private List<ProductType> productTypeList;
-
-    //折扣
-    @Schema(description = "折扣")
-    private Double discount;
 }

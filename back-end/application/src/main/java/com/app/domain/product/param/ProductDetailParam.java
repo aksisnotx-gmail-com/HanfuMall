@@ -48,11 +48,6 @@ public class ProductDetailParam implements Serializable {
     @NotEmpty(message = "商品类型不能为空")
     private List<ProductType> productTypeList;
 
-    //折扣
-    @Schema(description = "折扣")
-    private Double discount;
-
-
     @Schema(description = "sku")
     @NotEmpty(message = "sku不能为空")
     private List<Sku> skus;

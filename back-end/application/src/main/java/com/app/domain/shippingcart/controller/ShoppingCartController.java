@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @author xxl
  * @since 2024/3/22
  */
-@Tag(name = "购物车")
+@Tag(name = "购物车 - 详情")
 @RequestMapping("/shoppingCart")
 @RestController
 @Validated

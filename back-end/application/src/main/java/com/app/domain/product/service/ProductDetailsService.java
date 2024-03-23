@@ -47,6 +47,12 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
 
     public static final String SKU = "SKU";
 
+    //是否特惠
+    private static final Integer IS_SPECIAL = 1;
+
+    //是否推荐
+    private static final Integer IS_RECOMMEND = 1;
+
     @Transactional(rollbackFor = RuntimeException.class)
     @CacheEvict(allEntries = true)
     public Boolean publishDetail(ProductDetailParam param) {
@@ -142,7 +148,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    //@Cacheable(key = "#skuId")
+    @Cacheable(key = "#skuId")
     public Map<String, Object> getProductBySkuId(String skuId) {
         //获取SKU信息
         ProductSkuEntity sku = skuService.getById(skuId);
@@ -158,5 +164,13 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     }
 
 
+    @Cacheable(value = "GET_SPECIAL_PRODUCTS")
+    public Page<ProductSkuEntity> getSpecialProducts() {
+        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
+    }
 
+    @Cacheable(value = "GET_RECOMMEND_PRODUCTS")
+    public Page<ProductSkuEntity> getRecommendProducts() {
+        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
+    }
 }

@@ -51,9 +51,6 @@ public class ProductDetailsEntity extends Entity {
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> productTypes;
 
-    //折扣
-    @Schema(description = "折扣")
-    private Double discount;
 
     public List<ProductType> getProductTypeList() {
         return productTypes.stream().map(ProductType::valueOf).toList();

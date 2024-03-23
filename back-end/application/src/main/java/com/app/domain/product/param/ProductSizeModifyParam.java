@@ -41,4 +41,16 @@ public class ProductSizeModifyParam implements Serializable {
     //颜色
     @Schema(description = "样式")
     private ProductDetailParam.ProductStyle style;
+
+    //推荐
+    @Schema(description = "是否推荐，1 是 0 不是")
+    private Integer isRecommend;
+
+    //特惠价格
+    @Schema(description = "特惠价格")
+    private Double specialPrice;
+
+    //是否促销
+    @Schema(description = "是否特惠，1 是 0 不是")
+    private Integer isSpecial;
 }

@@ -78,7 +78,7 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
         return this.updateById(entity);
     }
 
-    //@Cacheable(key = "#loginUserId")
+    @Cacheable(key = "#loginUserId")
     public Page<ShoppingCartEntity> getAll(String loginUserId) {
         Page<ShoppingCartEntity> page = this.lambdaQuery().eq(ShoppingCartEntity::getUserId, loginUserId).page(CommonPageRequestUtils.defaultPage());
         //err: 这里不适用JSON转则会出问题
