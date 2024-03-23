@@ -7,21 +7,31 @@ import UnoCSS from 'unocss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@/': `${resolve(__dirname, 'src')}/`,
-    },
-  },
   plugins: [
     uni(),
     UnoCSS(),
     AutoImport({
       imports: [
         'vue',
+        'pinia',
         'uni-app'
       ]
     }),
   ],
+  resolve: {
+    alias: {
+      '@/': `${resolve(__dirname, 'src')}/`,
+    },
+  },
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       target: 'http://localhost:8080',
+  //       changeOrigin: true,
+  //       rewrite: path => path.replace(/^\/api/, '')
+  //     }
+  //   }
+  // },
   build: {
 		watch: {
 			exclude: ['node_modules/**', "/__uno.css"]

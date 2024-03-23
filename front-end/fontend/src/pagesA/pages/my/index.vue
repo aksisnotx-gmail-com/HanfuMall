@@ -73,10 +73,10 @@ const login = () => {
 
 
 const query = reactive({
-    appId: "wxb39792f7a5bfff5c",
+    appId: "wxec1cf291ff198934",
     avatar: '',
     code: "",
-    secret: "cf307af2d1716bc6c29a40a01e630be3",
+    secret: "868483dacf8c6b5a563863319760e2b6",
     userName: ''
 })
 const getPhoneNumber = (e) => {
@@ -85,6 +85,7 @@ const getPhoneNumber = (e) => {
         url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxb39792f7a5bfff5c&secret=cf307af2d1716bc6c29a40a01e630be3',
         method: "GET",
         success: (res) => {
+            console.log(res, 'ress');
             console.log('==>res.data.access_token', res.data.access_token);
             wx.request({
                 url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${res.data.access_token}`,

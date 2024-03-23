@@ -42,10 +42,11 @@
     },
     "quickapp" : {},
     "mp-weixin" : {
-        "appid" : "",
+        "appid" : "wx6979ebcb29e15873",
         "setting" : {
             "urlCheck" : false,
             "es6": true,
+            "es7": true,
             "minified": true,
             "postcss": true
         },
@@ -54,15 +55,6 @@
         },
         "usingComponents" : true,
         "lazyCodeLoading": "requiredComponents"
-    },
-    "mp-alipay" : {
-        "usingComponents" : true
-    },
-    "mp-baidu" : {
-        "usingComponents" : true
-    },
-    "mp-toutiao" : {
-        "usingComponents" : true
     },
     "uniStatistics": {  
         "enable": false

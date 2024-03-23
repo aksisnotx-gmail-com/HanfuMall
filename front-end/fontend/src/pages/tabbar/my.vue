@@ -1,6 +1,16 @@
 <script setup>
-    const imageSrc = ref('')
+    import { useUserStore } from '@/store/modules/user.js'
+    const userStore = useUserStore()
 
+    const { userInfo } = storeToRefs(userStore)
+
+    const onWxLogin = () => {
+        uni.navigateTo({
+            url: '/pagesA/pages/my/userInfo'
+        })
+    }
+
+    const imageSrc = ref('')
     const chooseImage = () => {
         uni.chooseImage({
                 count: 1, //最多可以选择的图片张数，默认9
@@ -57,10 +67,8 @@
                     }
                 }) 
                 }
-            })
+        })
     }
-
-    const userinfo = ref('1')
 
     const orderStatus = [
         {
@@ -151,7 +159,6 @@
         })
     }
 
-
     const onLogout = () => {
         uni.showModal({
             title: '提示',
@@ -166,6 +173,16 @@
         });
     }
 
+    const LoginShow = ref(false)
+    onShow(() => {
+        LoginShow.value = uni.getStorageSync('LoginShow')
+        if(LoginShow) {
+            userInfo.value.avatar = uni.getStorageSync('avatar')
+            userInfo.value.nickname = uni.getStorageSync('nickname')
+            userInfo.value.phoneNumber = uni.getStorageSync('phoneNumber')
+        }
+    })
+
     onUnload(() => {
         // 页面卸载时
         imageSrc.value = '';
@@ -176,7 +193,7 @@
     <view class="w-100vw bg-#ccc">
         <view class="bg">
             <template v-if="imageSrc">
-                <!-- 如果纯在图片 -->
+                <!-- 如果存在图片 -->
                 <image :src="imageSrc" class="image" mode="widthFix"></image>
             </template>
             <template v-else>
@@ -186,11 +203,16 @@
         </view>
         <view class="bg-#fff px-3 pb-3">
             <view class="content_botton">
-                <view class="content_info" v-if="userinfo">
+                <view class="content_info" v-if="LoginShow">
+                    <image 
+                        :src="userInfo.avatar" 
+                        mode="widthFix"
+                        class="avatar_img"
+                    >
+                    </image>
                     <view class="flex h-16">
-                        <image src="https://ts2.cn.mm.bing.net/th?id=OIP-C.qcssiqIxJl_5KTHne8ntWAAAAA&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" mode="widthFix"></image>
-                        <view class="w-90% flex justify-end items-center gap-15">
-                            <view class="font-600">昵称</view>
+                        <view class="w-100% flex justify-end items-center gap-4">
+                            <view class="font-600 w-30 overflow-hidden">{{ userInfo.nickname }}</view>
                             <view 
                                 class="border_xy py-2 px-3 rd-2 color-#FF75A3"
                                 @click="JumpEdit"
@@ -198,11 +220,19 @@
                         </view>
                     </view>
                 </view>
-                <view v-else class="noLogin">
+                <view 
+                    v-else 
+                    class="noLogin"
+                >
                     <view class="flex h-16">
-                        <image src="https://ts4.cn.mm.bing.net/th?id=OIP-C.X-VG5gTN2ak8rGRij3oCogAAAA&w=212&h=212&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" mode="widthFix"></image>
-                        <view class="w-90% flex justify-end items-center gap-15">
-                            <view class="font-600">请点击登录</view>
+                        <view 
+                            class="w-100% flex justify-end items-center"
+                        >
+                           <button 
+                                type="primary" 
+                                class="bg-#FF75A3"
+                                @click="onWxLogin"
+                            >微信一键登录</button>
                         </view>
                     </view>
                 </view>
@@ -318,33 +348,25 @@
     }
 
     .content_botton{
-	   .noLogin{
-            position: relative;
-            left: 45%;
-            transform: translate(-50%);
-            height: 120rpx;
-            background-color:#fff;
-		   image{
+        position: relative;
+        .avatar_img {
             position: absolute;
             left: 10%;
-            top: -25%;
+            top: -10%;
             width: 140rpx;
             height: 140rpx;
             border-radius: 70rpx;
-		   }
+            z-index: 4;
+        }
+	   .noLogin{
+            /* left: 45%;
+            transform: translate(-50%); */
+            height: 120rpx;
+            background-color:#fff;
 	   }
 	   .content_info{
-            position: relative;
             height: 120rpx;
             background-color:#fff;
-		   image{
-            position: absolute;
-            left: 10%;
-            top: -25%;
-            width: 140rpx;
-            height: 140rpx;
-            border-radius: 70rpx;
-		   }
 	   }
 	   .my_order{
 		   margin-top: 10rpx;
@@ -381,4 +403,3 @@
     border-bottom: 1px solid #ccc;
    }
 </style>
-

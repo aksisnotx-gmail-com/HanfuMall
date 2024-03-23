@@ -91,6 +91,12 @@
 					}
 				},
 				{
+					"path": "pages/my/userInfo",
+					"style": {
+						"navigationBarTitleText": "微信登录"
+					}
+				},
+				{
 					"path": "pages/my/order",
 					"style": {
 						"navigationBarTitleText": "订单"

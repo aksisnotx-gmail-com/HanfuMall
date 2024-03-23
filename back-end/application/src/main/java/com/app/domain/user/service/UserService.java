@@ -66,15 +66,14 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
                     // 处理错误情况，例如打印日志、抛出异常等
                     throw new GlobalException("微信授权失败: " + result);
                 }
-                String sessionKey = (String) result.get(SESSION_KEY);
                 //如果手机号不存在则注册
                 UserEntity user = getUserByPhoneNumber(param.getPhoneNumber());
                 if (Objects.isNull(user)) {
                     //创建用户
                     UserEntity entity = new UserEntity();
                     BeanUtil.copyProperties(param, entity);
-                    entity.setId(sessionKey);
-                    entity.setPwd(sessionKey);
+                    entity.setId(param.getPhoneNumber());
+                    entity.setPwd(param.getPhoneNumber());
                     //登录
                     register(entity,true);
                     //登录
@@ -94,7 +93,7 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
     public UserEntity login(String phoneNumber, String password) {
         UserEntity user = getUserByPhoneNumber(phoneNumber);
         AssertUtils.notNull(user, "用户不存在");
-        AssertUtils.assertTrue(MD5Utils.encrypt(password).equals(user.getPwd()), "密码错误");
+        AssertUtils.assertTrue(MD5Utils.decrypt(password,user.getPwd()), "密码错误");
         return LoginUser.store(user);
     }
 

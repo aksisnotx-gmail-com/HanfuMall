@@ -81,7 +81,7 @@ auth-path:
     - /**/user/auth/**
     - /**/file/**
   token-name: token
-  enable: true
+  enable: false
 
 # 文件存储位置
 file:
@@ -90,6 +90,6 @@ file:
 
 # 微信小程序
 wechat:
-  id: wxec1cf291ff198934
-  secret: 868483dacf8c6b5a563863319760e2b6
+  id: wx6979ebcb29e15873
+  secret: 9719b9cd67ba4a478795e1f85e99acbf
 
