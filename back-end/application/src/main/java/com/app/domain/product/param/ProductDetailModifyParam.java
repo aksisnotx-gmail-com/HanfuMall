@@ -49,7 +49,7 @@ public class ProductDetailModifyParam implements Serializable {
     //商品类型：汉服、首饰
     @Schema(description = "商品类型URL")
     @NotEmpty(message = "商品类型不能为空")
-    private List<ProductType> productTypes;
+    private List<ProductType> productTypeList;
 
     //折扣
     @Schema(description = "折扣")

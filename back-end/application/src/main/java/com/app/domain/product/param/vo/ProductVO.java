@@ -72,6 +72,8 @@ public class ProductVO extends Entity {
     public static ProductVO create(ProductDetailsEntity entity,List<ProductSkuEntity> skuEntities){
         ProductVO vo = new ProductVO();
         BeanUtil.copyProperties(entity,vo);
+        //设置ProductType
+        vo.setProductTypes(entity.getProductTypeList());
         //设置sku
         List<SkuVO> list = skuEntities.parallelStream().map(SkuVO::create).toList();
         //设置可供选择的规格组合

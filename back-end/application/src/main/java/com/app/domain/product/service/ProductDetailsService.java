@@ -52,6 +52,8 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     public Boolean publishDetail(ProductDetailParam param) {
         ProductDetailsEntity entity = new ProductDetailsEntity();
         BeanUtil.copyProperties(param,entity);
+        //设置ProductType类型
+        entity.setProductTypeList(param.getProductTypeList());
         return this.saveOrUpdateBatchAround(List.of(entity), Entity::getId,null,(t1, t2, t3)-> {
             //把尺码信息插入到sku表
             List<ProductSkuEntity> list = param.getSkus().stream().map(t -> {
@@ -93,6 +95,8 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         ProductDetailsEntity entity = this.getById(param.getId());
         AssertUtils.notNull(entity,"商品详情不存在");
         BeanUtil.copyProperties(param,entity);
+        //设置ProductType
+        entity.setProductTypeList(param.getProductTypeList());
         return  this.updateById(entity);
     }
 
