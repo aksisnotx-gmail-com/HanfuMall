@@ -6,12 +6,9 @@ import java.util.Date;
 import com.app.domain.base.Entity;
 import com.app.domain.order.enmus.OrderState;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
 
 /**
  * 订单列表(SysOrder)表实体类
@@ -39,5 +36,8 @@ public class OrderEntity extends Entity {
 
     @Schema(description = "用户ID")
     private String userId;
+
+    @Schema(description = "收货地址")
+    private String deliveryAddress;
 }
 

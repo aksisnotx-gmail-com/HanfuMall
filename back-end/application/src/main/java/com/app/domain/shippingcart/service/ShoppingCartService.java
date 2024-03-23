@@ -18,6 +18,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.app.domain.product.service.ProductDetailsService.PRODUCT;
@@ -48,6 +49,10 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
         if (number > stock) {
             throw new GlobalException("库存不足");
         }
+
+        //假设同款的SKU多次添加
+        List<ShoppingCartEntity> list = this.lambdaQuery().eq(ShoppingCartEntity::getUserId, loginUserId).eq(ShoppingCartEntity::getProductSkuId, entity.getProductSkuId()).list();
+        AssertUtils.assertTrue(list.isEmpty(), "同款的SKU已存在 , 接口调用错误");
         entity.setUserId(loginUserId);
         return this.save(entity);
     }
@@ -73,7 +78,7 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
         return this.updateById(entity);
     }
 
-    //@Cacheable(key = "#loginUserId")
+    @Cacheable(key = "#loginUserId")
     public Page<ShoppingCartEntity> getAll(String loginUserId) {
         Page<ShoppingCartEntity> page = this.lambdaQuery().eq(ShoppingCartEntity::getUserId, loginUserId).page(CommonPageRequestUtils.defaultPage());
         //err: 这里不适用JSON转则会出问题

@@ -53,10 +53,6 @@ public class ProductVO extends Entity {
     @Schema(description = "商品名称")
     private String productName;
 
-    //折扣
-    @Schema(description = "折扣")
-    private Double discount;
-
     /**
      * 可选列表
      */
@@ -72,6 +68,8 @@ public class ProductVO extends Entity {
     public static ProductVO create(ProductDetailsEntity entity,List<ProductSkuEntity> skuEntities){
         ProductVO vo = new ProductVO();
         BeanUtil.copyProperties(entity,vo);
+        //设置ProductType
+        vo.setProductTypes(entity.getProductTypeList());
         //设置sku
         List<SkuVO> list = skuEntities.parallelStream().map(SkuVO::create).toList();
         //设置可供选择的规格组合
@@ -125,6 +123,18 @@ public class ProductVO extends Entity {
         //图片
         @Schema(description = "图片")
         private String carouselUrl;
+
+        //推荐
+        @Schema(description = "是否推荐，1 是 0 不是")
+        private Integer isRecommend;
+
+        //特惠价格
+        @Schema(description = "特惠价格")
+        private Double specialPrice;
+
+        //是否促销
+        @Schema(description = "是否特惠，1 是 0 不是")
+        private Integer isSpecial;
 
         public static SkuVO create(ProductSkuEntity productSku) {
             SkuVO skuVO = new SkuVO();

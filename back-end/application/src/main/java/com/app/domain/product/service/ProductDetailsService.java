@@ -47,11 +47,19 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
 
     public static final String SKU = "SKU";
 
+    //是否特惠
+    private static final Integer IS_SPECIAL = 1;
+
+    //是否推荐
+    private static final Integer IS_RECOMMEND = 1;
+
     @Transactional(rollbackFor = RuntimeException.class)
     @CacheEvict(allEntries = true)
     public Boolean publishDetail(ProductDetailParam param) {
         ProductDetailsEntity entity = new ProductDetailsEntity();
         BeanUtil.copyProperties(param,entity);
+        //设置ProductType类型
+        entity.setProductTypeList(param.getProductTypeList());
         return this.saveOrUpdateBatchAround(List.of(entity), Entity::getId,null,(t1, t2, t3)-> {
             //把尺码信息插入到sku表
             List<ProductSkuEntity> list = param.getSkus().stream().map(t -> {
@@ -93,6 +101,8 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         ProductDetailsEntity entity = this.getById(param.getId());
         AssertUtils.notNull(entity,"商品详情不存在");
         BeanUtil.copyProperties(param,entity);
+        //设置ProductType
+        entity.setProductTypeList(param.getProductTypeList());
         return  this.updateById(entity);
     }
 
@@ -138,7 +148,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    //@Cacheable(key = "#skuId")
+    @Cacheable(key = "#skuId")
     public Map<String, Object> getProductBySkuId(String skuId) {
         //获取SKU信息
         ProductSkuEntity sku = skuService.getById(skuId);
@@ -154,5 +164,13 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     }
 
 
+    @Cacheable(value = "GET_SPECIAL_PRODUCTS")
+    public Page<ProductSkuEntity> getSpecialProducts() {
+        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
+    }
 
+    @Cacheable(value = "GET_RECOMMEND_PRODUCTS")
+    public Page<ProductSkuEntity> getRecommendProducts() {
+        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
+    }
 }
