@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author xxl
@@ -75,8 +76,7 @@ public class ProductVO extends Entity {
         //设置可供选择的规格组合
         vo.setSpecCombinationList(list);
         //设置可选列表
-        List<String> sizes = skuEntities.parallelStream().map(ProductSkuEntity::getSize).distinct().toList();
-
+        List<String> sizes = skuEntities.parallelStream().flatMap(t -> t.getSize().stream()).distinct().toList();
         //样式去重
         List<ProductDetailParam.ProductStyle> styles = skuEntities.
                 parallelStream().
@@ -114,7 +114,7 @@ public class ProductVO extends Entity {
 
         //尺码
         @Schema(description = "尺码")
-        private String size;
+        private List<String> size;
 
         //其他属性
         @Schema(description = "样式描述")
@@ -142,6 +142,7 @@ public class ProductVO extends Entity {
             ProductDetailParam.ProductStyle attribute = productSku.getAttribute();
             skuVO.setDesc(attribute.getDesc());
             skuVO.setCarouselUrl(attribute.getCarouselUrl());
+            skuVO.setPrice(attribute.getPrice());
             return skuVO;
         }
     }

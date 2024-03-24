@@ -117,6 +117,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         AssertUtils.notNull(one,"商品尺码不存在");
         BeanUtil.copyProperties(param,one);
         one.setAttribute(param.getStyle());
+        one.setPrice(param.getStyle().getPrice());
         return skuService.updateById(one);
     }
 
@@ -126,6 +127,7 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         ProductSkuEntity sku = new ProductSkuEntity();
         BeanUtil.copyProperties(param, sku);
         sku.setAttribute(param.getStyle());
+        sku.setPrice(param.getStyle().getPrice());
         return skuService.save(sku);
     }
 

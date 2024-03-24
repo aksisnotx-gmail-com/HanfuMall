@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductSkuService extends AbstractService<ProductSkuMapper, ProductSkuEntity> {
 
-    //todo 对于处在订单中的商品需要被冻结
-
     /**
      * 减少库存
      *

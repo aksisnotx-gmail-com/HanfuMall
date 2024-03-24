@@ -4,13 +4,16 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.app.domain.base.Entity;
 import com.app.domain.product.param.ProductDetailParam;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.util.List;
 
 /**
  * (SysProductSku)表实体类
@@ -21,7 +24,7 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "商品sku")
 @Data
-@TableName("sys_product_sku")
+@TableName(value = "sys_product_sku",autoResultMap = true)
 public class ProductSkuEntity extends Entity {
 
     @Serial
@@ -41,7 +44,8 @@ public class ProductSkuEntity extends Entity {
 
     //尺码
     @Schema(description = "尺码")
-    private String size;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> size;
 
     //颜色
     @Schema(description = "颜色")
@@ -75,6 +79,7 @@ public class ProductSkuEntity extends Entity {
         ProductSkuEntity entity = new ProductSkuEntity();
         BeanUtil.copyProperties(sku,entity);
         entity.setAttribute(sku.getStyle());
+        entity.setPrice(sku.getStyle().getPrice());
         return entity;
     }
 }
