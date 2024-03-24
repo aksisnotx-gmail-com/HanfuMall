@@ -2,10 +2,12 @@ package com.app.domain.product.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author xxl
@@ -25,18 +27,14 @@ public class ProductSizeModifyParam implements Serializable {
     @Schema(description = "尺码id,添加尺码信息不用带ID,修改要带")
     private String id;
 
-    //价格
-    @Schema(description = "价格")
-    private Double price;
-
     //库存
     @Schema(description = "库存")
     private Integer stock;
 
     //尺码
     @Schema(description = "尺码")
-    @NotBlank(message = "尺码不能为空")
-    private String size;
+    @NotEmpty(message = "尺码不能为空")
+    private List<String> size;
 
     //颜色
     @Schema(description = "样式")

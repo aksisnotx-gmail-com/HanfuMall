@@ -60,9 +60,6 @@ public class ProductDetailParam implements Serializable {
     public static class Sku  implements Serializable {
         @Serial
         private static final long serialVersionUID = 5070470961911810329L;
-        //价格
-        @Schema(description = "价格")
-        private Double price;
 
         //库存
         @Schema(description = "库存")
@@ -70,7 +67,7 @@ public class ProductDetailParam implements Serializable {
 
         //尺码
         @Schema(description = "尺码")
-        private String size;
+        private List<String> size;
 
         //颜色
         @Schema(description = "样式")
@@ -100,5 +97,8 @@ public class ProductDetailParam implements Serializable {
         //图片
         @Schema(description = "图片")
         private String carouselUrl;
+
+        @Schema(description = "价格")
+        private double price;
     }
 }
