@@ -171,6 +171,10 @@
                 }
             }
         });
+        uni.clearStorageSync()
+        uni.reLaunch({
+            url: '/pages/tabbar/my'
+        })
     }
 
     const LoginShow = ref(false)

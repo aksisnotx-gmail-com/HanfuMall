@@ -70,12 +70,13 @@
     })
 
 	async function getProductByType (type) {
+		tabbar[viewInfo.current].proList.splice(0, Infinity)
+
 		const res = await getProductByTypeApi(type)
 		const records = res.records
-		if(records.length) {
-			records.forEach(item => {
-				tabbar[viewInfo.current].proList = [ ...item.specCombinationList ]
-			})
+		const len = records.length
+		if(len) {
+			tabbar[viewInfo.current].proList = [ ...records ]
 		}
 	}
 </script>
@@ -95,22 +96,37 @@
                 <text class="u-line-1">{{item.name}}</text>
             </view>
         </scroll-view>
-        <template v-for="(item,index) in tabbar" :key="index">
+        <template v-for="(item,index) of tabbar" :key="index">
             <scroll-view scroll-y class="right-box" v-if="viewInfo.current == index">
                 <view class="page-view">
                     <view class="class-item">
                         <view class="item-container">
 							<template v-if="!item.proList.length">
-								<text>暂无商品</text>
+								<u-empty
+									mode="data"
+								>
+								</u-empty>
 							</template>
                             <template v-else>
-								<view class="thumb-box" v-for="(item1, index1) in item.proList" :key="index1">
-									<image class="item-menu-image" :src="item1.carouselUrl" mode="aspectFit"></image>
-									<view class="ml-3 h-100% flex flex-col justify-between font-600">
-										<text>{{ item1.desc }}</text>
-										<text class="color-#FF0000 text-4.5">¥ {{ item1.price }}</text>
-									</view>
-								</view>
+								<template v-for="iten of item.proList" :key="iten.id">
+									<template v-if="!iten.specCombinationList.length">
+										<u-empty
+											mode="data"
+										>
+										</u-empty>
+									</template>
+									<template v-else>
+										<template v-for="product of iten.specCombinationList" :key="product.id">
+											<view class="thumb-box">
+												<image class="item-menu-image" :src="product.carouselUrl" mode="aspectFit"></image>
+												<view class="ml-3 h-100% flex flex-col justify-between font-600">
+													<text>{{ product.desc }}</text>
+													<text class="color-#FF0000 text-4.5">¥ {{ product.price }}</text>
+												</view>
+											</view>
+										</template>
+									</template>
+								</template>
 							</template>
                         </view>
                     </view>

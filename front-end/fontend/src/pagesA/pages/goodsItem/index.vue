@@ -164,6 +164,10 @@
     onMounted(() => {
         init()
     }) 
+
+    onLoad(() => {
+      
+    })
 </script>
 
 <template>
@@ -320,7 +324,6 @@
                                   v-if="property.name === '样式'"
                                 />
                                 <text>{{ attribute.value }}</text>
-                                <text>{{ attribute.price }}</text>
                               </view>
                           </view>
                       </template>

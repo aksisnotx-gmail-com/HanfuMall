@@ -1,4 +1,5 @@
 <script setup>
+	import { useGoodsStore } from '@/store/modules/goods'
 	import { getAllProductApi, getProductBySearchApi } from '@/api/home'
 
 	const current = ref(0)
@@ -33,8 +34,10 @@
 		if(siftShow.value) {
 			getAllProduct(current.value)
 		} else {
-			productList.value.sort((a, b) => {
-				return b.price - a.price
+			productList.value.forEach(item => {
+				item.specCombinationList.sort((a, b) => {
+				    return b.price - a.price
+				})
 			})
 		}
 	}
@@ -42,22 +45,26 @@
 	const reachBottom = ref(false)
 	onReachBottom(() => {		
 		current.value++
-		getAllProduct(current)
+		getAllProduct(current.value)
 	})
+
+	const goodsStore = useGoodsStore()
+	const onJumpDetail = (productId) => {
+		goodsStore.productId = productId
+
+		uni.navigateTo({
+            url: '/pagesA/pages/goodsItem/index'
+        })
+	}
+
 
 	const productList = ref([])
 	const getAllProduct = async (current = 1) => {
-		productList.value.length && productList.value.splice(0, Infinity)
-
 		const res = await getAllProductApi(current)
 		const records = res.records
 		const len = records.length
 		if(len) {
-			records.forEach(item => {
-				if(item.specCombinationList) {
-					productList.value = [ ...productList.value, ...item.specCombinationList ]
-				}
-			})
+			productList.value = [ ...records ]
 		} else {
 			reachBottom.value = true
 		}
@@ -69,17 +76,12 @@
 	    const records = res.records
 		const len = records.length
 		if(len) {
-			records.forEach(item => {
-				if(item.specCombinationList) {
-					productList.value = [ ...productList.value, ...item.specCombinationList ]
-				}
-			})
+			productList.value = [ ...records ]
 		}
 	}
 
 	onMounted(() => {
 		getAllProduct()
-
 	})
 </script>
 
@@ -143,17 +145,31 @@
 		<template v-else>
 			<view class="flex justify-between flex-wrap px-3 mt-22.75">
 				<template v-for="item of productList" :key="item.id">
-					<view class="item_card">
-						<view class="flex flex-col py-3 px-2">
-							<image
-								:src="item.carouselUrl"
-								mode="aspectFit"
-								class="w-100% h-25"
-							/>
-							<text class="mb-2">{{ item.desc }}</text>
-							<text class="color-#DC143C font-600">¥ {{ item.price }}</text>
-						</view>
-					</view>
+					<template v-if="!item.specCombinationList.length">
+						<u-empty
+							text="暂无商品数据"
+							mode="data"
+						>
+						</u-empty>
+					</template>
+					<template v-else>
+						<template v-for="product of item.specCombinationList" :key="product.id">
+							<view 
+								class="item_card"
+								@click="onJumpDetail(item.id)"
+							>
+								<view class="flex flex-col py-3 px-2">
+									<image
+										:src="product.carouselUrl"
+										mode="aspectFit"
+										class="w-100% h-25"
+									/>
+									<text class="mb-2">{{ product.desc }}</text>
+									<text class="color-#DC143C font-600">¥ {{ product.price }}</text>
+								</view>
+							</view>
+						</template>
+					</template>
 				</template>
 			</view>
 		</template>

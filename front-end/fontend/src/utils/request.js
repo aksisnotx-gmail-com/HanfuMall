@@ -23,7 +23,7 @@ function service(options = {}) {
 				});
 
 				// 登陆失效
-				if (res.data.code === 403 || res.data.code === 500) {
+				if (res.data.code === 403) {
 					// 清除本地token等信息
 					uni.clearStorageSync()
 					// 关闭所有页面返回到登录页
@@ -31,6 +31,7 @@ function service(options = {}) {
 						url: '/pages/tabbar/my'
 					})
 				}
+
 				// 返回错误信息
 				rejected(res)
 			} else {

@@ -12,7 +12,8 @@
 		{ 
 			"path": "pages/tabbar/watch",
 			"style": {
-				"navigationBarTitleText": "发现"
+				"navigationBarTitleText": "发现",
+				"onReachBottomDistance": 50
 			}
 		},
 		{
