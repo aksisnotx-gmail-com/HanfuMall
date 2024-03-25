@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class ProductCommentController extends Controller {
 
-    //发布评论,需要查看当前用户是否有这个评论
+    //发布评论,需要查看当前用户是否有这个商品
     @PostMapping("/publish")
     @Operation(summary = "评论")
     public RespEntity<Boolean> publishComment(@RequestBody @Validated(Entity.INSERT.class) @JsonView(Entity.INSERT.class) ProductCommentEntity param) {
