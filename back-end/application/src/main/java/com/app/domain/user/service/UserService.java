@@ -50,15 +50,12 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
 
     private final WalletService walletService;
 
-
     private static final Integer WECHAT_LOGIN = 1;
 
     private static final Integer UN_WECHAT_LOGIN = 0;
 
     // 微信提供的API接口URL，需要替换为实际值
     private static final String WECHAT_LOGIN_URL = "https://api.weixin.qq.com/sns/jscode2session";
-
-    private static final String SESSION_KEY = "session_key";
 
     public UserEntity loginWithWechat(WeChatLoginParam param) {
         final String resUrl = "%s?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
@@ -116,7 +113,7 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
         boolean save = this.save(param);
         //前台角色初始化钱包
         if (isWeChatLogin && save) {
-            walletService.initWallet(user.getId());
+            walletService.initWallet(param.getId());
         }
         return save;
     }
