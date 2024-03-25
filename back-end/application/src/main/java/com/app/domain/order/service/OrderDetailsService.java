@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.app.domain.order.entity.OrderDetailsEntity.UN_EVALUATE;
+
 /**
  * @author xxl
  * @since 2024/3/20
@@ -23,6 +25,10 @@ public class OrderDetailsService extends AbstractService<OrderDetailsMapper, Ord
 
     public List<OrderDetailsEntity>  getDetailsByOrderId(String orderId) {
         return this.lambdaQuery().eq(OrderDetailsEntity::getOrderId, orderId).list();
+    }
+
+    public List<OrderDetailsEntity>  getUnEvaluateByOrderId(String orderId) {
+        return this.lambdaQuery().eq(OrderDetailsEntity::getOrderId, orderId).eq(OrderDetailsEntity::getIsEvaluate, UN_EVALUATE).list();
     }
 
 }
