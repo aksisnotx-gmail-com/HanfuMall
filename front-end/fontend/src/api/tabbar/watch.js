@@ -35,23 +35,13 @@ export function delDiscoveryApi (discoveryId) {
 /**
  * @description 点赞
  */
-export function LikeApi (discoveryId) {
+export function likeOrCancelApi (discoveryId) {
     return service({
-        url: `discovery/like/${discoveryId}`,
+        url: `discovery/likeOrCancel/${discoveryId}`,
         method: 'get'
     })
 }
 
-
-/**
- * @description 取消点赞
- */
-export function cancelLikeApi (discoveryId) {
-    return service({
-        url: `discovery/cancelLike/${discoveryId}`,
-        method: 'get'
-    })
-}
 
 /**
  * @description 查询所有的评论

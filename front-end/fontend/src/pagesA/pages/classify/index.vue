@@ -85,7 +85,7 @@
 		tabbar[viewInfo.current].proList.splice(0, Infinity)
 
 		const res = await getProductByTypeApi(type)
-		const records = res.records
+		const { records } = res.data
 		const len = records.length
 		if(len) {
 			tabbar[viewInfo.current].proList = [ ...records ]

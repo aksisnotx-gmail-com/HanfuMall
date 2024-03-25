@@ -36,7 +36,7 @@ function service(options = {}) {
 				rejected(res)
 			} else {
 				// 请求回来的状态码为200则返回内容
-				resolved(res.data.data)
+				resolved(res.data)
 			}
 		};
 		options.fail = (err) => {

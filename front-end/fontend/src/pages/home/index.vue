@@ -5,7 +5,8 @@
     const swiperList = ref([])
     const getSwiperList = async () => {
         const res = await getSwiperListApi()
-        swiperList.value = res.records.map(item => item.bannerUrl)
+        const { records } = res.data
+        swiperList.value = records.map(item => item.bannerUrl)
     }
 
     const noticeText = ref('欢迎同胞们来到绾青丝汉服社!')

@@ -61,7 +61,7 @@
 	const productList = ref([])
 	const getAllProduct = async (current = 1) => {
 		const res = await getAllProductApi(current)
-		const records = res.records
+		const { records } = res.data
 		const len = records.length
 		if(len) {
 			productList.value = [ ...records ]
@@ -73,7 +73,7 @@
 	const getProductBySearch = async (productName) => {
 		productList.value.splice(0, Infinity)
 		const res = await getProductBySearchApi(productName)
-	    const records = res.records
+		const { records } = res.data
 		const len = records.length
 		if(len) {
 			productList.value = [ ...records ]

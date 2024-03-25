@@ -38,7 +38,7 @@ export const useGoodsStore = defineStore('goods', {
             descUrls,
             specCombinationList,
             specList
-          } = res
+          } = res.data
           this.productInfo.carousel = carousel
           this.productInfo.productName = productName
           this.productInfo.deliveryAddress = deliveryAddress

@@ -67,7 +67,7 @@
                 ...params,
                 "gender": 0
             })
-            const { token } = res
+            const { token } = res.data
             uni.setStorageSync('token', token)
             uni.showToast({
                 title: '登录成功',
