@@ -32,7 +32,7 @@ public class UserController extends Controller {
     @PostMapping("/auth/register")
     @Operation(summary = "后台注册")
     public RespEntity<Boolean> register(@RequestBody @JsonView({Entity.INSERT.class}) @Validated(Entity.INSERT.class) UserEntity param) {
-        return RespEntity.success(userLoginService.register(param,true));
+        return RespEntity.success(userLoginService.register(param,false));
     }
 
 

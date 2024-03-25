@@ -14,6 +14,7 @@ import com.app.domain.user.enums.Role;
 import com.app.domain.wallet.entity.WalletEntity;
 import com.app.domain.wallet.service.WalletService;
 import com.app.toolkit.web.CommonPageRequestUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
@@ -47,13 +48,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     private final OrderDetailsService detailsService;
 
     private final WalletService walletService;
-
-    /**
-     * 兼容查询返回是List/Page
-     */
-    private final static long MAX_SIZE = 9999;
-
-    public static final long MIN_SIZE = 0;
 
     public static final String CACHE_KEY = "ORDER_SERVICE";
 
@@ -199,10 +193,44 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return entity;
     }
 
+
+    @Cacheable(cacheNames = "GET_WAIT_PAY")
+    public Page<OrderEntity> getWaitPay(String loginUserId) {
+        return getOrderByUserId(loginUserId,OrderEntity::getState,OrderState.PLACE_ORDER.name());
+    }
+
+    @Cacheable(cacheNames = "GET_WAIT_RECEIVE")
+    public Page<OrderEntity> getWaitReceive(String loginUserId) {
+        return getOrderByUserId(loginUserId,OrderEntity::getState,OrderState.SHIP_ORDER.name());
+    }
+
+    @Cacheable(cacheNames = "GET_WAIT_EVALUATE")
+    public Page<OrderEntity> getWaitEvaluate(String loginUserId) {
+        //查询出当前用户已经收货的商品
+        Page<OrderEntity> page = getOrderByUserId(loginUserId, OrderEntity::getState, OrderState.CONFIRM_RECEIPT.name());
+        List<OrderEntity> list = page.getRecords().
+                stream().
+                //找出订单详情中未评价的商品
+                        peek(t -> t.setOrderDetails(detailsService.getUnEvaluateByOrderId(t.getId()))).
+                //把没有未评价的商品筛选出去
+                filter(t -> !t.getOrderDetails().isEmpty()).toList();
+        page.setTotal(list.size());
+        page.setRecords(list);
+        return page;
+    }
+    
+
     private OrderEntity getOne(String orderId,OrderState nextState,UserEntity user) {
         OrderEntity entity = this.lambdaQuery().eq(OrderEntity::getId, orderId).eq(OrderEntity::getUserId, user.getId()).one();
         AssertUtils.notNull(entity, "订单不存在");
         orderAction.doAction(entity.getState(), nextState, user.getRole());
         return entity;
+    }
+
+    private Page<OrderEntity> getOrderByUserId(String userId, SFunction<OrderEntity,?> sFunction, Object val) {
+        Page<OrderEntity> page = this.lambdaQuery().eq(OrderEntity::getUserId, userId).eq(sFunction, val).page(CommonPageRequestUtils.defaultPage());
+        //查询订单详情
+        page.getRecords().forEach(t -> t.setOrderDetails(detailsService.getDetailsByOrderId(t.getId())));
+        return page;
     }
 }
