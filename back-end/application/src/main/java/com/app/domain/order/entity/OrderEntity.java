@@ -43,9 +43,6 @@ public class OrderEntity extends Entity {
     @Schema(description = "收货地址")
     private String deliveryAddress;
 
-    @Schema(description = "总价")
-    private Double totalPrice;
-
     @TableField(exist = false)
     private List<OrderDetailsEntity> orderDetails;
 

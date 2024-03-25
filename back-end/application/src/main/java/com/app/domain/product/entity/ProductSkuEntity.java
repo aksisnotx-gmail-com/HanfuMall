@@ -8,11 +8,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public class ProductSkuEntity extends Entity {
 
     //价格
     @Schema(description = "价格")
-    private Double price;
+    private BigDecimal price;
 
     //库存
     @Schema(description = "库存")
@@ -61,7 +61,7 @@ public class ProductSkuEntity extends Entity {
 
     //特惠价格
     @Schema(description = "特惠价格")
-    private Double specialPrice;
+    private BigDecimal specialPrice;
 
     //是否促销
     @Schema(description = "是否特惠，1 是 0 不是")

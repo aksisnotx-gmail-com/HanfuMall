@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class ProductVO extends Entity {
      * 可选列表
      */
     @Schema(description = "可选列表")
-    private Map<String,List<Object>>  specList;
+    private Map<String,Object>  specList;
 
     /**
      * 可供选择的规格组合
@@ -86,10 +87,7 @@ public class ProductVO extends Entity {
                     sku.setOtherAttribute(t);
             return sku;
         }).map(ProductSkuEntity::getAttribute).toList();
-        HashMap<String,List<Object>> map = new HashMap<>();
-        map.put(SIZE, Collections.singletonList(sizes));
-        map.put(STYLE, Collections.singletonList(styles));
-        vo.setSpecList(map);
+        vo.setSpecList(Map.of(SIZE, Collections.singletonList(sizes),STYLE, styles));
         return vo;
     }
 
@@ -106,7 +104,7 @@ public class ProductVO extends Entity {
 
         //价格
         @Schema(description = "价格")
-        private Double price;
+        private BigDecimal price;
 
         //库存
         @Schema(description = "库存")
@@ -130,7 +128,7 @@ public class ProductVO extends Entity {
 
         //特惠价格
         @Schema(description = "特惠价格")
-        private Double specialPrice;
+        private BigDecimal specialPrice;
 
         //是否促销
         @Schema(description = "是否特惠，1 是 0 不是")

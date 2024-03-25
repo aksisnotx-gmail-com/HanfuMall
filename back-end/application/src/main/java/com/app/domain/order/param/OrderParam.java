@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -42,6 +43,6 @@ public class OrderParam implements Serializable {
         private Integer number;
 
         @Schema(description = "总价格")
-        private Double totalPrice;
+        private BigDecimal totalPrice;
     }
 }

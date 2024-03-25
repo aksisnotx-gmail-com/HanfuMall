@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -99,6 +100,6 @@ public class ProductDetailParam implements Serializable {
         private String carouselUrl;
 
         @Schema(description = "价格")
-        private double price;
+        private BigDecimal price;
     }
 }

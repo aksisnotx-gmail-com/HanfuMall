@@ -129,8 +129,8 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
 
     public Boolean payOrder(String orderId, UserEntity user) {
         OrderEntity one = getOne(orderId, OrderState.MAKE_PAYMENT, user);
-
-        return
+        //
+        return false;
     }
 
     private  OrderEntity getOne(String orderId,OrderState nextState,UserEntity user) {

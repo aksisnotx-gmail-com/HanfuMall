@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class ProductSizeModifyParam implements Serializable {
 
     //特惠价格
     @Schema(description = "特惠价格")
-    private Double specialPrice;
+    private BigDecimal specialPrice;
 
     //是否促销
     @Schema(description = "是否特惠，1 是 0 不是")

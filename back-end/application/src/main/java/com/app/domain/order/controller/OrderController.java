@@ -42,7 +42,7 @@ public class OrderController extends Controller {
         return RespEntity.success(orderService.payOrder(orderId,LoginUser.getLoginUser()));
     }
 
-    //申请退款
+    /*//申请退款
     @GetMapping("/applyRefund/{orderId}")
     @Operation(summary = "申请退款")
     public RespEntity<Boolean> refundOrder(@PathVariable String orderId) {
@@ -96,6 +96,6 @@ public class OrderController extends Controller {
     @Operation(summary = "获取订单详情")
     public RespEntity<OrderEntity> getOrder(@PathVariable String orderId) {
         return RespEntity.success(orderService.getOrder(orderId));
-    }
+    }*/
 
 }

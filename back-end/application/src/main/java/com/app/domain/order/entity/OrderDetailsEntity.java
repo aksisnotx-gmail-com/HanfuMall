@@ -1,6 +1,7 @@
 package com.app.domain.order.entity;
 
 import java.io.Serial;
+import java.math.BigDecimal;
 
 import com.app.domain.base.Entity;
 import com.app.domain.product.entity.ProductDetailsEntity;
@@ -53,6 +54,8 @@ public class OrderDetailsEntity extends Entity {
     @Schema(description = "购买数量")
     private Integer skuNumber;
 
+    @Schema(description = "总价")
+    private BigDecimal totalPrice;
     public static OrderDetailsEntity create(ProductSkuEntity sku,ProductDetailsEntity productDetail,String orderId,Integer skuNumber){
         OrderDetailsEntity entity = new OrderDetailsEntity();
         entity.setProductSku(sku);
