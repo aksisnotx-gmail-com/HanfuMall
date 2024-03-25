@@ -19,8 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author xxl
@@ -132,7 +134,10 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
 
     public Map<String, Object> getProductBySkuId(String skuId) {
         //获取SKU信息
-        ProductSkuEntity sku = skuService.getById(skuId);
+        ProductSkuEntity sku = skuService.getById(skuId,false);
+        if (Objects.isNull(sku)) {
+            return null;
+        }
         //获取产品信息
         ProductDetailsEntity entity = this.getById(sku.getProductId());
         return Map.of(PRODUCT,entity,SKU,sku);

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author xxl
@@ -65,8 +66,13 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
 
     public Page<ShoppingCartEntity> getAll(String loginUserId) {
         Page<ShoppingCartEntity> page = this.lambdaQuery().eq(ShoppingCartEntity::getUserId, loginUserId).page(CommonPageRequestUtils.defaultPage());
-        //err: 这里不适用JSON转则会出问题
-        page.getRecords().forEach(t -> t.setProductMap(productService.getProductBySkuId(t.getProductSkuId())));
+        //查询productMap
+        List<ShoppingCartEntity> list = page.getRecords().stream().
+                peek(t -> t.setProductMap(productService.getProductBySkuId(t.getProductSkuId())))
+                //把productMap为空的筛选出去
+                .filter(t -> !Objects.isNull(t.getProductMap())).toList();
+        page.setTotal(list.size());
+        page.setRecords(list);
         return page;
     }
 }

@@ -175,6 +175,8 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one) && detailsService.updateBatchById(list);
     }
 
+    //todo 关闭订单数量加回来
+
     public Boolean deleteOrder(String orderId, UserEntity loginUser) {
         OrderState delete = OrderState.DELETE_ORDER;
         OrderEntity one = getOne(orderId, delete, loginUser);
