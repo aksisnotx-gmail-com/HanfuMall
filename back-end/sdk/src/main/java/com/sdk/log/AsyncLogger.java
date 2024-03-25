@@ -25,33 +25,20 @@ public final class AsyncLogger {
 
     public void warn(Class<?> targetClass,String msg,Object... params) {
         final Logger logger = getLogger(targetClass);
-        service.execute(()->logger.warn(groupTransfer(msg,params)));
+        service.execute(()->logger.warn(msg,params));
     }
 
     public  void info(Class<?> targetClass,String msg,Object... params) {
         final Logger logger = getLogger(targetClass);
-        service.execute(()->logger.info(groupTransfer(msg,params)));
+        service.execute(()->logger.info(msg,params));
     }
 
     public  void error(Class<?> targetClass,String msg,Object... params) {
         final Logger logger = getLogger(targetClass);
-        service.execute(()->logger.error(groupTransfer(msg,params)));
+        service.execute(()->logger.error(msg,params));
     }
 
     private Logger getLogger(Class<?> targetClass) {
         return LoggerFactory.getLogger(targetClass);
-    }
-
-    private String groupTransfer(String msg,Object... params){
-        // 对msg中的{}进行替换
-        String result = msg;
-        for (Object param : params) {
-            String text = param instanceof Object[] ? Arrays.toString((Object[])param) : Objects.isNull(param) ? null : param.toString();
-            if (text == null) {
-                continue;
-            }
-            result = result.replaceFirst("\\{}", Matcher.quoteReplacement(text));
-        }
-        return result;
     }
 }

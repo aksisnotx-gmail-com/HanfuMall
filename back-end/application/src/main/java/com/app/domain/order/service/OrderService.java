@@ -10,6 +10,7 @@ import com.app.domain.product.entity.ProductSkuEntity;
 import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.product.service.ProductSkuService;
 import com.app.domain.user.entity.UserEntity;
+import com.app.domain.wallet.service.WalletService;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
@@ -38,7 +39,9 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
 
     private final OrderAction orderAction;
 
-    private  final OrderDetailsService detailsService;
+    private final OrderDetailsService detailsService;
+
+    private final WalletService walletService;
 
     /**
      * 兼容查询返回是List/Page

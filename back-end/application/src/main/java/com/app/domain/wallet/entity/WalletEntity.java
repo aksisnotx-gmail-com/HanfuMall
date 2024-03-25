@@ -28,5 +28,12 @@ public class WalletEntity extends Entity {
 
     //用户ID
     private String userId;
+
+    public static WalletEntity create(String userId) {
+        WalletEntity entity = new WalletEntity();
+        entity.setBalance(BigDecimal.ZERO);
+        entity.setUserId(userId);
+        return entity;
+    }
 }
 
