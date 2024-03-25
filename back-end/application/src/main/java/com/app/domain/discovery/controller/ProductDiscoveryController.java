@@ -4,6 +4,7 @@ import com.app.controller.Controller;
 import com.app.domain.base.Entity;
 import com.app.domain.discovery.entity.DiscoveryCommentEntity;
 import com.app.domain.discovery.entity.DiscoveryEntity;
+import com.app.domain.discovery.enums.GetType;
 import com.app.domain.user.entity.LoginUser;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -47,8 +48,8 @@ public class ProductDiscoveryController extends Controller {
     //查询所有的发现
     @GetMapping("/getAll/discovery")
     @Operation(summary = "查询所有的发现")
-    public RespEntity<Page<DiscoveryEntity>> getAllDiscovery() {
-        return RespEntity.success(discoveryService.getAllDiscovery());
+    public RespEntity<Page<DiscoveryEntity>> getAllDiscovery(@RequestParam GetType type) {
+        return RespEntity.success(discoveryService.getAllDiscovery(type,LoginUser.getLoginUserId()));
     }
 
     //评论发现
@@ -71,6 +72,8 @@ public class ProductDiscoveryController extends Controller {
     public RespEntity<Boolean> deleteComment(@PathVariable String commentId) {
         return RespEntity.success(discoveryService.deleteCommentById(commentId,LoginUser.getLoginUser()));
     }
+
+
 
     //已读信息
     /*@GetMapping("/read/comment/{commentId}")
