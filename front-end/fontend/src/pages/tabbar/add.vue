@@ -1,16 +1,43 @@
 <script setup>
+    import env from '@/utils/config';
+    import { uploadImgApi } from '@/api/file/index.js'
+
     const comment = ref('')
-    const fileList3 = [{
-        url: 'https://cdn.uviewui.com/uview/swiper/1.jpg',
-    }]
+    const fileList = ref([
+        {
+            url: 'https://cdn.uviewui.com/uview/swiper/1.jpg'
+        },
+        {
+            url: 'https://cdn.uviewui.com/uview/swiper/1.jpg',
+        }
+    ])
 
     // 文件读取完毕的函数
-    const afterRead = (file, lists, name) => {
-
+    const afterRead = (event) => {
+        uni.uploadFile({
+            header: {
+                'Content-Type': 'multipart/form-data' // 请求体的编码格式
+            },
+            url: env + 'file/upload', // 后端接口文档上的接口地址
+            filePath: event.file.url, // 图片的路径
+            name: 'file',
+            file: event.file, // 文件对象
+            // 上传成功回调
+            success: function (res) {
+                const data = JSON.parse(res.data)
+                console.log(data)
+                // 上传成功之后拿到 res ，然后进行你的下一步操作
+            },
+            // 上传失败回调
+            fail: function (err) {
+                console.log(err)
+            }
+        })
     }
 
     const deletePic = (e) => {
-        console.log(e, 'e');
+        const { index } = e
+        fileList.value.splice(index, 1)
     }
 
     const uToastRef = ref(null)
@@ -41,12 +68,12 @@
 
         <u-upload
             previewFullImage
-            :fileList="fileList3"
+            :fileList="fileList"
+            name="upload-img"
+            accept="image"
+            :maxCount="9"
             @afterRead="afterRead"
             @delete="deletePic"
-            name="1"
-            multiple
-            :maxCount="10"
         ></u-upload>
 
         <view class="absolute bottom-0 left-0 w-100%">

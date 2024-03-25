@@ -165,16 +165,15 @@
             content: '确定退出吗',
             success: function (res) {
                 if (res.confirm) {
-                    console.log('用户点击确定');
+                    uni.clearStorageSync()
+                    uni.reLaunch({
+                        url: '/pages/tabbar/my'
+                    })
                 } else if (res.cancel) {
                     console.log('用户点击取消');
                 }
             }
         });
-        uni.clearStorageSync()
-        uni.reLaunch({
-            url: '/pages/tabbar/my'
-        })
     }
 
     const LoginShow = ref(false)

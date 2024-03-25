@@ -1,5 +1,8 @@
 <script setup>
 	import { getProductByTypeApi } from '@/api/home'
+	import { useGoodsStore } from '@/store/modules/goods'
+    const goodsStore = useGoodsStore()
+
 	const tabbar = reactive([
         {
             name: '汉服',
@@ -65,11 +68,20 @@
         const { index } = option
         viewInfo.current = Number(index)
 
-		if(!typeObj[index]) return
 		getProductByType(typeObj[index])
     })
 
+
+	const onJumpDetail = (id) => {
+		goodsStore.productId = id
+		uni.navigateTo({
+		    url: '/pagesA/pages/goodsItem/index'
+		})
+	}
+
 	async function getProductByType (type) {
+		if(!type) return
+
 		tabbar[viewInfo.current].proList.splice(0, Infinity)
 
 		const res = await getProductByTypeApi(type)
@@ -117,7 +129,7 @@
 									</template>
 									<template v-else>
 										<template v-for="product of iten.specCombinationList" :key="product.id">
-											<view class="thumb-box">
+											<view class="thumb-box" @click="onJumpDetail(iten.id)">
 												<image class="item-menu-image" :src="product.carouselUrl" mode="aspectFit"></image>
 												<view class="ml-3 h-100% flex flex-col justify-between font-600">
 													<text>{{ product.desc }}</text>

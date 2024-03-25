@@ -1,35 +1,133 @@
 import { defineStore } from 'pinia'
-
+import { getProductByIdApi } from '@/api/home'
 export const useGoodsStore = defineStore('goods', {
     state: () => ({
-        productId: '',
+        productId: '', // 标题ID
+        productInfo: {
+          carousel: [], // 轮播图
+          priceRange: 0, // 价格区间
+          productName: '', // 商品名称
+          deliveryAddress: '', // 发货地址
+          descUrls: [], // 详情图
+        }, // 商品信息
         propertiesList: [
             {
-                id: "1",
-                name: "尺码",
-                attributes: [
-                  { value: "s", isActive: false, isDisabled: false },
-                  { value: "m", isActive: false, isDisabled: false },
-                  { value: "l", isActive: false, isDisabled: false },
-                  { value: "xl", isActive: false, isDisabled: false },
-                ],
-              },
-              {
-                id: "2",
-                name: "样式",
-                attributes: [
-                  { value: "飞机袖白色", img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.7G9x1ty7PKuo7tNRbnkKpwHaLH?w=203&h=304&c=7&r=0&o=5&pid=1.7', isActive: false, isDisabled: false },
-                  { value: "螺钿马面裙", img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.7G9x1ty7PKuo7tNRbnkKpwHaLH?w=203&h=304&c=7&r=0&o=5&pid=1.7', isActive: false, isDisabled: false },
-                  { value: "妆花马面裙", img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.7G9x1ty7PKuo7tNRbnkKpwHaLH?w=203&h=304&c=7&r=0&o=5&pid=1.7', isActive: false, isDisabled: false },
-                ],
-              }
+              id: "1",
+              name: "尺码",
+              attributes: [],
+            },
+            {
+              id: "2",
+              name: "样式",
+              attributes: [],
+            }
         ],
-        skuData: [
-            { id: "10", attributes: ["s", "飞机袖白色"] },
-            { id: "20", attributes: ["m", "螺钿马面裙"] },
-            { id: "30", attributes: ["l", "妆花马面裙"] },
-            { id: "40", attributes: ["xl", "妆花马面裙"] },
-        ],
+        skuData: [],
         goodsItem: {}
-    })  
+    }),
+    actions: {
+        async setPropertiesList () {
+          const id = this.productId
+          if(!id) return
+
+          const res = await getProductByIdApi(id)
+          const { 
+            carousel,
+            productName,
+            deliveryAddress,
+            descUrls,
+            specCombinationList,
+            specList
+          } = res
+          this.productInfo.carousel = carousel
+          this.productInfo.productName = productName
+          this.productInfo.deliveryAddress = deliveryAddress
+          this.productInfo.descUrls = descUrls
+          this.productInfo.priceRange = calculatePriceRange(specCombinationList)
+
+          this.propertiesList[0].attributes = getUniqueFlatArray(specList.size)
+          this.propertiesList[1].attributes = getStyleList(specCombinationList)
+
+          this.skuData = transformSpecCombinationToList(specCombinationList)
+
+        }
+    }
 })
+
+/**
+ * @description 计算价格区间
+ * @param {Array} specCombinationList 
+ */
+function calculatePriceRange(specCombinationList) {
+  if (!Array.isArray(specCombinationList) || !specCombinationList.length) return
+
+  const prices = specCombinationList.map(item => item.price)
+
+  if (prices.length === 1) {
+    // 如果数组中所有价格相同，则只返回这一个价格
+    return prices[0];
+  } else {
+    // 返回价格区间，即最低价格和最高价格
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    
+    return maxPrice == minPrice ? minPrice : `${minPrice} - ${maxPrice}`;
+  }
+}
+
+/**
+ * @description 获取数组中不重复的元素
+ * @param {Array[Array]} twoDimensionalArray 
+ * @returns {Array}
+ */
+function getUniqueFlatArray(twoDimensionalArray) {
+  // 将二维数组平铺为一维数组
+  const flatArray = twoDimensionalArray.flat();
+  // 使用Set对象去重，再将Set转换回数组
+  const uniqueArray = Array.from(new Set(flatArray));
+
+  if(!uniqueArray.length) return
+
+  return uniqueArray.map(item => ({ value: item, isActive: false, isDisabled: false }));
+}
+
+/**
+ * @description 获取商品信息
+ * @param {Array} productList 
+ * @returns 
+ */
+function getStyleList (productList) {
+  if(!productList.length) return
+
+  return productList.map(item => 
+    ({ 
+      value: item.desc, 
+      img: item.carouselUrl,
+      price: item.price,
+      stock: item.stock, 
+      isActive: false, 
+      isDisabled: false 
+    }))
+}
+
+/**
+ * @description 将规格组合转换为skuData格式
+ * @param {Array} specCombinationList 
+ * @returns 
+ */
+function transformSpecCombinationToList(specCombinationList) {
+  if(!Array.isArray(specCombinationList) || !specCombinationList.length) return
+  const skuData = [];
+
+  specCombinationList.forEach(item => {
+    item.size.forEach(size => {
+      skuData.push({
+        id: item.id,
+        productId: item.productId,
+        attributes: [size, item.desc]
+      });
+    });
+  });
+
+  return skuData;
+}

@@ -1,5 +1,19 @@
 <script setup>
-    const albumWidth = ref(0)
+    import { getAllDiscoveryApi } from '@/api/tabbar/watch'
+    const current = ref(1)
+
+    const discoveryList = ref([])
+
+    const getAllDiscovery = async (current = 1) => {
+        const res = await getAllDiscoveryApi(current)
+		const records = res.records
+		const len = records.length
+        if(len) {
+
+        } else {
+            reachBottom.value = true
+        }
+    }
 
     const urls2 = [
         'https://cdn.uviewui.com/uview/album/1.jpg',
@@ -19,11 +33,18 @@
             url: '/pagesA/pages/wDetail/index'
         })
     }
+
+    const reachBottom = ref(false)
+	onReachBottom(() => {		
+		current.value++
+		getAllDiscovery(current.value)
+	})
+
 </script>
 
 <template>
     <view class="bg-#f4f4f4">
-        <block v-for="item of 10" :key="item">
+        <template v-for="item of 10" :key="item">
             <view class="bg-#fff mb-3" @click="JumpDetail">
                 <view class="u-demo-block">
                     <view class="u-demo-block__content">
@@ -52,7 +73,7 @@
                     </view>
                 </view>
                 <u-divider text="" :hairline="true"></u-divider>
-                <view class="h-8 flex justify-end px-10 gap-10">
+                <view class="h-8 flex justify-end px-10 gap-6">
                     <u-icon 
                         name="thumb-up" 
                         size="24"
@@ -67,7 +88,19 @@
                     ></u-icon>
                 </view>
             </view>
-        </block>
+        </template>
+
+        <view 
+			v-if="reachBottom"
+			class="h-10 px-10"
+		>
+			<u-divider 
+				text="已经到底啦~" 
+				hairline
+				textColor="#999"
+				lineColor="#999"
+			></u-divider>
+		</view>
     </view>
 </template>
 

@@ -36,3 +36,13 @@ export function getProductBySearchApi (productName) {
         method: 'get'
     })
 }
+
+/**
+ * @description 根据标题ID获取商品
+ */
+export function getProductByIdApi (productId) {
+    return service({
+        url: `product/detail/${productId}`,
+        method: 'get'
+    })
+}

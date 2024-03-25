@@ -66,7 +66,7 @@
                     </view>
                 </view>
                 <u-divider text="" hairline></u-divider>
-                <view class="h-8 flex justify-end px-10 gap-10">
+                <view class="h-8 flex justify-end px-10 gap-6">
                     <u-icon 
                         name="thumb-up" 
                         size="24"
@@ -77,6 +77,12 @@
                         name="chat" 
                         size="24"
                         label="18"
+                        space="1"
+                    ></u-icon>
+                    <u-icon 
+                        name="trash" 
+                        size="24"
+                        label=""
                         space="1"
                     ></u-icon>
                 </view>

@@ -1,13 +1,12 @@
 <script setup>
     import { useGoodsStore } from '@/store/modules/goods.js'
-    import { propertiesList, skuData } from './data';
     const goodsStore = useGoodsStore()
 
-    const swiperList = ref([
-        'https://cdn.uviewui.com/uview/swiper/swiper3.png',
-        'https://cdn.uviewui.com/uview/swiper/swiper2.png',
-        'https://cdn.uviewui.com/uview/swiper/swiper1.png',
-    ])
+    const { productInfo, propertiesList, skuData } = storeToRefs(goodsStore)
+    const { setPropertiesList } = goodsStore
+
+
+    const swiperList = ref([])
 
     const infoShow = ref(false)
     const chooisGoods = () => {
@@ -139,10 +138,10 @@
 
     const initPrice = ref('')
     const init = () => {
-        properties.value = [ ...propertiesList ];
-        skuList.value = [ ...skuData ];
+        properties.value = [ ...propertiesList.value ];
+        skuList.value = [ ...skuData.value ];
 
-        const a = propertiesList[1].attributes
+        const a = properties.value[1].attributes
         const priceList = a.map(item => item.price)
 
         initPrice.value = Math.min(...priceList) + ' - ' + Math.max(...priceList)
@@ -162,12 +161,18 @@
     const countd = ref(1)
 
     onMounted(() => {
-        init()
+      initInfo()
+
+      init()
     }) 
 
     onLoad(() => {
-      
+      setPropertiesList()
     })
+
+    const initInfo = () => {
+      swiperList.value = [ ...productInfo.value.carousel ]
+    }
 </script>
 
 <template>
@@ -183,8 +188,8 @@
         </view>
         <view class="bg-#fff p-4">
             <view class="flex flex-col">
-                <text class="color-#DC143C font-600">¥ 69.00 - 161.00</text>
-                <text class="mt-3">绾青丝【凤凰鸣】原创明制仿妆花马面裙套装汉服女2023新款秋冬</text>
+                <text class="color-#DC143C font-600">¥ {{ productInfo.priceRange }}</text>
+                <text class="mt-3">{{ productInfo.productName }}</text>
             </view>
             <u-divider
                 lineColor="#ccc"
@@ -201,7 +206,7 @@
                 <view class="mb-3">
                     <text class="mr-4 color-#000">发货</text>
                     <text>快递: </text>
-                    <text>包邮</text>
+                    <text>从{{ productInfo.deliveryAddress}}发货 , 包邮</text>
                 </view>
                 <view>
                     <text class="color-#000">服务</text>
@@ -213,26 +218,21 @@
         <view class="bg-#fff p-4 my-3">
             <u-divider textSize="18" text="商品描述" dashed :hairline="false"></u-divider>
             <view class="mt-4 flex flex-col items-center">
-                <image
-                    src="/pagesA/static/ms1.jpg"
-                    mode="widthFix"
-                    class="vertical-bottom"
-                />
-                <image
-                    src="/pagesA/static/ms2.jpg"
-                    mode="widthFix"
-                    class="vertical-bottom"
-                />
-                <image
-                    src="/pagesA/static/ms3.jpg"
-                    mode="widthFix"
-                    class="vertical-bottom"
-                />
-                <image
-                    src="/pagesA/static/ms.jpg"
-                    mode="widthFix"
-                    class="vertical-bottom"
-                />
+              <template v-if="!productInfo.descUrls.length">
+                <u-empty
+                  mode="data"
+                >
+                </u-empty>
+              </template>
+              <template v-else>
+                <template v-for="(item, index) of productInfo.descUrls" :key="index">
+                  <image
+                      :src="item"
+                      mode="widthFix"
+                      class="vertical-bottom"
+                  />
+                </template>
+              </template>
             </view>
         </view>
         <view class="bg-#fff p-4 ">
@@ -265,6 +265,15 @@
             </view>
               
         </view>
+
+        <view class="w-100vw bg-#fff flex mb-5">
+          <text class="flex-1 flex justify-center bg-#82A4D7 py-5 rd_l">
+            加入购物车
+          </text>
+          <text class="flex-1 flex justify-center bg-#5C90DF py-5 rd_r">
+            立即购买
+          </text>
+        </view>
           
         <u-popup 
             :show="infoShow"
@@ -275,7 +284,7 @@
         >
 
             <view class="root">
-              <block v-if="selected.length">
+              <template v-if="selected.length">
                   <view class="thumb-box">
                       <image class="item-menu-image" :src="selected[1]?.img" mode="aspectFit"></image>
                       <view class="ml-3 h-25 flex flex-col justify-around font-600">
@@ -286,12 +295,20 @@
                             <text>{{ selected[0]?.value }}, </text>
                             <text>{{ selected[1]?.value }}</text>
                         </view>
+                        <!-- <text 
+                          class="color-#999" 
+                          v-if="selected[1]?.stock"
+                        >库存: {{ selected[1]?.stock }}</text> -->
                     </view>
                   </view>
-              </block>
-              <block v-else>
+                </template>
+              <template v-else>
                 <view class="thumb-box">
-                      <image class="item-menu-image" src="https://cdn.uviewui.com/uview/swiper/swiper3.png" mode="aspectFit"></image>
+                      <image 
+                        class="item-menu-image" 
+                        :src="swiperList[0]" 
+                        mode="aspectFit"
+                      ></image>
                       <view class="ml-3 h-25 flex flex-col justify-around font-600">
                         <text class="color-#FF0000 text-4.5">¥ {{ initPrice }}</text>
                         <view class="color-#999">
@@ -301,7 +318,7 @@
                         </view>
                     </view>
                 </view>
-              </block>
+              </template>
               <view v-for="(property, propertyIndex) in properties" :key="propertyIndex">
                   <p class="mb-3">{{ property.name }}</p>
                   <view class="sku-box-area">
@@ -324,6 +341,7 @@
                                   v-if="property.name === '样式'"
                                 />
                                 <text>{{ attribute.value }}</text>
+                                <text class="color-#FF0000" v-if="attribute.price">¥ {{ attribute.price }}</text>
                               </view>
                           </view>
                       </template>
@@ -396,4 +414,14 @@
 		width: 200rpx;
 		height: 200rpx;
 	}
+
+  .rd_l {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  .rd_r {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
 </style>

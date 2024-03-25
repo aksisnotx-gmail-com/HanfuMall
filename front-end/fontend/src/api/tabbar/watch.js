@@ -11,6 +11,28 @@ export function getAllDiscoveryApi (current) {
 }
 
 /**
+ * @description 添加发现
+ */
+export function addDiscoveryApi (data) {
+    return service({
+        url: `discovery/discovery/publish`,
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * @description 删除发现
+ */
+export function delDiscoveryApi (discoveryId) {
+    return service({
+        url: `discovery/delete/${discoveryId}`,
+        method: 'get'
+    })
+}
+
+
+/**
  * @description 点赞
  */
 export function LikeApi (discoveryId) {
@@ -37,6 +59,27 @@ export function cancelLikeApi (discoveryId) {
 export function getAllCommentApi (discoveryId) {
     return service({
         url: `discovery/getAll/comment/${discoveryId}`,
+        method: 'get'
+    })
+}
+
+/**
+ * @description 评论 - 回复
+ */
+export function commentApi (data) {
+    return service({
+        url: `discovery/comment/publish`,
+        method: 'post',
+        data
+    })
+}
+
+/**
+ * @description 删除评论
+ */
+export function delCommentApi (commentId) {
+    return service({
+        url: `discovery/delete/comment/${commentId}`,
         method: 'get'
     })
 }
