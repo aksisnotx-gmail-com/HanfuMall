@@ -49,7 +49,7 @@ public class DefaultOrderActionHandler implements OrderAction {
     public void doAction(OrderState curAction, OrderState nextAction, Role role) {
         AssertUtils.assertTrue(!ACTION_MAP.get(curAction).getNextStates().contains(nextAction),"当前订单状态操作异常");
         //如果下一层状态是可执行的则查看状态中的角色
-        AssertUtils.assertTrue(ACTION_MAP.get(nextAction).getCurrentHandlerRole().equals(role),"当前角色操作异常");
+        AssertUtils.assertTrue(ACTION_MAP.get(nextAction).getCurrentHandlerRole().equals(role),"当前订单操作角色异常");
     }
 
     @Data

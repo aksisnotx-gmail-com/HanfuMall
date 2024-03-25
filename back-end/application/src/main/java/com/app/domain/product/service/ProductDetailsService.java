@@ -13,22 +13,14 @@ import com.app.domain.product.param.ProductSizeModifyParam;
 import com.app.domain.product.param.vo.ProductVO;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
-import static com.app.domain.product.service.ProductDetailsService.CACHE_KEY;
 
 /**
  * @author xxl
@@ -37,10 +29,7 @@ import static com.app.domain.product.service.ProductDetailsService.CACHE_KEY;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@CacheConfig(cacheNames = CACHE_KEY)
 public class ProductDetailsService extends AbstractService<ProductDetailsMapper,ProductDetailsEntity> {
-
-    public static final String CACHE_KEY = "PRODUCT_DETAIL";
 
     private final ProductSkuService skuService;
 
@@ -55,7 +44,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     private static final Integer IS_RECOMMEND = 1;
 
     @Transactional(rollbackFor = RuntimeException.class)
-    @CacheEvict(allEntries = true)
     public Boolean publishDetail(ProductDetailParam param) {
         ProductDetailsEntity entity = new ProductDetailsEntity();
         BeanUtil.copyProperties(param,entity);
@@ -73,7 +61,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         });
     }
 
-    @Cacheable(key = "#productId")
     public ProductVO getDetail(String productId) {
         ProductDetailsEntity productDetail = this.getById(productId);
         AssertUtils.notNull(productDetail,"商品详情不存在");
@@ -82,7 +69,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return ProductVO.create(productDetail,list);
     }
 
-    @Cacheable
     public Page<ProductVO> getAllDetail() {
         Page<ProductDetailsEntity> page = this.page(CommonPageRequestUtils.defaultPage());
         Page<ProductVO> voPage = entityPageToVoPage(page);
@@ -92,12 +78,10 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteProductById(String id) {
         return this.removeById(id);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean modifyDetail(ProductDetailModifyParam param) {
         ProductDetailsEntity entity = this.getById(param.getId());
         AssertUtils.notNull(entity,"商品详情不存在");
@@ -107,12 +91,10 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return  this.updateById(entity);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteDetailSize(String productId, String sizeId) {
         return skuService.lambdaUpdate().eq(ProductSkuEntity::getProductId,productId).eq(ProductSkuEntity::getId,sizeId).remove();
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean modifyDetailSize(ProductSizeModifyParam param) {
         ProductSkuEntity one = skuService.lambdaQuery().eq(ProductSkuEntity::getProductId, param.getProductId()).eq(ProductSkuEntity::getId, param.getId()).one();
         AssertUtils.notNull(one,"商品尺码不存在");
@@ -122,7 +104,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return skuService.updateById(one);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean addDetailSize(ProductSizeModifyParam param) {
         AssertUtils.notNull(this.getById(param.getProductId()),"商品不能为空");
         ProductSkuEntity sku = new ProductSkuEntity();
@@ -132,7 +113,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return skuService.save(sku);
     }
 
-    @Cacheable(key = "#type")
     public Page<ProductVO> getDetailByType(ProductType type) {
         Page<ProductVO> detail = getAllDetail();
         List<ProductVO> list = detail.getRecords().stream().filter(t -> t.getProductTypes().contains(type)).toList();
@@ -141,7 +121,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return detail;
     }
 
-    @Cacheable(key = "#productName")
     public Page<ProductVO> search(String productName) {
         Page<ProductDetailsEntity> page = this.lambdaQuery().like(ProductDetailsEntity::getProductName, productName).page(CommonPageRequestUtils.defaultPage());
         Page<ProductVO> voPage = entityPageToVoPage(page);
@@ -151,7 +130,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    @Cacheable(key = "#skuId")
     public Map<String, Object> getProductBySkuId(String skuId) {
         //获取SKU信息
         ProductSkuEntity sku = skuService.getById(skuId);
@@ -160,12 +138,10 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return Map.of(PRODUCT,entity,SKU,sku);
     }
 
-    @Cacheable(value = "GET_SPECIAL_PRODUCTS")
     public Page<ProductSkuEntity> getSpecialProducts() {
         return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
     }
 
-    @Cacheable(value = "GET_RECOMMEND_PRODUCTS")
     public Page<ProductSkuEntity> getRecommendProducts() {
         return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
     }

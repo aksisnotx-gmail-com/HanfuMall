@@ -20,13 +20,11 @@ import static com.app.domain.banner.service.BannerService.BANNER;
  * @since 2024/3/23
  */
 @Service
-@CacheConfig(cacheNames = BANNER)
 public class BannerService extends AbstractService<BannerMapper, BannerEntity> {
 
     public static final String BANNER = "BANNER";
 
     @Transactional(rollbackFor = RuntimeException.class)
-    @CacheEvict(allEntries = true)
     public Boolean addBanner(List<String> param) {
         List<BannerEntity> list = param.parallelStream().map(t -> {
             BannerEntity entity = new BannerEntity();
@@ -36,12 +34,10 @@ public class BannerService extends AbstractService<BannerMapper, BannerEntity> {
         return this.saveOrUpdateBatch(list);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteBanner(String bannerId) {
         return this.removeById(bannerId);
     }
 
-    @Cacheable
     public Page<BannerEntity> queryBanner() {
         return this.page(CommonPageRequestUtils.defaultPage());
     }

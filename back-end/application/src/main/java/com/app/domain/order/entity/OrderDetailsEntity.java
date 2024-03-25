@@ -58,13 +58,14 @@ public class OrderDetailsEntity extends Entity {
 
     @Schema(description = "总价")
     private BigDecimal totalPrice;
-    public static OrderDetailsEntity create(ProductSkuEntity sku,ProductDetailsEntity productDetail,String orderId,Integer skuNumber){
+    public static OrderDetailsEntity create(ProductSkuEntity sku,ProductDetailsEntity productDetail,String orderId,Integer skuNumber,BigDecimal totalPrice){
         OrderDetailsEntity entity = new OrderDetailsEntity();
         entity.setProductSku(sku);
         entity.setProductDetail(productDetail);
         entity.setOrderId(orderId);
         entity.setIsEvaluate(UN_HANDLER);
         entity.setSkuNumber(skuNumber);
+        entity.setTotalPrice(totalPrice);
         return entity;
     }
 }

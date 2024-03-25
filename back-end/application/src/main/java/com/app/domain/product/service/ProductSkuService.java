@@ -1,14 +1,10 @@
 package com.app.domain.product.service;
 
 import com.app.domain.base.AbstractService;
-import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.entity.ProductSkuEntity;
-import com.app.domain.product.mapper.ProductDetailsMapper;
 import com.app.domain.product.mapper.ProductSkuMapper;
 import com.sdk.util.asserts.AssertUtils;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author xxl
@@ -29,7 +25,7 @@ public class ProductSkuService extends AbstractService<ProductSkuMapper, Product
         synchronized (this) {
             checkStock(stock,num);
             //更新库存
-            entity.setStock(stock + num);
+            entity.setStock(stock + (-num));
             this.updateById(entity);
         }
     }
@@ -49,10 +45,8 @@ public class ProductSkuService extends AbstractService<ProductSkuMapper, Product
     }
 
     public void checkStock(Integer stock, Integer num) {
-        int theActualAmount = num + stock;
-        //如果库存数量 > 需要增加的数量/相减的数量 + 库存 表示库存不足
-        AssertUtils.assertTrue(stock > theActualAmount, "库存不足");
-        //0 < 需要增加的数量/相减的数量 + 库存  表示库存不足
-        AssertUtils.assertTrue(0 < theActualAmount, "库存不足");
+        AssertUtils.notNull(num > 0, "数量必须要大于0");
+        //如果库存数量 < 要减的数量  表示库存不足
+        AssertUtils.assertTrue(num > stock, "库存不足");
     }
 }

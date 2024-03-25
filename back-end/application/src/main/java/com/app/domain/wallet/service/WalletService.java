@@ -15,7 +15,6 @@ import static com.app.domain.wallet.service.WalletService.CACHE_KEY;
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = CACHE_KEY)
 public class WalletService extends AbstractService<WalletMapper, WalletEntity> {
 
     public static final String CACHE_KEY = "WALLET_SERVICE";

@@ -13,14 +13,9 @@ import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.app.domain.comment.service.ProductCommentService.CACHE_KEY;
 
 /**
  * @author xxl
@@ -28,10 +23,7 @@ import static com.app.domain.comment.service.ProductCommentService.CACHE_KEY;
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = CACHE_KEY)
 public class ProductCommentService extends AbstractService<ProductCommentMapper, ProductCommentEntity> {
-
-    public static final String CACHE_KEY = "PRODUCT_COMMENT";
 
     private final ProductDetailsService detailsService;
 
@@ -39,7 +31,6 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
 
     private final UserService userService;
 
-    @CacheEvict(key = "#param.productId")
     public Boolean publishComment(ProductCommentEntity param, String loginUserId) {
         ProductDetailsEntity productDetail = detailsService.getById(param.getProductId());
         AssertUtils.notNull(productDetail, "商品不存在");
@@ -48,7 +39,6 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         return this.save(param);
     }
 
-    @Cacheable(key = "#productId")
     public Page<ProductCommentEntity> queryAllComment(String productId) {
         Page<ProductCommentEntity> page = this.lambdaQuery()
                 .eq(ProductCommentEntity::getProductId, productId)
@@ -61,7 +51,6 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         return page;
     }
 
-    @CacheEvict(key = "#productId")
     public Boolean deleteComment(String productId, String commentId, UserEntity loginUser) {
         ProductCommentEntity one = this.lambdaQuery()
                 .eq(ProductCommentEntity::getProductId, productId)

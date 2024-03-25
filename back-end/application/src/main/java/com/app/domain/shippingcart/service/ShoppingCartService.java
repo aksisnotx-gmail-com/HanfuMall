@@ -1,9 +1,6 @@
 package com.app.domain.shippingcart.service;
 
-import cn.hutool.json.JSONUtil;
 import com.app.domain.base.AbstractService;
-import com.app.domain.product.entity.ProductDetailsEntity;
-import com.app.domain.product.entity.ProductSkuEntity;
 import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.product.service.ProductSkuService;
 import com.app.domain.shippingcart.entity.ShoppingCartEntity;
@@ -13,16 +10,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.exception.GlobalException;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.app.domain.product.service.ProductDetailsService.PRODUCT;
-import static com.app.domain.product.service.ProductDetailsService.SKU;
 
 /**
  * @author xxl
@@ -30,16 +20,12 @@ import static com.app.domain.product.service.ProductDetailsService.SKU;
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = ShoppingCartService.SHOPPING_CART)
 public class ShoppingCartService extends AbstractService<ShoppingCartMapper, ShoppingCartEntity> {
-
-    public static final String SHOPPING_CART = "SHOPPING_CART";
 
     private final ProductDetailsService productService;
 
     private final ProductSkuService skuService;
 
-    @CacheEvict(allEntries = true)
     public synchronized Boolean addSku(ShoppingCartEntity entity, String loginUserId) {
         //购物数量
         Integer number = entity.getNumber();
@@ -57,7 +43,6 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
         return this.save(entity);
     }
 
-    @CacheEvict(allEntries = true)
     public synchronized Boolean addOrReduce(String itemId, Integer number) {
         ShoppingCartEntity entity = this.getById(itemId);
         int sumNumber = entity.getNumber() + number;
@@ -78,7 +63,6 @@ public class ShoppingCartService extends AbstractService<ShoppingCartMapper, Sho
         return this.updateById(entity);
     }
 
-    @Cacheable(key = "#loginUserId")
     public Page<ShoppingCartEntity> getAll(String loginUserId) {
         Page<ShoppingCartEntity> page = this.lambdaQuery().eq(ShoppingCartEntity::getUserId, loginUserId).page(CommonPageRequestUtils.defaultPage());
         //err: 这里不适用JSON转则会出问题

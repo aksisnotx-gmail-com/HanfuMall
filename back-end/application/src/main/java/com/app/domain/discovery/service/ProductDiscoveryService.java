@@ -30,7 +30,6 @@ import static com.app.domain.user.enums.Role.ADMIN;
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = CACHE_KEY)
 public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMapper, DiscoveryEntity> {
 
     private final DiscoveryCommentService commentService;
@@ -49,14 +48,12 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
      */
     public static final Integer UNREAD = 0;
 
-    @CacheEvict(allEntries = true)
     public Boolean publish(DiscoveryEntity entity, String loginUserId) {
         entity.setUserId(loginUserId);
         entity.setLikes(0);
         return this.save(entity);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteDiscoveryById(String discoveryId, UserEntity loginUser) {
         DiscoveryEntity entity = getById(discoveryId);
         //只有管理员可以直接删除
@@ -70,7 +67,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
                 eq(DiscoveryEntity::getUserId, loginUser.getId()).remove();
     }
 
-    @Cacheable
     public Page<DiscoveryEntity> getAllDiscovery(GetType type,String loginUserId) {
         Page<DiscoveryEntity> page;
         if (GetType.ALL.equals(type)) {
@@ -89,14 +85,12 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     }
 
 
-    @CacheEvict(allEntries = true)
     public Boolean commentDiscovery(DiscoveryCommentEntity entity, String loginUserId) {
         entity.setIsRead(UNREAD);
         entity.setUserId(loginUserId);
         return commentService.save(entity);
     }
 
-    @Cacheable(key = "#discoveryId")
     public DiscoveryEntity getAllComment(String discoveryId) {
         DiscoveryEntity entity = getById(discoveryId);
         //设置USER
@@ -109,7 +103,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
         return entity;
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteCommentById(String commentId, UserEntity loginUser) {
         DiscoveryCommentEntity entity = commentService.getById(commentId);
 
@@ -123,7 +116,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
                 eq(DiscoveryCommentEntity::getUserId, loginUser.getId()).remove();
     }
 
-    @CacheEvict(allEntries = true)
     public RespEntity<Boolean> likeOrCancel(String discoveryId, String loginUserId) {
         DiscoveryEntity entity = getById(discoveryId);
         List<String> users = entity.getLikeUsers();

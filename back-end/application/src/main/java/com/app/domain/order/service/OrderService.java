@@ -18,9 +18,6 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +25,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import static com.app.domain.order.service.OrderService.CACHE_KEY;
-
 /**
  * @author xxl
  * @since 2024/3/21
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = CACHE_KEY)
 public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
 
     private final ProductSkuService skuService;
@@ -48,8 +42,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     private final OrderDetailsService detailsService;
 
     private final WalletService walletService;
-
-    public static final String CACHE_KEY = "ORDER_SERVICE";
 
     /**
      * 查看用户是否买了这个商品中的某一款商品
@@ -72,27 +64,47 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
                 );
     }
 
-    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = RuntimeException.class)
     public  Boolean createOrder(OrderParam orderParam,String userId) {
-       /* //未保存发货地相同现在需要把订单分类
-        orderParam.getProductSkuIds().stream().map(t -> productDetailsService.getProductBySkuId(t.getSkuId()).get(PRO))
+        //未保存发货地相同现在需要把订单分类
+        //多少个商品
+        List<ProductSkuEntity> skus = orderParam.getProductSkuIds().stream().map(t -> skuService.getById(t.getSkuId())).toList();
 
-        OrderEntity order = OrderEntity.create(OrderState.PLACE_ORDER, userId, orderParam.getDeliveryAddress());
-        boolean save = this.save(order);
-        //保存商品详情
-        List<OrderDetailsEntity> list = orderParam.getProductSkuIds().stream().map(t -> {
-            ProductSkuEntity entity = skuService.getById(t);
-            //如果库存满足条件则扣减,也就是说后面没必要检查库存
-            skuService.checkStock(entity.getStock(), t.getNumber());
-            skuService.reduceSkuStock(entity.getProductId(), t.getNumber());
-            return OrderDetailsEntity.create(entity, productDetailsService.getById(entity.getProductId()), order.getId(), t.getNumber());
-        }).toList();
-        return save && detailsService.saveBatch(list);*/
-        return false;
+        //要创建多少表单
+        List<String> productIds = skus.parallelStream().map(ProductSkuEntity::getProductId).distinct().toList();
+        for (String productId : productIds) {
+            OrderEntity order = OrderEntity.create(OrderState.PLACE_ORDER, userId, orderParam.getDeliveryAddress());
+            //保存订单
+            this.save(order);
+            //保存商品详情
+            List<OrderDetailsEntity> list = skus.
+                    stream().
+                    //属于此类商品的才能是一个单子
+                    filter(t -> productId.equals(t.getProductId())).
+                    map(t -> {
+                        //筛选出此商品要购买的数量
+                        OrderParam.OrderDetailsParam param = orderParam.getProductSkuIds().parallelStream().filter(t1 -> t1.getSkuId().
+                                        equals(t.getId())).
+                                findFirst().
+                                orElse(null);
+                        AssertUtils.notNull(param, "订单异常请重新下单");
+
+                        //如果库存满足条件则扣减,也就是说后面没必要检查库存
+                        skuService.checkStock(t.getStock(), param.getNumber());
+                        //设置购买数量
+                        skuService.reduceSkuStock(t.getId(), param.getNumber());
+                        return OrderDetailsEntity.create(t,
+                                productDetailsService.getById(t.getProductId()),
+                                order.getId(), param.getNumber(), param.getTotalPrice());
+            }).toList();
+
+            //保存商品
+            detailsService.saveBatch(list);
+        }
+
+        return true;
     }
 
-    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean closeOrder(String orderId, UserEntity user) {
         OrderState closeOrder = OrderState.CLOSE_ORDER;
@@ -110,7 +122,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one);
     }
 
-    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean payOrder(String orderId, UserEntity user) {
         OrderState makePayment = OrderState.MAKE_PAYMENT;
@@ -127,7 +138,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one) && walletService.updateById(wallet);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean applyRefundOrder(String orderId, UserEntity loginUser) {
         OrderState refund = OrderState.APPLY_FOR_REFUND;
         OrderEntity one = getOne(orderId, refund,loginUser);
@@ -135,7 +145,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one);
     }
 
-    @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean refundOrder(String orderId,UserEntity user) {
         OrderState refund = OrderState.REFUND;
@@ -150,7 +159,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one) && walletService.updateById(wallet);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean sendOrder(String orderId, UserEntity loginUser) {
         OrderState send = OrderState.SHIP_ORDER;
         OrderEntity one = getOne(orderId, send, loginUser);
@@ -158,7 +166,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean receiveOrder(String orderId, UserEntity loginUser) {
         OrderState receive = OrderState.CONFIRM_RECEIPT;
         OrderEntity one = getOne(orderId, receive, loginUser);
@@ -168,14 +175,12 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one) && detailsService.updateBatchById(list);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteOrder(String orderId, UserEntity loginUser) {
         OrderState delete = OrderState.DELETE_ORDER;
         OrderEntity one = getOne(orderId, delete, loginUser);
         return this.removeById(one.getId());
     }
 
-    @Cacheable
     public Page<OrderEntity> getOrderByUser(UserEntity loginUser) {
         //用户获取自己的，管理员获取所有的
         Page<OrderEntity> page;
@@ -190,7 +195,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return page;
     }
 
-    @Cacheable(key = "#orderId")
     public OrderEntity getOrder(String orderId) {
         OrderEntity entity = this.lambdaQuery().eq(OrderEntity::getId, orderId).one();
         entity.setOrderDetails(detailsService.getDetailsByOrderId(entity.getId()));
@@ -198,17 +202,14 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     }
 
 
-    @Cacheable(cacheNames = "GET_WAIT_PAY")
     public Page<OrderEntity> getWaitPay(String loginUserId) {
         return getOrderByUserId(loginUserId,OrderEntity::getState,OrderState.PLACE_ORDER.name());
     }
 
-    @Cacheable(cacheNames = "GET_WAIT_RECEIVE")
     public Page<OrderEntity> getWaitReceive(String loginUserId) {
         return getOrderByUserId(loginUserId,OrderEntity::getState,OrderState.SHIP_ORDER.name());
     }
 
-    @Cacheable(cacheNames = "GET_WAIT_EVALUATE")
     public Page<OrderEntity> getWaitEvaluate(String loginUserId) {
         //查询出当前用户已经收货的商品
         Page<OrderEntity> page = getOrderByUserId(loginUserId, OrderEntity::getState, OrderState.CONFIRM_RECEIPT.name());
