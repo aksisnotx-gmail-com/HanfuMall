@@ -160,13 +160,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return Map.of(PRODUCT,entity,SKU,sku);
     }
 
-    private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {
-        Page<ProductVO> voPage = new Page<>();
-        BeanUtil.copyProperties(page,voPage);
-        return voPage;
-    }
-
-
     @Cacheable(value = "GET_SPECIAL_PRODUCTS")
     public Page<ProductSkuEntity> getSpecialProducts() {
         return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
@@ -175,5 +168,11 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     @Cacheable(value = "GET_RECOMMEND_PRODUCTS")
     public Page<ProductSkuEntity> getRecommendProducts() {
         return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
+    }
+
+    private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {
+        Page<ProductVO> voPage = new Page<>();
+        BeanUtil.copyProperties(page,voPage);
+        return voPage;
     }
 }

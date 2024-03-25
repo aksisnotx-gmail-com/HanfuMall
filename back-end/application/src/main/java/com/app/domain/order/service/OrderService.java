@@ -75,6 +75,9 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     @CacheEvict(allEntries = true)
     @Transactional(rollbackFor = RuntimeException.class)
     public  Boolean createOrder(OrderParam orderParam,String userId) {
+       /* //未保存发货地相同现在需要把订单分类
+        orderParam.getProductSkuIds().stream().map(t -> productDetailsService.getProductBySkuId(t.getSkuId()).get(PRO))
+
         OrderEntity order = OrderEntity.create(OrderState.PLACE_ORDER, userId, orderParam.getDeliveryAddress());
         boolean save = this.save(order);
         //保存商品详情
@@ -85,7 +88,8 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
             skuService.reduceSkuStock(entity.getProductId(), t.getNumber());
             return OrderDetailsEntity.create(entity, productDetailsService.getById(entity.getProductId()), order.getId(), t.getNumber());
         }).toList();
-        return save && detailsService.saveBatch(list);
+        return save && detailsService.saveBatch(list);*/
+        return false;
     }
 
     @CacheEvict(allEntries = true)

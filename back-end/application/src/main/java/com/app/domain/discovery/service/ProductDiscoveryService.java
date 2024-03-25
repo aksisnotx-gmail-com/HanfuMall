@@ -3,6 +3,7 @@ package com.app.domain.discovery.service;
 import com.app.domain.base.AbstractService;
 import com.app.domain.discovery.entity.DiscoveryCommentEntity;
 import com.app.domain.discovery.entity.DiscoveryEntity;
+import com.app.domain.discovery.enums.GetType;
 import com.app.domain.discovery.mapper.ProductDiscoveryMapper;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.service.UserService;
@@ -70,8 +71,14 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     }
 
     @Cacheable
-    public Page<DiscoveryEntity> getAllDiscovery() {
-            Page<DiscoveryEntity> page = this.page(CommonPageRequestUtils.defaultPage());
+    public Page<DiscoveryEntity> getAllDiscovery(GetType type,String loginUserId) {
+        Page<DiscoveryEntity> page;
+        if (GetType.ALL.equals(type)) {
+            page = this.page(CommonPageRequestUtils.defaultPage());
+        }else {
+            page = this.lambdaQuery().eq(DiscoveryEntity::getUserId,loginUserId).page(CommonPageRequestUtils.defaultPage());
+        }
+
         //设置User信息
         page.getRecords().forEach(t -> {
             t.setUser(userService.getById(t.getUserId(), false));
