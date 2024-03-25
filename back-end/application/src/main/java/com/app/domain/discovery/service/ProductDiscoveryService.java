@@ -12,16 +12,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.resp.RespEntity;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static com.app.domain.discovery.service.ProductDiscoveryService.CACHE_KEY;
 import static com.app.domain.user.enums.Role.ADMIN;
 
 /**
@@ -35,8 +29,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     private final DiscoveryCommentService commentService;
 
     private final UserService userService;
-
-    public static final String CACHE_KEY = "PRODUCT_DISCOVERY";
 
     /**
      * 已读
