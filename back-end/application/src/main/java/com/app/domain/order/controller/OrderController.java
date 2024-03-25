@@ -95,20 +95,20 @@ public class OrderController extends Controller {
     @GetMapping("/getWaitPay")
     @Operation(summary = "获取待付款的商品")
     public RespEntity<Page<OrderEntity>> getWaitPay() {
-        return RespEntity.success(orderService.getWaitPay(LoginUser.getLoginUserId()));
+        return RespEntity.success(orderService.getWaitPay(LoginUser.getLoginUser()));
     }
 
     //待收货
     @GetMapping("/getWaitReceive")
     @Operation(summary = "获取待收货的商品")
     public RespEntity<Page<OrderEntity>> getWaitReceive() {
-        return RespEntity.success(orderService.getWaitReceive(LoginUser.getLoginUserId()));
+        return RespEntity.success(orderService.getWaitReceive(LoginUser.getLoginUser()));
     }
 
     //待评价
     @GetMapping("/getWaitEvaluate")
     @Operation(summary = "获取待评价的商品")
     public RespEntity<Page<OrderEntity>> getWaitEvaluate() {
-        return RespEntity.success(orderService.getWaitEvaluate(LoginUser.getLoginUserId()));
+        return RespEntity.success(orderService.getWaitEvaluate(LoginUser.getLoginUser()));
     }
 }

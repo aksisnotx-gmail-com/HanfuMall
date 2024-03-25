@@ -112,7 +112,7 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         //如果允许关闭订单 , 1.订单中的商品如果存在数量加回来 2.订单中的商品不存在则忽略
         List<OrderDetailsEntity> details = detailsService.getDetailsByOrderId(one.getId());
         details.forEach(t ->{
-            ProductSkuEntity sku = skuService.getById(t.getProductSku().getProductId(), false);
+            ProductSkuEntity sku = skuService.getById(t.getProductSku().getId(), false);
             if (!Objects.isNull(sku)) {
                 //存在
                 skuService.addSkuStock(sku.getId(),t.getSkuNumber());
@@ -148,11 +148,13 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean refundOrder(String orderId,UserEntity user) {
         OrderState refund = OrderState.REFUND;
-        OrderEntity one = getOne(orderId, refund,user);
+        //管理员做的事不需要User
+        OrderEntity one = getOneByAdmin(orderId, refund,user);
         one.setState(refund);
         //获取账单总余额
         BigDecimal price = detailsService.getProductTotalPrice(one.getId());
-        WalletEntity wallet = walletService.getOne(user.getId());
+        //获取订单人的钱包
+        WalletEntity wallet = walletService.getOne(one.getUserId());
         //余额 + 商品总价钱
         wallet.setBalance(wallet.getBalance().add(price));
         //更新订单 && 钱包
@@ -161,7 +163,8 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
 
     public Boolean sendOrder(String orderId, UserEntity loginUser) {
         OrderState send = OrderState.SHIP_ORDER;
-        OrderEntity one = getOne(orderId, send, loginUser);
+        //不需要获取管理员用户
+        OrderEntity one = getOneByAdmin(orderId, send, loginUser);
         one.setState(send);
         return this.updateById(one);
     }
@@ -175,7 +178,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return this.updateById(one) && detailsService.updateBatchById(list);
     }
 
-    //todo 关闭订单数量加回来
 
     public Boolean deleteOrder(String orderId, UserEntity loginUser) {
         OrderState delete = OrderState.DELETE_ORDER;
@@ -204,17 +206,17 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     }
 
 
-    public Page<OrderEntity> getWaitPay(String loginUserId) {
-        return getOrderByUserId(loginUserId,OrderEntity::getState,OrderState.PLACE_ORDER.name());
+    public Page<OrderEntity> getWaitPay(UserEntity user) {
+        return getOrderByUserId(user,OrderEntity::getState,OrderState.PLACE_ORDER.name());
     }
 
-    public Page<OrderEntity> getWaitReceive(String loginUserId) {
-        return getOrderByUserId(loginUserId,OrderEntity::getState,OrderState.SHIP_ORDER.name());
+    public Page<OrderEntity> getWaitReceive(UserEntity user) {
+        return getOrderByUserId(user,OrderEntity::getState,OrderState.SHIP_ORDER.name());
     }
 
-    public Page<OrderEntity> getWaitEvaluate(String loginUserId) {
+    public Page<OrderEntity> getWaitEvaluate(UserEntity user) {
         //查询出当前用户已经收货的商品
-        Page<OrderEntity> page = getOrderByUserId(loginUserId, OrderEntity::getState, OrderState.CONFIRM_RECEIPT.name());
+        Page<OrderEntity> page = getOrderByUserId(user, OrderEntity::getState, OrderState.CONFIRM_RECEIPT.name());
         List<OrderEntity> list = page.getRecords().
                 stream().
                 //找出订单详情中未评价的商品
@@ -234,8 +236,21 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         return entity;
     }
 
-    private Page<OrderEntity> getOrderByUserId(String userId, SFunction<OrderEntity,?> sFunction, Object val) {
-        Page<OrderEntity> page = this.lambdaQuery().eq(OrderEntity::getUserId, userId).eq(sFunction, val).page(CommonPageRequestUtils.defaultPage());
+    private OrderEntity getOneByAdmin(String orderId,OrderState nextState,UserEntity user) {
+        OrderEntity entity = this.lambdaQuery().eq(OrderEntity::getId, orderId).one();
+        AssertUtils.notNull(entity, "订单不存在");
+        orderAction.doAction(entity.getState(), nextState, user.getRole());
+        return entity;
+    }
+
+    private Page<OrderEntity> getOrderByUserId(UserEntity user, SFunction<OrderEntity,?> sFunction, Object val) {
+        Page<OrderEntity> page;
+        //管理员获取所有的
+        if (Role.ADMIN.equals(user.getRole())) {
+            page = this.lambdaQuery().eq(sFunction, val).page(CommonPageRequestUtils.defaultPage());
+        }else {
+            page = this.lambdaQuery().eq(OrderEntity::getUserId, user.getId()).eq(sFunction, val).page(CommonPageRequestUtils.defaultPage());
+        }
         //查询订单详情
         page.getRecords().forEach(t -> t.setOrderDetails(detailsService.getDetailsByOrderId(t.getId())));
         return page;

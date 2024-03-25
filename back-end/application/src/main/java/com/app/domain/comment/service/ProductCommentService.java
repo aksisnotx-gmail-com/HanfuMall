@@ -36,7 +36,8 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         AssertUtils.notNull(productDetail, "商品不存在");
         AssertUtils.assertTrue(orderService.hasProduct(loginUserId, param.getProductId()), "未改买的商品无法评论");
         param.setUserId(loginUserId);
-        return this.save(param);
+        //修改顶单为已评价
+        return this.save(param) ;
     }
 
     public Page<ProductCommentEntity> queryAllComment(String productId) {

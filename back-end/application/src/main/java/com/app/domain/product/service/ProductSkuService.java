@@ -47,6 +47,6 @@ public class ProductSkuService extends AbstractService<ProductSkuMapper, Product
     public void checkStock(Integer stock, Integer num) {
         AssertUtils.assertTrue(num > 0, "数量必须要大于0");
         //如果库存数量 < 要减的数量  表示库存不足
-        AssertUtils.assertTrue( stock > num, "库存不足");
+        AssertUtils.assertTrue( stock >= num, "库存不足");
     }
 }
