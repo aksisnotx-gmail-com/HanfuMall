@@ -38,17 +38,10 @@ public class ProductDiscoveryController extends Controller {
     }
 
     //点赞
-    @GetMapping("/like/{discoveryId}")
-    @Operation(summary = "点赞")
-    public RespEntity<Boolean> likeDiscovery(@PathVariable String discoveryId) {
-        return RespEntity.success(discoveryService.likeDiscovery(discoveryId,LoginUser.getLoginUserId()));
-    }
-
-    //取消点赞
-    @GetMapping("/cancelLike/{discoveryId}")
-    @Operation(summary = "取消点赞")
-    public RespEntity<Boolean> cancelLike(@PathVariable String discoveryId) {
-        return RespEntity.success(discoveryService.cancelLike(discoveryId,LoginUser.getLoginUserId()));
+    @GetMapping("/likeOrCancel/{discoveryId}")
+    @Operation(summary = "点赞/取消")
+    public RespEntity<Boolean> likeOrCancel(@PathVariable String discoveryId) {
+        return discoveryService.likeOrCancel(discoveryId,LoginUser.getLoginUserId());
     }
 
     //查询所有的发现

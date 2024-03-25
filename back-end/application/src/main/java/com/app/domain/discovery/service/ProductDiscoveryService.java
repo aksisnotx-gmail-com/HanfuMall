@@ -8,6 +8,7 @@ import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.service.UserService;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sdk.resp.RespEntity;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
@@ -68,29 +69,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
                 eq(DiscoveryEntity::getUserId, loginUser.getId()).remove();
     }
 
-
-    @CacheEvict(allEntries = true)
-    public Boolean likeDiscovery(String discoveryId, String loginUserId) {
-        DiscoveryEntity entity = getById(discoveryId);
-        List<String> users = entity.getLikeUsers();
-        AssertUtils.assertTrue(!users.contains(loginUserId), "已经点过赞了");
-        entity.setLikes(entity.getLikes() + 1);
-        users.add(loginUserId);
-        entity.setLikeUsers(users);
-        return updateById(entity);
-    }
-
-    @CacheEvict(allEntries = true)
-    public Boolean cancelLike(String discoveryId, String loginUserId) {
-        DiscoveryEntity entity = getById(discoveryId);
-        List<String> users = entity.getLikeUsers();
-        AssertUtils.assertTrue(users.contains(loginUserId), "不能取消点赞");
-        entity.setLikes(entity.getLikes() - 1);
-        users.remove(loginUserId);
-        entity.setLikeUsers(users);
-        return updateById(entity);
-    }
-
     @Cacheable
     public Page<DiscoveryEntity> getAllDiscovery() {
             Page<DiscoveryEntity> page = this.page(CommonPageRequestUtils.defaultPage());
@@ -136,5 +114,26 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
         return commentService.lambdaUpdate().
                 eq(DiscoveryCommentEntity::getId, commentId).
                 eq(DiscoveryCommentEntity::getUserId, loginUser.getId()).remove();
+    }
+
+    @CacheEvict(allEntries = true)
+    public RespEntity<Boolean> likeOrCancel(String discoveryId, String loginUserId) {
+        DiscoveryEntity entity = getById(discoveryId);
+        List<String> users = entity.getLikeUsers();
+        boolean match = users.parallelStream().anyMatch(t -> t.equals(loginUserId));
+
+        //如果点赞了则取消
+        if (match) {
+            entity.setLikes(entity.getLikes() - 1);
+            users.remove(loginUserId);
+            entity.setLikeUsers(users);
+            return RespEntity.success("取消成功",this.updateById(entity));
+        }
+
+        //如果没有点赞则点赞
+        users.add(loginUserId);
+        entity.setLikeUsers(users);
+        entity.setLikes(entity.getLikes() + 1);
+        return RespEntity.success("点赞成功",this.updateById(entity));
     }
 }
