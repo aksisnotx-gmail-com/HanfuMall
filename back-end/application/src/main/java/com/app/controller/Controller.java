@@ -4,6 +4,8 @@ import com.app.domain.banner.service.BannerService;
 import com.app.domain.comment.service.ProductCommentService;
 import com.app.domain.discovery.service.ProductDiscoveryService;
 import com.app.domain.file.service.FileService;
+import com.app.domain.order.service.OrderDetailsService;
+import com.app.domain.order.service.OrderService;
 import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.shippingcart.service.ShoppingCartService;
 import com.app.domain.user.service.UserService;
@@ -40,4 +42,6 @@ public class Controller {
     @Resource
     protected BannerService bannerService;
 
+    @Resource
+    protected OrderService orderService;
 }

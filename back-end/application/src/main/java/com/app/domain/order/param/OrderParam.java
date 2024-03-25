@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -24,7 +25,24 @@ public class OrderParam implements Serializable {
     @NotBlank(message = "收货地址不能为空")
     private String deliveryAddress;
 
-    @Schema(description = "商品skuIds")
-    @NotEmpty(message = "商品skuIds不能为空")
-    private List<String> productSkuIds;
+    @Schema(description = "商品")
+    @NotEmpty(message = "商品不能为空")
+    private List<OrderDetailsParam> productSkuIds;
+
+    @Data
+    @Schema(description = "订单详情参数")
+    public static class OrderDetailsParam implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = -9191345976887799704L;
+
+        @Schema(description = "商品id")
+        private String skuId;
+
+        @Schema(description = "商品数量")
+        private Integer number;
+
+        @Schema(description = "总价格")
+        private BigDecimal totalPrice;
+    }
 }
