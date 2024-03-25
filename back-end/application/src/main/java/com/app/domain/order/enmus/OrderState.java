@@ -60,7 +60,16 @@ public enum OrderState implements IEnum<String> {
      * 表示卖家或系统完成退款操作。
      */
     @Schema(description = "退款")
-    REFUND(POrderState.REFUNDED,COrderState.REFUNDED);
+    REFUND(POrderState.REFUNDED,COrderState.REFUNDED),
+
+
+    /**
+     * 删除订单
+     * 买家删除自己的订单。
+     */
+    @Schema(description = "已完成")
+    DELETE_ORDER(POrderState.DELETED_ORDER,COrderState.DELETED_ORDER),
+    ;
 
     @Schema(description = "pc端订单状态")
     private final POrderState pOrderState;
@@ -130,7 +139,14 @@ public enum OrderState implements IEnum<String> {
          * 表示卖家已处理退款，资金返还给买家。
          */
         @Schema(description = "已退款")
-        REFUNDED
+        REFUNDED,
+
+        /**
+         * 已删除
+         * 表示买家删除自己的订单。
+         */
+        @Schema(description = "已删除")
+        DELETED_ORDER
     }
 
 
@@ -193,6 +209,14 @@ public enum OrderState implements IEnum<String> {
          * 卖家已同意退款，交易资金已返还给买家。
          */
         @Schema(description = "已退款")
-        REFUNDED
+        REFUNDED,
+
+        /**
+         * 已删除
+         * 买家删除自己的订单。
+         */
+        @Schema(description = "已删除")
+        DELETED_ORDER,
+
     }
 }

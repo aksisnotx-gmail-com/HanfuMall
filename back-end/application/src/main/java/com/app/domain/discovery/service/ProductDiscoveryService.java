@@ -15,7 +15,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.app.domain.discovery.service.ProductDiscoveryService.CACHE_KEY;
 import static com.app.domain.user.enums.Role.ADMIN;
@@ -91,9 +93,13 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
 
     @Cacheable
     public Page<DiscoveryEntity> getAllDiscovery() {
-        Page<DiscoveryEntity> page = this.page(CommonPageRequestUtils.defaultPage());
+            Page<DiscoveryEntity> page = this.page(CommonPageRequestUtils.defaultPage());
         //设置User信息
-        page.getRecords().forEach(t -> t.setUser(userService.getById(t.getUserId(),false)));
+        page.getRecords().forEach(t -> {
+            t.setUser(userService.getById(t.getUserId(), false));
+            //查询顶级评论
+            t.setComments(commentService.getTopComment(t.getId()));
+        });
         return page;
     }
 
@@ -111,7 +117,7 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
         //设置USER
         entity.setUser(userService.getById(entity.getUserId(),false));
         //查询顶级评论
-        List<DiscoveryCommentEntity> comments = commentService.lambdaQuery().eq(DiscoveryCommentEntity::getCommentId, discoveryId).list();
+        List<DiscoveryCommentEntity> comments = commentService.getTopComment(discoveryId);
         //查询回复
         comments.forEach(commentService::fillReplies);
         entity.setComments(comments);

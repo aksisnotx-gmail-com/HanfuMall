@@ -29,4 +29,14 @@ public class DiscoveryCommentService extends AbstractService<DiscoveryCommentMap
         //递归调用
         list.forEach(this::fillReplies);
     }
+
+    /**
+     * 获取评论不是回复
+     *
+     * @param discoveryId 发现Id
+     * @return 评论
+     */
+    public List<DiscoveryCommentEntity> getTopComment(String discoveryId) {
+        return this.lambdaQuery().eq(DiscoveryCommentEntity::getCommentId, discoveryId).list();
+    }
 }

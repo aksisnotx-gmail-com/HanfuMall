@@ -31,6 +31,8 @@ public class OrderDetailsEntity extends Entity {
 
     public static final Integer EVALUATE = 1;
 
+    public static final Integer UN_HANDLER = -1;
+
     @Serial
     private static final long serialVersionUID = 5289564186190120895L;
 
@@ -47,8 +49,8 @@ public class OrderDetailsEntity extends Entity {
     @Schema(description = "订单ID")
     private String orderId;
 
-    //是否评价(1 已评价 0 未评价)
-    @Schema(description = "是否评价(1 已评价 0 未评价)")
+    //是否评价(1 已评价 0 未评价 -1 未购买)
+    @Schema(description = "是否评价(1 已评价 0 未评价 -1 表示未处理商品评价)")
     private Integer isEvaluate;
 
     @Schema(description = "购买数量")
@@ -61,7 +63,7 @@ public class OrderDetailsEntity extends Entity {
         entity.setProductSku(sku);
         entity.setProductDetail(productDetail);
         entity.setOrderId(orderId);
-        entity.setIsEvaluate(UN_EVALUATE);
+        entity.setIsEvaluate(UN_HANDLER);
         entity.setSkuNumber(skuNumber);
         return entity;
     }

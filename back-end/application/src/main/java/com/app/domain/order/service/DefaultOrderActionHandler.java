@@ -32,15 +32,17 @@ public class DefaultOrderActionHandler implements OrderAction {
         //2. 付款动作的角色,，与下一层可到达的状态
         ACTION_MAP.put(MAKE_PAYMENT,ActionHandler.create(Role.BUYER,APPLY_FOR_REFUND,SHIP_ORDER));
         //2. 关闭动作的角色，与下一层可到达的状态
-        ACTION_MAP.put(CLOSE_ORDER,ActionHandler.create(Role.BUYER));
+        ACTION_MAP.put(CLOSE_ORDER,ActionHandler.create(Role.BUYER,DELETE_ORDER));
         //3. 发货动作的角色，与下一层可到达的状态
         ACTION_MAP.put(SHIP_ORDER,ActionHandler.create(Role.ADMIN,CONFIRM_RECEIPT,APPLY_FOR_REFUND));
         //3. 申请退款动作的角色，与下一层可到达的状态
         ACTION_MAP.put(APPLY_FOR_REFUND,ActionHandler.create(Role.BUYER,REFUND));
         //[4,5.] 退款动作的角色，与下一层可到达的状态
-        ACTION_MAP.put(REFUND,ActionHandler.create(Role.ADMIN));
+        ACTION_MAP.put(REFUND,ActionHandler.create(Role.ADMIN,DELETE_ORDER));
         //4. 确认收货动作的角色，与下一层可到达的状态
-        ACTION_MAP.put(CONFIRM_RECEIPT,ActionHandler.create(Role.BUYER));
+        ACTION_MAP.put(CONFIRM_RECEIPT,ActionHandler.create(Role.BUYER,DELETE_ORDER));
+        //5. 删除订单动作的角色，与下一层可到达的状态
+        ACTION_MAP.put(DELETE_ORDER,ActionHandler.create(Role.BUYER));
     }
 
     @Override
