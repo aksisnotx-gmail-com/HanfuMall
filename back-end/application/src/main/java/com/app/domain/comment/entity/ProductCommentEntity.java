@@ -61,7 +61,7 @@ public class ProductCommentEntity extends Entity {
     @Schema(description = "商品ID")
     @NotBlank(message = "商品ID不能为空",groups = INSERT.class)
     @JsonView(INSERT.class)
-    private String orderDetailId;
+    private String orderId;
 
     @TableField(exist = false)
     @Schema(description = "用户信息")

@@ -4,11 +4,11 @@ import com.app.domain.banner.service.BannerService;
 import com.app.domain.comment.service.ProductCommentService;
 import com.app.domain.discovery.service.ProductDiscoveryService;
 import com.app.domain.file.service.FileService;
-import com.app.domain.order.service.OrderDetailsService;
 import com.app.domain.order.service.OrderService;
 import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.shippingcart.service.ShoppingCartService;
 import com.app.domain.user.service.UserService;
+import com.app.domain.wallet.service.WalletService;
 import jakarta.annotation.Resource;
 import lombok.Data;
 
@@ -44,4 +44,7 @@ public class Controller {
 
     @Resource
     protected OrderService orderService;
+
+    @Resource
+    protected WalletService walletService;
 }

@@ -3,6 +3,7 @@ package com.app.controller.exception;
 
 import com.sdk.exception.GlobalException;
 import com.sdk.resp.RespEntity;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
@@ -36,6 +37,8 @@ public class ExceptionController {
             return RespEntity.fail(exception.getMessage());
         }else if (exception instanceof HttpMessageNotReadableException){
             return RespEntity.fail("枚举类型不存在");
+        }else if (exception instanceof ConstraintViolationException){
+            return RespEntity.fail(exception.getMessage());
         }
         return RespEntity.fail();
     }

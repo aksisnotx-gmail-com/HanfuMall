@@ -1,6 +1,7 @@
 package com.app.domain.order.controller;
 
 import com.app.controller.Controller;
+import com.app.domain.comment.entity.ProductCommentEntity;
 import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.order.param.OrderParam;
 import com.app.domain.user.entity.LoginUser;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author xxl
@@ -24,7 +27,7 @@ public class OrderController extends Controller {
     //下单
     @PostMapping("/create")
     @Operation(summary = "创建订单")
-    public RespEntity<Boolean> createOrder(@RequestBody OrderParam orderParam) {
+    public RespEntity<Boolean> createOrder(@RequestBody List<OrderParam> orderParam) {
         return RespEntity.success(orderService.createOrder(orderParam,LoginUser.getLoginUserId()));
     }
 

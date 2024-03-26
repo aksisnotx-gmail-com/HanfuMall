@@ -3,6 +3,8 @@ package com.app.domain.comment.controller;
 import com.app.controller.Controller;
 import com.app.domain.base.Entity;
 import com.app.domain.comment.entity.ProductCommentEntity;
+import com.app.domain.comment.vo.CommentVO;
+import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.user.entity.LoginUser;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -41,5 +43,11 @@ public class ProductCommentController extends Controller {
     @Operation(summary = "删除评价")
     public RespEntity<Boolean> deleteComment(@RequestParam String commentId) {
         return RespEntity.success(commentService.deleteComment(commentId,LoginUser.getLoginUser()));
+    }
+
+    @GetMapping("/getMyEvaluate")
+    @Operation(summary = "我的评价")
+    public RespEntity<Page<CommentVO>> getMyEvaluate() {
+        return RespEntity.success(commentService.getMyEvaluate(LoginUser.getLoginUserId()));
     }
 }

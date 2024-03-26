@@ -32,7 +32,7 @@ public enum OrderState implements IEnum<String> {
      * 表示卖家发出商品的操作。
      */
     @Schema(description = "发货")
-    SHIP_ORDER(POrderState.PENDING_RECEIPT,COrderState.SHIPPED),
+    SHIP_ORDER(POrderState.PENDING_RECEIPT,COrderState.PENDING_RECEIPT),
 
     /**
      * 确认收货
@@ -175,13 +175,6 @@ public enum OrderState implements IEnum<String> {
          */
         @Schema(description = "待收货")
         PENDING_RECEIPT,
-
-        /**
-         * 已发货
-         * 卖家已将订单商品发出，商品在途中。
-         */
-        @Schema(description = "已发货")
-        SHIPPED,
 
         /**
          * 已完成
