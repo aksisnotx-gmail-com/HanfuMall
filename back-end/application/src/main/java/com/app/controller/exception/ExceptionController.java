@@ -4,6 +4,7 @@ package com.app.controller.exception;
 import com.sdk.exception.GlobalException;
 import com.sdk.resp.RespEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,8 @@ public class ExceptionController {
                     toString());
         }else if (exception instanceof IllegalArgumentException){
             return RespEntity.fail(exception.getMessage());
+        }else if (exception instanceof HttpMessageNotReadableException){
+            return RespEntity.fail("枚举类型不存在");
         }
         return RespEntity.fail();
     }

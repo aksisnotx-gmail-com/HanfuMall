@@ -4,15 +4,21 @@ import com.app.controller.Controller;
 import com.app.domain.base.Entity;
 import com.app.domain.discovery.entity.DiscoveryCommentEntity;
 import com.app.domain.discovery.entity.DiscoveryEntity;
+import com.app.domain.discovery.entity.vo.MessageListVO;
 import com.app.domain.discovery.enums.GetType;
+import com.app.domain.discovery.enums.ReadType;
+import com.app.domain.discovery.param.ReadParam;
 import com.app.domain.user.entity.LoginUser;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.sdk.resp.RespEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author xxl
@@ -47,7 +53,7 @@ public class ProductDiscoveryController extends Controller {
 
     //查询所有的发现
     @GetMapping("/getAll/discovery")
-    @Operation(summary = "查询所有的发现")
+    @Operation(summary = "查询所有的发现(我的图文)")
     public RespEntity<Page<DiscoveryEntity>> getAllDiscovery(@RequestParam GetType type) {
         return RespEntity.success(discoveryService.getAllDiscovery(type,LoginUser.getLoginUserId()));
     }
@@ -74,11 +80,17 @@ public class ProductDiscoveryController extends Controller {
     }
 
 
-
     //已读信息
-    /*@GetMapping("/read/comment/{commentId}")
+    @PostMapping("/read")
     @Operation(summary = "已读信息")
-    public RespEntity<Boolean> readComment(@PathVariable String commentId) {
-        return RespEntity.success(discoveryService.readComment(commentId,LoginUser.getLoginUser()));
-    }*/
+    public RespEntity<Boolean> readComment(@RequestBody @Validated ReadParam param) {
+        return RespEntity.success(discoveryService.readMessage(param.getType(),param.getIds(),LoginUser.getLoginUserId()));
+    }
+
+    //获取消息
+    @GetMapping("/getMsg")
+    @Operation(summary = "消息中心")
+    public RespEntity<MessageListVO> getMsg() {
+        return RespEntity.success(discoveryService.getMsg(LoginUser.getLoginUserId()));
+    }
 }
