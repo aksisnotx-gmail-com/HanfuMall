@@ -44,30 +44,25 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     private final WalletService walletService;
 
     /**
-     * 查看用户是否买了这个商品中的某一款商品
+     * 查看用户是否买了这个商品中
      *
      * @param userId 用户ID
-     * @param productId 商品Id
      */
-    public boolean hasProduct(String userId, String productId) {
+    public Boolean hasOrder(String userId, OrderDetailsEntity entity) {
         //查询买过(确认收货)的订单
-        return  this.lambdaQuery().
-                eq(OrderEntity::getUserId,userId).
-                eq(OrderEntity::getState,OrderState.CONFIRM_RECEIPT.name()).list().
-                stream().
-                map(OrderEntity::getId).
-                anyMatch(t ->
-                        //查询买过订单包含的商品
-                        detailsService.getDetailsByOrderId(t).
-                                parallelStream().
-                                anyMatch(t1 -> productId.equals(t1.getProductDetail().getId()))
-                );
+        return this.lambdaQuery().
+                //用户ID
+                eq(OrderEntity::getUserId, userId).
+                //订单ID
+                eq(OrderEntity::getId, entity.getOrderId()).
+                //订单状态
+                eq(OrderEntity::getState, OrderState.CONFIRM_RECEIPT.name()).exists();
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
     public  Boolean createOrder(OrderParam orderParam,String userId) {
-        //未保存发货地相同现在需要把订单分类
-        //多少个商品
+        //发货地不相同现在需要把订单分类
+        //多少个SKU商品
         List<ProductSkuEntity> skus = orderParam.getProductSkuIds().stream().map(t -> skuService.getById(t.getSkuId())).toList();
 
         //要创建多少表单
@@ -148,7 +143,7 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean refundOrder(String orderId,UserEntity user) {
         OrderState refund = OrderState.REFUND;
-        //管理员做的事不需要User
+        //管理员做的事不需要买家
         OrderEntity one = getOneByAdmin(orderId, refund,user);
         one.setState(refund);
         //获取账单总余额
@@ -227,7 +222,6 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         page.setRecords(list);
         return page;
     }
-    
 
     private OrderEntity getOne(String orderId,OrderState nextState,UserEntity user) {
         OrderEntity entity = this.lambdaQuery().eq(OrderEntity::getId, orderId).eq(OrderEntity::getUserId, user.getId()).one();

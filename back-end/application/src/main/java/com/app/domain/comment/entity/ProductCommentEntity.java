@@ -61,8 +61,7 @@ public class ProductCommentEntity extends Entity {
     @Schema(description = "商品ID")
     @NotBlank(message = "商品ID不能为空",groups = INSERT.class)
     @JsonView(INSERT.class)
-    //todo 商品评论不正确是针对商品的还是什么？？？？
-    private String productId;
+    private String orderDetailId;
 
     @TableField(exist = false)
     @Schema(description = "用户信息")

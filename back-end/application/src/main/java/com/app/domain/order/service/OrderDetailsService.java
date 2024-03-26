@@ -1,7 +1,9 @@
 package com.app.domain.order.service;
 
 import com.app.domain.base.AbstractService;
+import com.app.domain.order.enmus.OrderState;
 import com.app.domain.order.entity.OrderDetailsEntity;
+import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.order.mapper.OrderDetailsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,10 @@ public class OrderDetailsService extends AbstractService<OrderDetailsMapper, Ord
 
     public List<OrderDetailsEntity>  getUnEvaluateByOrderId(String orderId) {
         return this.lambdaQuery().eq(OrderDetailsEntity::getOrderId, orderId).eq(OrderDetailsEntity::getIsEvaluate, UN_EVALUATE).list();
+    }
+
+    public List<OrderDetailsEntity> getDetailsByProductId(String productId) {
+        return this.lambdaQuery().list().stream().filter(t -> t.getProductDetail().getId().equals(productId)).toList();
     }
 
 }
