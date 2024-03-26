@@ -1,7 +1,5 @@
 package com.app.domain.discovery.entity;
 
-import java.io.Serial;
-
 import com.app.domain.base.Entity;
 import com.app.domain.user.entity.UserEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -12,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,10 +57,20 @@ public class DiscoveryEntity extends Entity {
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<String> likeUsers;
 
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    @JsonView(IGNORE.class)
+    @Schema(description = "未读赞的信息列表，这个数组的size表示多少未读赞")
+    private List<String> unreadLikes;
+
     @Schema(description = "评论信息")
     @JsonView(IGNORE.class)
     @TableField(exist = false)
     private List<DiscoveryCommentEntity> comments;
+
+    @Schema(description = "点赞用户信息")
+    @JsonView(IGNORE.class)
+    @TableField(exist = false)
+    private List<UserEntity> unreadLikeInfos;
 
     @Schema(description = "用户信息")
     @JsonView(IGNORE.class)
@@ -69,10 +78,11 @@ public class DiscoveryEntity extends Entity {
     private UserEntity user;
 
     public List<String> getLikeUsers() {
-        if (Objects.isNull(likeUsers)) {
-            return new ArrayList<>();
-        }
-        return likeUsers;
+        return Objects.isNull(likeUsers) ? new ArrayList<>() : likeUsers;
+    }
+
+    public List<String> getUnreadLikes() {
+        return Objects.isNull(unreadLikes) ? new ArrayList<>() : unreadLikes;
     }
 }
 

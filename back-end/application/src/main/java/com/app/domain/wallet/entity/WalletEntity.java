@@ -24,9 +24,11 @@ public class WalletEntity extends Entity {
     private static final long serialVersionUID = 4269575420133022580L;
 
     //余额
+    @Schema(description = "余额")
     private BigDecimal balance;
 
     //用户ID
+    @Schema(description = "用户ID")
     private String userId;
 
     public static WalletEntity create(String userId) {

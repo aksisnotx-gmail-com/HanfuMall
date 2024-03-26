@@ -1,6 +1,7 @@
 package com.app.domain.order.controller;
 
 import com.app.controller.Controller;
+import com.app.domain.comment.entity.ProductCommentEntity;
 import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.order.param.OrderParam;
 import com.app.domain.user.entity.LoginUser;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author xxl
@@ -24,7 +27,7 @@ public class OrderController extends Controller {
     //下单
     @PostMapping("/create")
     @Operation(summary = "创建订单")
-    public RespEntity<Boolean> createOrder(OrderParam orderParam) {
+    public RespEntity<Boolean> createOrder(@RequestBody List<OrderParam> orderParam) {
         return RespEntity.success(orderService.createOrder(orderParam,LoginUser.getLoginUserId()));
     }
 
@@ -93,22 +96,22 @@ public class OrderController extends Controller {
 
     //待付款
     @GetMapping("/getWaitPay")
-    @Operation(summary = "待付款")
+    @Operation(summary = "获取待付款的商品")
     public RespEntity<Page<OrderEntity>> getWaitPay() {
-        return RespEntity.success(orderService.getWaitPay(LoginUser.getLoginUserId()));
+        return RespEntity.success(orderService.getWaitPay(LoginUser.getLoginUser()));
     }
 
     //待收货
     @GetMapping("/getWaitReceive")
-    @Operation(summary = "待收货")
+    @Operation(summary = "获取待收货的商品")
     public RespEntity<Page<OrderEntity>> getWaitReceive() {
-        return RespEntity.success(orderService.getWaitReceive(LoginUser.getLoginUserId()));
+        return RespEntity.success(orderService.getWaitReceive(LoginUser.getLoginUser()));
     }
 
     //待评价
     @GetMapping("/getWaitEvaluate")
-    @Operation(summary = "待评价")
+    @Operation(summary = "获取待评价的商品")
     public RespEntity<Page<OrderEntity>> getWaitEvaluate() {
-        return RespEntity.success(orderService.getWaitEvaluate(LoginUser.getLoginUserId()));
+        return RespEntity.success(orderService.getWaitEvaluate(LoginUser.getLoginUser()));
     }
 }

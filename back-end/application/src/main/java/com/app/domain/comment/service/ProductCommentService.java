@@ -1,11 +1,12 @@
 package com.app.domain.comment.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.app.domain.base.AbstractService;
 import com.app.domain.comment.entity.ProductCommentEntity;
 import com.app.domain.comment.mapper.ProductCommentMapper;
+import com.app.domain.comment.vo.CommentVO;
+import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.order.service.OrderService;
-import com.app.domain.product.entity.ProductDetailsEntity;
-import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.enums.Role;
 import com.app.domain.user.service.UserService;
@@ -13,14 +14,9 @@ import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.app.domain.comment.service.ProductCommentService.CACHE_KEY;
 
 /**
  * @author xxl
@@ -28,45 +24,44 @@ import static com.app.domain.comment.service.ProductCommentService.CACHE_KEY;
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = CACHE_KEY)
 public class ProductCommentService extends AbstractService<ProductCommentMapper, ProductCommentEntity> {
-
-    public static final String CACHE_KEY = "PRODUCT_COMMENT";
-
-    private final ProductDetailsService detailsService;
 
     private final OrderService orderService;
 
     private final UserService userService;
 
-    @CacheEvict(key = "#param.productId")
     public Boolean publishComment(ProductCommentEntity param, String loginUserId) {
-        ProductDetailsEntity productDetail = detailsService.getById(param.getProductId());
-        AssertUtils.notNull(productDetail, "商品不存在");
-        AssertUtils.assertTrue(orderService.hasProduct(loginUserId, param.getProductId()), "未改买的商品无法评论");
+        OrderEntity entity = orderService.getById(param.getOrderId());
+        AssertUtils.assertTrue(orderService.hasOrder(loginUserId,entity.getId()), "未改买的商品无法评论");
+        AssertUtils.assertTrue(entity.getIsEvaluate().equals(OrderEntity.UN_EVALUATE), "该商品已评价/未收货");
         param.setUserId(loginUserId);
-        return this.save(param);
+        //修改顶单为已评价
+        entity.setIsEvaluate(OrderEntity.EVALUATE);
+        return this.save(param) && orderService.updateById(entity);
     }
 
-    @Cacheable(key = "#productId")
     public Page<ProductCommentEntity> queryAllComment(String productId) {
+        //查询商品
+        List<OrderEntity> details = orderService.getDetailsByProductId(productId);
+        //过滤出已评价的商品
+        List<OrderEntity> evaluateOrders = details.stream().filter(t -> t.getIsEvaluate().equals(OrderEntity.EVALUATE)).toList();
+        //如果评价的商品为空则表示此商品未被评价
+        if (evaluateOrders.isEmpty()) {
+            return new Page<>();
+        }
         Page<ProductCommentEntity> page = this.lambdaQuery()
-                .eq(ProductCommentEntity::getProductId, productId)
+                //查询相关的评论
+                .in(ProductCommentEntity::getOrderId,evaluateOrders.stream().map(OrderEntity::getId).toList())
                 .page(CommonPageRequestUtils.defaultPage());
-        List<ProductCommentEntity> list = page.getRecords().stream().peek(t -> {
-            //把图片url json形式改为list形式
-            t.setUser(userService.getById(t.getUserId()));
-        }).toList();
-        page.setRecords(list);
+        //设置用户
+        page.getRecords().forEach(t ->  t.setUser(userService.getById(t.getUserId())));
         return page;
     }
 
-    @CacheEvict(key = "#productId")
-    public Boolean deleteComment(String productId, String commentId, UserEntity loginUser) {
+    public Boolean deleteComment(String commentId, UserEntity loginUser) {
         ProductCommentEntity one = this.lambdaQuery()
-                .eq(ProductCommentEntity::getProductId, productId)
                 .eq(ProductCommentEntity::getId, commentId).one();
-        AssertUtils.notNull(one, "评论不存在");
+        AssertUtils.notNull(one, "评价不存在");
 
         //管理员
         if (Role.ADMIN.equals(loginUser.getRole())) {
@@ -75,5 +70,20 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
 
         AssertUtils.assertTrue(one.getUserId().equals(loginUser.getId()), "无权删除");
         return this.removeById(commentId);
+    }
+
+    public Page<CommentVO> getMyEvaluate(String loginUserId) {
+        Page<OrderEntity> myEvaluate = orderService.getMyEvaluateOrder(loginUserId);
+        Page<CommentVO> commentVoPage = new Page<>();
+        BeanUtil.copyProperties(myEvaluate,commentVoPage);
+        //构建CommentVO
+        List<CommentVO> list = myEvaluate.getRecords().stream().map(t -> {
+            CommentVO commentVO = new CommentVO();
+            commentVO.setComment(this.lambdaQuery().eq(ProductCommentEntity::getOrderId, t.getId()).one());
+            commentVO.setOrder(t);
+            return commentVO;
+        }).toList();
+        commentVoPage.setRecords(list);
+        return commentVoPage;
     }
 }

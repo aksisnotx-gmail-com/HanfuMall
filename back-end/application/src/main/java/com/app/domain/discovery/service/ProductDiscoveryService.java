@@ -3,25 +3,28 @@ package com.app.domain.discovery.service;
 import com.app.domain.base.AbstractService;
 import com.app.domain.discovery.entity.DiscoveryCommentEntity;
 import com.app.domain.discovery.entity.DiscoveryEntity;
+import com.app.domain.discovery.entity.vo.MessageListVO;
+import com.app.domain.discovery.enums.CommentType;
 import com.app.domain.discovery.enums.GetType;
+import com.app.domain.discovery.enums.ReadType;
 import com.app.domain.discovery.mapper.ProductDiscoveryMapper;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.service.UserService;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sdk.exception.GlobalException;
 import com.sdk.resp.RespEntity;
 import com.sdk.util.asserts.AssertUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import static com.app.domain.discovery.service.ProductDiscoveryService.CACHE_KEY;
 import static com.app.domain.user.enums.Role.ADMIN;
 
 /**
@@ -30,14 +33,15 @@ import static com.app.domain.user.enums.Role.ADMIN;
  */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = CACHE_KEY)
 public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMapper, DiscoveryEntity> {
 
     private final DiscoveryCommentService commentService;
 
     private final UserService userService;
 
-    public static final String CACHE_KEY = "PRODUCT_DISCOVERY";
+    private static final String COMMENT = "comment";
+
+    private static final String REPLY = "reply";
 
     /**
      * 已读
@@ -49,14 +53,12 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
      */
     public static final Integer UNREAD = 0;
 
-    @CacheEvict(allEntries = true)
     public Boolean publish(DiscoveryEntity entity, String loginUserId) {
         entity.setUserId(loginUserId);
         entity.setLikes(0);
         return this.save(entity);
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteDiscoveryById(String discoveryId, UserEntity loginUser) {
         DiscoveryEntity entity = getById(discoveryId);
         //只有管理员可以直接删除
@@ -70,7 +72,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
                 eq(DiscoveryEntity::getUserId, loginUser.getId()).remove();
     }
 
-    @Cacheable
     public Page<DiscoveryEntity> getAllDiscovery(GetType type,String loginUserId) {
         Page<DiscoveryEntity> page;
         if (GetType.ALL.equals(type)) {
@@ -89,14 +90,32 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     }
 
 
-    @CacheEvict(allEntries = true)
     public Boolean commentDiscovery(DiscoveryCommentEntity entity, String loginUserId) {
         entity.setIsRead(UNREAD);
         entity.setUserId(loginUserId);
-        return commentService.save(entity);
+        CommentType commentType = entity.getCommentType();
+        switch (commentType) {
+            case COMMENT -> {
+                //检查是否存在发现
+                DiscoveryEntity discovery = this.getById(entity.getCommentId());
+                if (entity.getUserId().equals(discovery.getUserId())) {
+                    //如果对自己的评论或者回复则是已读
+                    entity.setIsRead(READ);
+                }
+                return commentService.save(entity);
+            }
+            case REPLY -> {
+                DiscoveryCommentEntity comment = commentService.getById(entity.getCommentId());
+                if (entity.getUserId().equals(comment.getUserId())) {
+                    //如果对自己的评论或者回复则是已读
+                    entity.setIsRead(READ);
+                }
+                return commentService.save(entity);
+            }
+            default -> throw new GlobalException("评论类型错误");
+        }
     }
 
-    @Cacheable(key = "#discoveryId")
     public DiscoveryEntity getAllComment(String discoveryId) {
         DiscoveryEntity entity = getById(discoveryId);
         //设置USER
@@ -109,7 +128,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
         return entity;
     }
 
-    @CacheEvict(allEntries = true)
     public Boolean deleteCommentById(String commentId, UserEntity loginUser) {
         DiscoveryCommentEntity entity = commentService.getById(commentId);
 
@@ -123,24 +141,80 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
                 eq(DiscoveryCommentEntity::getUserId, loginUser.getId()).remove();
     }
 
-    @CacheEvict(allEntries = true)
     public RespEntity<Boolean> likeOrCancel(String discoveryId, String loginUserId) {
         DiscoveryEntity entity = getById(discoveryId);
         List<String> users = entity.getLikeUsers();
+        List<String> unreadLikes = entity.getUnreadLikes();
         boolean match = users.parallelStream().anyMatch(t -> t.equals(loginUserId));
 
-        //如果点赞了则取消
+        //如果点赞了则取消,同时未读信息列表移出，存在就移除
         if (match) {
             entity.setLikes(entity.getLikes() - 1);
+            unreadLikes.remove(loginUserId);
             users.remove(loginUserId);
             entity.setLikeUsers(users);
             return RespEntity.success("取消成功",this.updateById(entity));
         }
 
-        //如果没有点赞则点赞
+        //如果没有点赞则点赞，同时未读信息列表加一个用户ID
         users.add(loginUserId);
         entity.setLikeUsers(users);
         entity.setLikes(entity.getLikes() + 1);
+        entity.setUnreadLikes(unreadLikes);
+        if (!entity.getUserId().equals(loginUserId)) {
+            //自己点赞不算未读消息
+            unreadLikes.add(loginUserId);
+        }
         return RespEntity.success("点赞成功",this.updateById(entity));
     }
+
+
+    public MessageListVO getMsg(String loginUserId) {
+        //获取未点赞的
+        List<DiscoveryEntity> unreadLikes = this.lambdaQuery().
+                eq(DiscoveryEntity::getUserId, loginUserId).
+                list().
+                stream().
+                filter(t -> !t.getUnreadLikes().isEmpty()).peek(t -> {
+                    List<String> unreadLikeList = t.getUnreadLikes();
+                    t.setUser(userService.getById(t.getUserId()));
+                    //设置未读用户信息列表
+                    t.setUnreadLikeInfos(userService.list(UserEntity::getId, unreadLikeList));
+                }).toList();
+        //获取未读的信息：未读的信息分两种: 1. 回复自己的 2. 评论自己的
+        //1. 查询所有”发现“未读评论
+        List<String> discoveryIds = this.lambdaQuery().eq(DiscoveryEntity::getUserId, loginUserId).list().stream().map(DiscoveryEntity::getId).toList();
+        List<DiscoveryCommentEntity> unreadComment = commentService.getUnreadComment(discoveryIds);
+
+        //2. 未读回复
+        //查询自己所有的评论、回复
+        List<String> replyIds = commentService.getCommentByUserId(loginUserId).stream().map(DiscoveryCommentEntity::getId).toList();
+        //查询别人对我的评论、回复是否回复了
+        List<DiscoveryCommentEntity> unreadReply = commentService.getUnreadReply(replyIds);
+
+        return MessageListVO.create(unreadLikes, Map.of(COMMENT,unreadComment,REPLY,unreadReply));
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    public Boolean readMessage(ReadType type,List<String> ids, String loginUserId) {
+        switch (type){
+            case LIKE -> {
+                List<DiscoveryEntity> discoveries = this.lambdaQuery().
+                        eq(DiscoveryEntity::getUserId, loginUserId).
+                        in(DiscoveryEntity::getId, ids).
+                        list();
+                //暂不校验
+                //AssertUtils.assertTrue(!discoveries.isEmpty(),"只能已读自己的消息");
+                //AssertUtils.assertTrue(discoveries.size() == ids.size(),"某些信息不存在,请重试");
+                return this.updateBatchById(discoveries.stream().peek(t -> t.setUnreadLikes(new ArrayList<>())).toList());
+            }
+            case COMMENT_OR_REPLY -> {
+                List<DiscoveryCommentEntity> list = commentService.lambdaQuery().in(DiscoveryCommentEntity::getId, ids).list();
+                return commentService.updateBatchById(list.stream().peek(t -> t.setIsRead(READ)).toList());
+            }
+            default ->  {return false;}
+        }
+    }
+
+
 }

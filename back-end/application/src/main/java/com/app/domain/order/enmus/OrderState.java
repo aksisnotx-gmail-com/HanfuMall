@@ -32,14 +32,14 @@ public enum OrderState implements IEnum<String> {
      * 表示卖家发出商品的操作。
      */
     @Schema(description = "发货")
-    SHIP_ORDER(POrderState.PENDING_RECEIPT,COrderState.SHIPPED),
+    SHIP_ORDER(POrderState.PENDING_RECEIPT,COrderState.PENDING_RECEIPT),
 
     /**
      * 确认收货
      * 表示买家确认收到商品的操作。
      */
     @Schema(description = "确认收货")
-    CONFIRM_RECEIPT(POrderState.RECEIVED,COrderState.COMPLETED),
+    CONFIRM_RECEIPT(POrderState.COMPLETED,COrderState.COMPLETED),
 
     /**
      * 关闭订单
@@ -67,7 +67,7 @@ public enum OrderState implements IEnum<String> {
      * 删除订单
      * 买家删除自己的订单。
      */
-    @Schema(description = "已完成")
+    @Schema(description = "删除订单")
     DELETE_ORDER(POrderState.DELETED_ORDER,COrderState.DELETED_ORDER),
     ;
 
@@ -117,8 +117,8 @@ public enum OrderState implements IEnum<String> {
          * 已收货
          * 表示买家已确认收货，订单交易接近完成。
          */
-        @Schema(description = "已收货")
-        RECEIVED,
+        @Schema(description = "已完成")
+        COMPLETED,
 
         /**
          * 已关闭
@@ -175,13 +175,6 @@ public enum OrderState implements IEnum<String> {
          */
         @Schema(description = "待收货")
         PENDING_RECEIPT,
-
-        /**
-         * 已发货
-         * 卖家已将订单商品发出，商品在途中。
-         */
-        @Schema(description = "已发货")
-        SHIPPED,
 
         /**
          * 已完成
