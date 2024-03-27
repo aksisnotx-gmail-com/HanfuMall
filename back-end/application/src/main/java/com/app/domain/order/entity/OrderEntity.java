@@ -72,13 +72,17 @@ public class OrderEntity extends Entity {
     @Schema(description = "总价")
     private BigDecimal totalPrice;
 
+    @Schema(description = "尺码")
+    private String size;
+
     public static OrderEntity create(OrderState state,
                                      String userId,
                                      String deliveryAddress,
                                      ProductSkuEntity productSku,
                                      ProductDetailsEntity detailsEntity,
                                      Integer skuNumber,
-                                     BigDecimal totalPrice
+                                     BigDecimal totalPrice,
+                                     String size
                                      ){
         OrderEntity order = new OrderEntity();
         order.setProductSku(productSku);
@@ -90,6 +94,7 @@ public class OrderEntity extends Entity {
         order.setOrderNumber("" + System.currentTimeMillis());
         order.setUserId(userId);
         order.setDeliveryAddress(deliveryAddress);
+        order.setSize(size);
         return order;
     }
 }

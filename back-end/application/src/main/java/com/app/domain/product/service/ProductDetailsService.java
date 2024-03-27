@@ -144,11 +144,11 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     }
 
     public Page<ProductSkuEntity> getSpecialProducts() {
-        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial, IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
+        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial,IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
     }
 
     public Page<ProductSkuEntity> getRecommendProducts() {
-        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsRecommend, IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
+        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsRecommend,IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
     }
 
     private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {

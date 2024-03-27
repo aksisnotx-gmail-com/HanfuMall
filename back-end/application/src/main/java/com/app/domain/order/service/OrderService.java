@@ -74,7 +74,8 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
                     entity,
                     productDetailsService.getById(entity.getProductId()),
                     t.getNumber(),
-                    t.getTotalPrice());
+                    t.getTotalPrice(),
+                    t.getSize());
         }).toList();
         return this.saveBatch(list);
     }

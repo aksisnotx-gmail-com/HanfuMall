@@ -39,4 +39,8 @@ public class OrderParam implements Serializable {
     @Schema(description = "总价格")
     @NotBlank(message = "总价格不能为空")
     private BigDecimal totalPrice;
+
+    @Schema(description = "size")
+    @NotEmpty(message = "尺码不能为空")
+    private String size;
 }

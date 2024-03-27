@@ -191,7 +191,6 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
         List<String> replyIds = commentService.getCommentByUserId(loginUserId).stream().map(DiscoveryCommentEntity::getId).toList();
         //查询别人对我的评论、回复是否回复了
         List<DiscoveryCommentEntity> unreadReply = commentService.getUnreadReply(replyIds);
-
         return MessageListVO.create(unreadLikes, Map.of(COMMENT,unreadComment,REPLY,unreadReply));
     }
 
