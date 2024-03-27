@@ -27,7 +27,7 @@ public class OrderController extends Controller {
     //下单
     @PostMapping("/create")
     @Operation(summary = "创建订单")
-    public RespEntity<Boolean> createOrder(@RequestBody List<OrderParam> orderParam) {
+    public RespEntity<List<OrderEntity>> createOrder(@RequestBody List<OrderParam> orderParam) {
         return RespEntity.success(orderService.createOrder(orderParam,LoginUser.getLoginUserId()));
     }
 

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,7 +61,7 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public  Boolean createOrder(List<OrderParam> orderParam,String userId) {
+    public  List<OrderEntity> createOrder(List<OrderParam> orderParam,String userId) {
         List<OrderEntity> list = orderParam.stream().map(t -> {
             ProductSkuEntity entity = skuService.getById(t.getSkuId());
             //如果库存满足条件则扣减,也就是说后面没必要检查库存
@@ -77,7 +78,7 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
                     t.getTotalPrice(),
                     t.getSize());
         }).toList();
-        return this.saveBatch(list);
+        return this.saveBatch(list) ? list : new ArrayList<>();
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
