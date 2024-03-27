@@ -176,10 +176,13 @@
         return
       }
 
+      const size = selected.value[0].value
       const id = selected.value[1].productSkuId
+      const number = countd.value
       const objParams = {
         productSkuId: id,
-        number: countd.value
+        size,
+        number
       }
       const res = await addCarApi(objParams)
       if(res.data) {

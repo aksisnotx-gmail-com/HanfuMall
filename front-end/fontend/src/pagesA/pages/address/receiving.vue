@@ -27,43 +27,71 @@
     }
 
     const onDel = (item) => {
-        const i = addressStore.addressList.findIndex((val) => val.id === item.id)
-        addressStore.addressList.splice(i, 1)
+        uni.showModal({
+            title: '提示',
+            content: '确定删除吗',
+            success: function (res) {
+                if (res.confirm) {
+                    const i = addressStore.addressList.findIndex((val) => val.id === item.id)
+                    addressStore.addressList.splice(i, 1)
+
+                    const shippingAddress = addressStore.addressList.map(item => JSON.stringify(item))
+                    addressStore.delAddress(shippingAddress)
+                } else if (res.cancel) {
+                    console.log('用户点击取消');
+                }
+            }
+        });
     }
+
+    onMounted(() => {
+        addressStore.getAddressList()
+    })
 </script>
 
 <template>
     <view class="h-100vh bg-#f4f4f4 px-3">
-        <u-checkbox-group v-model="itemGrounpChecked" @change="handleCheck">
-            <view 
-                class="list" 
-                v-for="item in addressStore.addressList" 
-                :key='item.id'
-            >
-                    <view class="l">
-                        <!-- 列表的复选框 -->
-                        <u-checkbox
-                        :name="item.id"
-                        shape="circle" 
-                        activeColor="#7DA1DC"
-                        size="20"
-                    ></u-checkbox>
-                    <view class="ml-3 flex flex-col max-w-58">
-                        <view class="flex text-3.5 gap-3">
-                            <text>{{ item.name }}</text>
-                            <text class="color-#999">{{ item.phone }}</text>
-                        </view> 
-                        <view>
-                            <text class="text-3.5 color-#666">{{ item.address }}</text>
+        <template v-if="!addressStore.addressList.length">
+            <view class="h-100vh layout-abs-center">
+                <u-empty
+                    mode="data"
+                >
+                </u-empty>
+            </view>
+        </template>
+
+        <template v-else>
+            <u-checkbox-group v-model="itemGrounpChecked" @change="handleCheck">
+                <view 
+                    class="list" 
+                    v-for="item in addressStore.addressList" 
+                    :key='item.id'
+                >
+                        <view class="l">
+                            <!-- 列表的复选框 -->
+                            <u-checkbox
+                            :name="item.id"
+                            shape="circle" 
+                            activeColor="#7DA1DC"
+                            size="20"
+                        ></u-checkbox>
+                        <view class="ml-3 flex flex-col max-w-58">
+                            <view class="flex text-3.5 gap-3">
+                                <text>{{ item.name }}</text>
+                                <text class="color-#999">{{ item.phone }}</text>
+                            </view> 
+                            <view>
+                                <text class="text-3.5 color-#666">{{ item.address }}</text>
+                            </view>
                         </view>
                     </view>
+                    <view class="flex">
+                        <u-icon name="edit-pen-fill" color="#7DA1DC" size="28" @click="onEdit(item)"></u-icon>
+                        <u-icon name="trash-fill" color="#7DA1DC" size="28" @click="onDel(item)"></u-icon>
+                    </view>
                 </view>
-                <view class="flex">
-                    <u-icon name="edit-pen-fill" color="#7DA1DC" size="28" @click="onEdit(item)"></u-icon>
-                    <u-icon name="trash-fill" color="#7DA1DC" size="28" @click="onDel(item)"></u-icon>
-                </view>
-            </view>
-        </u-checkbox-group>
+            </u-checkbox-group>
+        </template>
 
         <view class="add" @click="add">
             新增地址

@@ -1,4 +1,12 @@
 <script setup>
+    import { getAllOrderApi, getWaitPayApi, getWaitReceiveApi, getWaitEvaluateApi } from '@/api/tabbar/my'
+    import demo from './components/demo.vue'
+    const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
+
     const current = ref(3)
 
     const orderStatus = ref([
@@ -14,6 +22,45 @@
         console.log(name, 'name');
     }
 
+    const orderList = ref([])
+    const getWaitPay = async () => {
+        const res = await getWaitPayApi()
+        const { records, total, size, current } = res.data
+        pageInfo.total = total
+        pageInfo.size = size
+        pageInfo.current = current
+        orderList.value = [ ...records ]
+    }
+
+    const getWaitReceive = async () => {
+        const res = await getWaitReceiveApi()
+        const { records, total, size, current } = res.data
+        pageInfo.total = total
+        pageInfo.size = size
+        pageInfo.current = current
+        orderList.value = [ ...records ]
+    }
+
+    const getWaitEvaluate = async () => {
+        const res = await getWaitEvaluateApi()
+        const { records, total, size, current } = res.data
+        pageInfo.total = total
+        pageInfo.size = size
+        pageInfo.current = current
+        orderList.value = [ ...records ]
+    }
+
+    const getAllOrder = async () => {
+        const res = await getAllOrderApi()
+        const { records, total, size, current } = res.data
+        pageInfo.total = total
+        pageInfo.size = size
+        pageInfo.current = current
+        orderList.value = [ ...records ]
+    }
+
+
+
     const JumpDetail = () => {
         uni.navigateTo({
             url: '/pagesA/pages/my/orderDetail'
@@ -22,8 +69,30 @@
 
     onLoad((options) => {
         const { index } = options
+        console.log(index, 'index');
         current.value = Number(index)
     })
+
+    // onReachBottom(async () => {		
+	// 	uni.showLoading({
+    //         title: '加载中'
+    //     });
+	// 	const currentTotal = pageInfo.current * pageInfo.size
+	// 	if(currentTotal < pageInfo.total) {
+    //         pageInfo.current++
+    //         // TODO 
+    //         // await getAllProduct(pageInfo.current)
+    //         uni.hideLoading()
+    //     } else {
+    //         uni.hideLoading()
+    //         uni.showToast({
+    //             title: '没有更多了',
+    //             icon: 'error',
+    //             mask: true,
+    //             duration: 1000
+    //         })
+    //     }
+	// })
 </script>
 
 <template>
@@ -78,6 +147,8 @@
                 </view>
             </template>
         </view>
+
+        <demo></demo>
     </view>
 </template>
 

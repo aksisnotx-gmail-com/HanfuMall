@@ -1,7 +1,7 @@
 <script setup>
     import { getAllCommentApi, commentApi } from '@/api/tabbar/watch'
     import { useCommentStore } from '@/store/modules/comment'
-    import CommentItem from '@/components/comment-item.vue';
+    import CommentItem from '@/components/comment-item';
 
     const discoveryInfo = reactive({
         avatar: '',
