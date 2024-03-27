@@ -10,5 +10,15 @@ export const useUserStore = defineStore('user', {
             nickname: '',
             phoneNumber: ''
         }
-    })
+    }),
+    actions: {
+        setUserInfo () {
+            const avatar = uni.getStorageSync('avatar')
+            const nickname = uni.getStorageSync('nickname')
+
+            this.userInfo.avatar = avatar
+            this.userInfo.nickname = nickname
+            console.log(this.userInfo, 'userInfo');
+        }
+    }
 })

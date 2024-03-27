@@ -6,16 +6,8 @@
 
     const { userInfo } = storeToRefs(userStore)
 
-
-    const params = reactive({
-        avatar: '',
-        nickname: '',
-        code: '',
-        phoneNumber: ''
-    })
-
     const onChooseAvatar = (e) => {
-        params.avatar = e.detail.avatarUrl
+        userInfo.value.avatar = e.detail.avatarUrl
         
         uni.setStorage({
             key: 'avatar',
@@ -26,8 +18,7 @@
     const getPhoneNumber = (e) => {
         wx.login({
             success: (res) => {
-                console.log('res', res);
-                params.code = res.code
+                userInfo.value.code = res.code
             } 
         })
         // 先获取access_token
@@ -46,7 +37,7 @@
                     },
                     success: (res) => {
                         const phone = res.data.phone_info.phoneNumber
-                        params.phoneNumber = phone
+                        userInfo.value.phoneNumber = phone
                         uni.setStorageSync('phoneNumber', phone);
                     }
                 })
@@ -55,16 +46,18 @@
     }
 
     const login = async () => {
-        const res = checkParams(params)
+        const objParam = {
+            avatar: userInfo.value.avatar,
+            nickname: userInfo.value.nickname,
+            code: userInfo.value.code,
+            phoneNumber: userInfo.value.phoneNumber
+        }
+        const res = checkParams(objParam)
         if(res) {
             uni.setStorageSync('LoginShow', true)
-            userInfo.value.avatar = params.avatar
-            userInfo.value.nickname = params.nickname
-            userInfo.value.phoneNumber = params.phoneNumber
-            userInfo.value.code = params.code
 
             const res = await loginApi({
-                ...params,
+                ...objParam,
                 "gender": 0
             })
             const { token } = res.data
@@ -85,7 +78,7 @@
 
     const getNickName = (e) => {
         const val = e.detail.value
-        params.nickname = val
+        userInfo.value.nickname = val
         uni.setStorageSync('nickname', val)
     }
 
@@ -119,8 +112,8 @@
             class="page-container"
         >                
             <image
-                v-if="params.avatar" 
-                :src="params.avatar" 
+                v-if="userInfo.avatar" 
+                :src="userInfo.avatar" 
                 mode="widthFix"
                 class="avatar_img"
             >
@@ -130,7 +123,7 @@
             </view>
             <input
                 @change="getNickName"
-                :value="params.nickname"
+                :value="userInfo.nickname"
                 type="nickname" 
                 placeholder="请输入昵称" 
                 name="nickname" 

@@ -2,7 +2,12 @@
 	import { useGoodsStore } from '@/store/modules/goods'
 	import { getAllProductApi, getProductBySearchApi } from '@/api/home'
 
-	const current = ref(0)
+	const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
+
 	const searchStyle = {
 		width: '120rpx',
 		color: '#fff',
@@ -25,14 +30,14 @@
 	const onClear = () => {
 		keyword.value = ''
 		productList.value.splice(0, Infinity)
-		getAllProduct(current.value)
+		getAllProduct(pageInfo.current)
 	}
 
 	const siftShow = ref(true)
 	const priceSift = () => {
 		siftShow.value = !siftShow.value
 		if(siftShow.value) {
-			getAllProduct(current.value)
+			getAllProduct(pageInfo.current)
 		} else {
 			productList.value.forEach(item => {
 				item.specCombinationList.sort((a, b) => {
@@ -42,12 +47,7 @@
 		}
 	}
 
-	const reachBottom = ref(false)
-	onReachBottom(() => {		
-		current.value++
-		getAllProduct(current.value)
-	})
-
+	
 	const goodsStore = useGoodsStore()
 	const onJumpDetail = (productId) => {
 		goodsStore.productId = productId
@@ -59,14 +59,15 @@
 
 
 	const productList = ref([])
-	const getAllProduct = async (current = 1) => {
-		const res = await getAllProductApi(current)
-		const { records } = res.data
+	const getAllProduct = async (currentt = 1) => {
+		const res = await getAllProductApi(currentt)
+		const { records, current, size, total } = res.data
 		const len = records.length
 		if(len) {
+			pageInfo.current = current
+            pageInfo.size = size
+            pageInfo.total = total
 			productList.value = [ ...records ]
-		} else {
-			reachBottom.value = true
 		}
 	}
 
@@ -82,6 +83,26 @@
 
 	onMounted(() => {
 		getAllProduct()
+	})
+
+	onReachBottom(async () => {		
+		uni.showLoading({
+            title: '加载中'
+        });
+		const currentTotal = pageInfo.current * pageInfo.size
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getAllProduct(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
 	})
 </script>
 
@@ -173,17 +194,6 @@
 				</template>
 			</view>
 		</template>
-		<view 
-			v-if="reachBottom"
-			class="h-10 px-10"
-		>
-			<u-divider 
-				text="已经到底啦~" 
-				hairline
-				textColor="#999"
-				lineColor="#999"
-			></u-divider>
-		</view>
 	</view>
 </template>
 

@@ -40,8 +40,6 @@ function service(options = {}) {
 			}
 		};
 		options.fail = (err) => {
-			// 清除本地token
-			removeToken()
 			// 请求失败弹窗
 			uni.showToast({
 				icon: 'none',

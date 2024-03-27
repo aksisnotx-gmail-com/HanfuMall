@@ -1,8 +1,31 @@
 <script setup>
 	import { useCarStore } from '@/store/modules/car'
+	import { getAllApi, addOrReduceApi } from '@/api/tabbar/car'
+
 	const carStore = useCarStore()
+	const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
 
 	const list = ref([])
+	const getAllCar = async (currentt = 1) => {
+		const res = await getAllApi(currentt)
+		const { records, total, size, current } = res.data
+		pageInfo.current = current
+		pageInfo.size = size
+		pageInfo.total = total
+		list.value = [ ...records.map(item => ({
+			id: item.id,
+			img: item.productMap.PRODUCT.carousel[0],
+			name: item.productMap.SKU.attribute.desc,
+			size: item.productMap.SKU.size,
+			count: item.number,
+			price: item.productMap.SKU.price,
+			sumPrice: item.number * item.productMap.SKU.price,
+		})) ]
+	}
 
 	const itemGrounpChecked = ref([])
 
@@ -20,7 +43,7 @@
 			return
 		}
 
-		list.value = list.value.filter(item => !itemGrounpChecked.value.includes(item.name))
+		list.value = list.value.filter(item => !itemGrounpChecked.value.includes(item.id))
 		itemGrounpChecked.value.splice(0, Infinity)
 	}
 
@@ -28,18 +51,19 @@
 		console.log(detail, 'detail');
 	}
 
+	const allCheckedName = 'all'
 	// 全选
 	const isAllChecked = computed({
 		get(){
 			const listLen = list.value.length
 			const checkedLen = itemGrounpChecked.value.length
 			if(!listLen) return []
-			if(listLen === checkedLen) return ['all']
+			if(listLen === checkedLen) return [ allCheckedName ]
 		},
 		// 全选---->list列表
 		set(val){
 			if(val.length) {
-				itemGrounpChecked.value = list.value.map(item => item.name)
+				itemGrounpChecked.value = list.value.map(item => item.id)
 			} else {
 				itemGrounpChecked.value.splice(0, Infinity)
 			}
@@ -50,7 +74,7 @@
 	const cartTotalPrice = computed(() => {
 		const checkedItemSet = new Set(itemGrounpChecked.value)
 		return list.value.reduce((prev, cur) => {
-			if(checkedItemSet.has(cur.name)) {
+			if(checkedItemSet.has(cur.id)) {
 				prev += cur.sumPrice
 			}
 			return prev
@@ -58,39 +82,31 @@
 	})
  
 	// 增加商品数量
-	const add = (id) => {
-		list.value.forEach(el => {
-		if(el.id == id){
-			if(el.count < el.stock){
-				el.count++
-				// 商品小计价格也要改变
-				el.sumPrice=el.count*el.price
-			}else{
-				uni.showToast({
-					title:'库存不足哦~',
-					icon:'none'
-				})
-			}
+	const add = async (item) => {
+		const res = await addOrReduceApi(item.id, 1)
+		if(!res.data) {
+			uni.showToast({
+				title:'库存不足哦~',
+				icon:'none'
+			})
+			return
 		}
-	})
+		getAllCar(pageInfo.current)
 	}
 
 	// 减少商品数量
-	const reduce = (id) => {
-		list.value.forEach( el => {
-		if(el.id == id){
-			if(el.count > 1){
-				el.count--
-				// 商品小计价格也要改变
-				el.sumPrice = el.count*el.price
-			}else{
-				uni.showToast({
-					title:'至少购买一件商品哦',
-					icon:'none'
-				})
-			}
+	const reduce = async (item) => {
+		if(item.count > 1) {
+			item.count--
+			item.sumPrice = item.count * item.price
+			await addOrReduceApi(item.id, -1)
+			getAllCar(pageInfo.current)
+		} else{
+			uni.showToast({
+				title:'至少购买一件商品哦',
+				icon:'none'
+			})
 		}
-	})
 	}
 	
 	// 提交购物车订单
@@ -104,7 +120,7 @@
 		}
 
 		const checkedItemSet = new Set(itemGrounpChecked.value)
-		const carList = list.value.filter(el => checkedItemSet.has(el.name))
+		const carList = list.value.filter(el => checkedItemSet.has(el.id))
 		carStore.addToCar(carList, cartTotalPrice.value)
 
 		uni.navigateTo({
@@ -113,44 +129,27 @@
 	}
 
 	onMounted(() => {
-		// 模拟从后台拿到的数据
-		var orginList=[
-				{
-					id:'0',
-					name:'西瓜红红薯',
-					price:20,
-					count:1,
-					size:'小',
-					sumPrice:20,
-					stock:22,
-					img:'https://ts4.cn.mm.bing.net/th?id=OIP-C.mAVGJgwFDE7fhvAYn1qslAHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'
-				},
-				{
-					id:'1',
-					name:'南瓜',
-					price:10,
-					count:3,
-					size:'中等',
-					sumPrice:30,
-					stock:10,
-					img:'https://ts1.cn.mm.bing.net/th?id=OIP-C.CpUdnoVqBYS5qngcMAaK3AHaE8&w=306&h=204&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'
-				},
-				{
-					id:'2',
-					name:'红枣',
-					price:10,
-					count:4,
-					size:'迷你',
-					sumPrice:40,
-					stock:11,
-					img:'https://ts2.cn.mm.bing.net/th?id=OIP-C.iB6ds4_IqvUWdlmaNYifWQHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2'
-				}
-			]
-			
-			// list数组中为每一项添加双向绑定的属性---这个属性要在页面显示(onShow)添加
-			// orginList.forEach(el => el.isChecked = false);
-			
-			list.value = orginList;
+		getAllCar()
+	})
+
+	onReachBottom(async () => {		
+		uni.showLoading({
+            title: '加载中'
+        });
+		const currentTotal = pageInfo.current * pageInfo.size
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getAllCar(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
 	})
 </script>
 
@@ -169,7 +168,7 @@
 					<view class="l">
 						<!-- 列表的复选框 -->
 						<u-checkbox
-						:name="item.name"
+						:name="item.id"
 						shape="circle" 
 						activeColor="#7DA1DC"
 					></u-checkbox>
@@ -194,13 +193,13 @@
 							
 						</view>
 						<view class="update-count">
-							<view class="reduce" @tap="reduce(item.id)">
+							<view class="reduce" @tap="reduce(item)">
 							-
 							</view>
 							<view class="cart-count">
 								{{item.count}}
 							</view>
-							<view class="add" @tap="add(item.id)">
+							<view class="add" @tap="add(item)">
 								+
 							</view>
 						</view>
@@ -217,7 +216,7 @@
 						v-model="isAllChecked" 	
 					>
 						<u-checkbox 
-							name="all"
+							:name="allCheckedName"
 							shape="circle"
 							activeColor="#7DA1DC" 
 							label="全选" 
@@ -237,7 +236,7 @@
 						v-model="isAllChecked" 	
 					>
 						<u-checkbox 
-							name="all"
+							:name="allCheckedName"
 							shape="circle"
 							activeColor="#7DA1DC" 
 							label="全选" 

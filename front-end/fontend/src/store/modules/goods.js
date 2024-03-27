@@ -104,7 +104,8 @@ function getStyleList (productList) {
       value: item.desc, 
       img: item.carouselUrl,
       price: item.price,
-      stock: item.stock, 
+      stock: item.stock,
+      productSkuId: item.id,
       isActive: false, 
       isDisabled: false 
     }))

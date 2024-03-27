@@ -1,22 +1,43 @@
 <script setup>
-    const urls2 = [
-        'https://cdn.uviewui.com/uview/album/1.jpg',
-        'https://cdn.uviewui.com/uview/album/2.jpg',
-        'https://cdn.uviewui.com/uview/album/3.jpg',
-        'https://cdn.uviewui.com/uview/album/4.jpg',
-        'https://cdn.uviewui.com/uview/album/5.jpg',
-        'https://cdn.uviewui.com/uview/album/6.jpg',
-        'https://cdn.uviewui.com/uview/album/7.jpg',
-        'https://cdn.uviewui.com/uview/album/8.jpg',
-        'https://cdn.uviewui.com/uview/album/9.jpg',
-        'https://cdn.uviewui.com/uview/album/10.jpg',
-    ]
+    import { getAllDiscoveryApi, delDiscoveryApi } from '@/api/tabbar/watch'
+    import { useCommentStore } from '@/store/modules/comment'
+
+    const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
+
+    const discoveryList = ref([])
+
+    const getAllDiscovery = async (currentt = 1) => {
+        const res = await getAllDiscoveryApi('MY', currentt)
+		const { records, current, size, total } = res.data
+		const len = records.length
+        if(len) {
+            pageInfo.current = current
+            pageInfo.size = size
+            pageInfo.total = total
+            discoveryList.value = [ ...records ]
+        }
+    }
+
+    const commentStore = useCommentStore()
+    const JumpDetail = (id) => {
+        commentStore.discoveryId = id
+        uni.navigateTo({
+            url: '/pagesA/pages/wDetail/index'
+        })
+    }
 
 
     const editShow = ref(false)
 
-    const onEdit = () => {
+    const delId = ref('')
+    const onEdit = (id) => {
         editShow.value = true
+
+        delId.value = id
     }
 
     const list = ref([
@@ -32,33 +53,77 @@
         },
     ])
 
-    const onSelect = (e) => {
+    const onSelect = async (e) => {
         const { name } = e
-        console.log(name, 'name');
+        if(name === '删除') {
+            const res = await delDiscoveryApi(delId.value)
+            const { data, message } = res
+            if(data) {
+                uni.showToast({
+                    title: '删除成功',
+                    icon: 'success',
+                    duration: 3000,
+                    mask: true
+                })
+                getAllDiscovery(pageInfo.current)
+                editShow.value = false
+            } else {
+                uni.showToast({
+                    title: message,
+                    icon: 'error',
+                    duration: 3000,
+                    mask: true
+                })
+            }
+        }
     }
+
+	onReachBottom(async () => {		
+		uni.showLoading({
+            title: '加载中'
+        });
+		const currentTotal = pageInfo.current * pageInfo.size
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getAllDiscovery(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
+	})
+
+    onMounted(() => {
+        getAllDiscovery()
+    })
 </script>
 
 <template>
-    <view class="bg-#f2f2f2 pb-4">
-        <view>
+    <view class="min-h-100vh bg-#f2f2f2 pb-4">
+        <template v-for="item of discoveryList" :key="item.id">
             <view class="bg-#fff mb-3">
                 <view class="u-demo-block">
                     <view class="u-demo-block__content">
-                        <view class="album">
+                        <view class="album" @click.stop="JumpDetail(item.id)">
                             <view class="album__content px-3 flex flex-col">
                                 <view 
                                     class="flex justify-between items-center h-10"
-                                    @click="onEdit"
+                                    @click.stop="onEdit(item.id)"
                                 >
-                                    <text class="color-#666">2023/3/2</text>
+                                    <text class="color-#666">{{ item.createTime }}</text>
                                     <u-icon 
                                         name="arrow-down" 
                                         size="22"
                                     ></u-icon>
                                 </view>
-                                <text class="color-#666">汉家衣裳，渊源流长。衣冠上国，礼义之邦。</text>
+                                <text class="color-#666">{{ item.descText }}</text>
                                 <u-album 
-                                    :urls="urls2"
+                                    :urls="item.img"
                                     multipleSize="110"
                                 ></u-album>
                             </view>
@@ -70,65 +135,19 @@
                     <u-icon 
                         name="thumb-up" 
                         size="24"
-                        label="118"
+                        :label="item.likes"
                         space="1"
                     ></u-icon>
                     <u-icon 
                         name="chat" 
                         size="24"
-                        label="18"
+                        :label="item.comments.length || 0"
                         space="1"
-                    ></u-icon>
-                    <u-icon 
-                        name="trash" 
-                        size="24"
-                        label=""
-                        space="1"
+                        @click.stop="JumpDetail(item.id)"
                     ></u-icon>
                 </view>
             </view>
-
-            <view class="bg-#fff mb-3">
-                <view class="u-demo-block">
-                    <view class="u-demo-block__content">
-                        <view class="album">
-                            <view class="album__content px-3 flex flex-col">
-                                <view 
-                                    class="flex justify-between items-center h-10"
-                                    @click="onEdit"
-                                >
-                                    <text class="color-#666">2023/3/2</text>
-                                    <u-icon 
-                                        name="arrow-down" 
-                                        size="22"
-                                    ></u-icon>
-                                </view>
-                                <text class="color-#666">汉家衣裳，渊源流长。衣冠上国，礼义之邦。</text>
-                                <u-album 
-                                    :urls="urls2"
-                                    multipleSize="110"
-                                ></u-album>
-                            </view>
-                        </view>
-                    </view>
-                </view>
-                <u-divider text="" hairline></u-divider>
-                <view class="h-8 flex justify-end px-10 gap-10">
-                    <u-icon 
-                        name="thumb-up" 
-                        size="24"
-                        label="118"
-                        space="1"
-                    ></u-icon>
-                    <u-icon 
-                        name="chat" 
-                        size="24"
-                        label="18"
-                        space="1"
-                    ></u-icon>
-                </view>
-            </view>
-        </view>
+        </template>
 
         <u-action-sheet
             closeOnClickOverlay
@@ -138,6 +157,7 @@
             @close="editShow = false"
             @select="onSelect"
         ></u-action-sheet>
+
     </view>
 </template>
 

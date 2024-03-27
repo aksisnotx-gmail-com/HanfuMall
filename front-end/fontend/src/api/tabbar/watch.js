@@ -3,9 +3,9 @@ import service from '@/utils/request'
 /**
  * @description 查询所有的发现
  */
-export function getAllDiscoveryApi (current) {
+export function getAllDiscoveryApi (type, current) {
     return service({
-        url: `discovery/getAll/discovery?current=${current}`,
+        url: `discovery/getAll/discovery?type=${type}&current=${current}`,
         method: 'get'
     })
 }

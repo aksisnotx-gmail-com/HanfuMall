@@ -1,21 +1,30 @@
 <script setup>
     import { getAllDiscoveryApi, likeOrCancelApi } from '@/api/tabbar/watch'
-    const current = ref(1)
+    import { useCommentStore } from '@/store/modules/comment'
+
+    const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
 
     const discoveryList = ref([])
 
-    const getAllDiscovery = async (current = 1) => {
-        const res = await getAllDiscoveryApi(current)
-		const records = res.data.records
+    const getAllDiscovery = async (currentt = 1) => {
+        const res = await getAllDiscoveryApi('ALL', currentt)
+		const { records, current, size, total } = res.data
 		const len = records.length
         if(len) {
-            discoveryList.value = [ ...records ]
-        } else {
-            reachBottom.value = true
+            pageInfo.current = current
+            pageInfo.size = size
+            pageInfo.total = total
+            discoveryList.value = [ ...discoveryList.value, ...records ]
         }
     }
 
-    const JumpDetail = () => {
+    const commentStore = useCommentStore()
+    const JumpDetail = (id) => {
+        commentStore.discoveryId = id
         uni.navigateTo({
             url: '/pagesA/pages/wDetail/index'
         })
@@ -30,7 +39,7 @@
                 icon: 'success',
                 mask: true
             })
-            getAllDiscovery(current.value)
+            getAllDiscovery(pageInfo.current)
         } else {
             uni.showToast({
                 title: message,
@@ -40,10 +49,25 @@
         }
     }
 
-    const reachBottom = ref(false)
-	onReachBottom(() => {		
-		current.value++
-		getAllDiscovery(current.value)
+	onReachBottom(async () => {		
+        uni.showLoading({
+            title: '加载中'
+        });
+		const currentTotal = pageInfo.current * pageInfo.size
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getAllDiscovery(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
+
 	})
 
     onLoad(() => {
@@ -57,7 +81,7 @@
             <view class="bg-#fff mb-3">
                 <view class="u-demo-block">
                     <view class="u-demo-block__content">
-                        <view class="album" @click.stop="JumpDetail">
+                        <view class="album" @click.stop="JumpDetail(item.id)">
                             <view class="album__avatar">
                                 <image
                                 :src="item.user.avatar"
@@ -92,28 +116,16 @@
                         space="1"
                         @click="onLikeOrCancel(item.id)"
                     ></u-icon>
-                    <!-- TODO 修改评论的数量 -->
                     <u-icon 
                         name="chat" 
                         size="24"
                         :label="item.comments?.length || 0" 
                         space="1"
+                        @click="JumpDetail(item.id)"
                     ></u-icon>
                 </view>
             </view>
         </template>
-
-        <view 
-			v-if="reachBottom"
-			class="h-10 px-10"
-		>
-			<u-divider 
-				text="已经到底啦~" 
-				hairline
-				textColor="#999"
-				lineColor="#999"
-			></u-divider>
-		</view>
     </view>
 </template>
 

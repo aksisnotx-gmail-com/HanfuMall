@@ -25,7 +25,8 @@
 		{
 			"path": "pages/tabbar/car",
 			"style": {
-				"navigationBarTitleText": "购物车"
+				"navigationBarTitleText": "购物车",
+				"onReachBottomDistance": 50
 			}
 		},
 		{ "path": "pages/tabbar/my" }
@@ -62,8 +63,7 @@
 				{
 					"path": "pages/wDetail/index",
 					"style": {
-						"navigationBarTitleText": "图文详情",
-						"onReachBottomDistance": 50
+						"navigationBarTitleText": "图文详情"
 					}
 				},
 				{
@@ -177,6 +177,9 @@
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "绾青丝汉服社",
 		"navigationBarBackgroundColor": "#7494D1",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+		"usingComponents": {  
+			"comment-item": "/components/comment-item"  
+		}
 	}
 }
