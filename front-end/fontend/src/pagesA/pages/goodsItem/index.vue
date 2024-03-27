@@ -1,5 +1,7 @@
 <script setup>
-    import { useGoodsStore } from '@/store/modules/goods.js'
+    import { useGoodsStore } from '@/store/modules/goods'
+    import { addCarApi } from '@/api/tabbar/car'
+
     const goodsStore = useGoodsStore()
 
     const { productInfo, propertiesList, skuData } = storeToRefs(goodsStore)
@@ -149,6 +151,54 @@
         setAdjMatrixValue();
     }
 
+    const countd = ref(1)
+    const confirmSelected = () => {
+      if(!Array.isArray(selected.value) || selected.value.length !== 2) {
+        uni.showToast({
+          title: '请选择商品属性',
+          icon: 'none',
+          duration: 3000
+        })
+        return
+      }
+
+      infoShow.value = false
+      
+    }
+
+    const addCar = async () => {
+      if(!Array.isArray(selected.value) || selected.value.length !== 2) {
+        uni.showToast({
+          title: '请选择商品属性',
+          icon: 'none',
+          duration: 3000
+        })
+        return
+      }
+
+      const id = selected.value[1].productSkuId
+      const objParams = {
+        productSkuId: id,
+        number: countd.value
+      }
+      const res = await addCarApi(objParams)
+      if(res.data) {
+        uni.showToast({
+          title: '加入购物车成功',
+          icon: 'success',
+          duration: 3000
+        })
+      } else {
+        uni.showToast({
+          title: res.message,
+          icon: 'error',
+          duration: 3000
+        })
+      }
+
+    }
+
+
     const rate = ref(4)
 
     const JumpComment = () => {
@@ -157,8 +207,6 @@
             url: '/pagesA/pages/comment/index'
         })
     }
-
-    const countd = ref(1)
 
     onMounted(() => {
       initInfo()
@@ -184,6 +232,7 @@
                 circular
                 indicatorActiveColor="#E4697B"
                 indicatorMode="dot"
+                :displayMultipleItems="0"
             ></u-swiper> 
         </view>
         <view class="bg-#fff p-4">
@@ -267,7 +316,10 @@
         </view>
 
         <view class="w-100vw bg-#fff flex mb-5">
-          <text class="flex-1 flex justify-center bg-#82A4D7 py-5 rd_l">
+          <text 
+            class="flex-1 flex justify-center bg-#82A4D7 py-5 rd_l"
+            @click="addCar"
+          >
             加入购物车
           </text>
           <text class="flex-1 flex justify-center bg-#5C90DF py-5 rd_r">
@@ -288,9 +340,8 @@
                   <view class="thumb-box">
                       <image class="item-menu-image" :src="selected[1]?.img" mode="aspectFit"></image>
                       <view class="ml-3 h-25 flex flex-col justify-around font-600">
-                        <text class="color-#FF0000 text-4.5">¥ {{ selected[1]?.price }}</text>
+                        <text class="color-#FF0000 text-4.5" v-if="selected[1] && selected[1].price">¥ {{ selected[1].price }}</text>
                         <view class="color-#999">
-                          
                             <text>已选: </text>
                             <text>{{ selected[0]?.value }}, </text>
                             <text>{{ selected[1]?.value }}</text>
@@ -351,7 +402,10 @@
                 <text>购买数量</text>
                 <u-number-box integer v-model="countd"></u-number-box>
               </view>
-              <view class="layout-center bg-#7DA1DC color-#fff py-3 rd-2">确认</view>
+              <view 
+                class="layout-center bg-#7DA1DC color-#fff py-3 rd-2"
+                @click="confirmSelected"
+              >确认</view>
             </view>
         </u-popup>
     </view>

@@ -3,9 +3,9 @@ import service from '@/utils/request'
 /**
  * @description 查询所有的发现
  */
-export function getAllDiscoveryApi (current) {
+export function getAllDiscoveryApi (type, current) {
     return service({
-        url: `discovery/getAll/discovery?current=${current}`,
+        url: `discovery/getAll/discovery?type=${type}&current=${current}`,
         method: 'get'
     })
 }
@@ -35,23 +35,13 @@ export function delDiscoveryApi (discoveryId) {
 /**
  * @description 点赞
  */
-export function LikeApi (discoveryId) {
+export function likeOrCancelApi (discoveryId) {
     return service({
-        url: `discovery/like/${discoveryId}`,
+        url: `discovery/likeOrCancel/${discoveryId}`,
         method: 'get'
     })
 }
 
-
-/**
- * @description 取消点赞
- */
-export function cancelLikeApi (discoveryId) {
-    return service({
-        url: `discovery/cancelLike/${discoveryId}`,
-        method: 'get'
-    })
-}
 
 /**
  * @description 查询所有的评论

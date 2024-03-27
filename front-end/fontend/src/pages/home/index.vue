@@ -1,38 +1,36 @@
 <script setup>
-    import { getSwiperListApi } from '@/api/home'
-    import { useGoodsStore } from '@/store/modules/goods.js'
+    import { getSwiperListApi, getRecommendProductsApi, getSpecialProductsApi } from '@/api/home'
+    import { useGoodsStore } from '@/store/modules/goods'
 
     const swiperList = ref([])
     const getSwiperList = async () => {
         const res = await getSwiperListApi()
-        swiperList.value = res.records.map(item => item.bannerUrl)
+        const { records } = res.data
+        swiperList.value = records.map(item => item.bannerUrl)
     }
 
     const noticeText = ref('欢迎同胞们来到绾青丝汉服社!')
 
-    const list = [
-        {
-            thumb: "https://cdn.uviewui.com/uview/goods/1.jpg"
-        }, 
-        {
-            thumb: "https://cdn.uviewui.com/uview/goods/2.jpg"
-        }, 
-        {
-            thumb: "https://cdn.uviewui.com/uview/goods/3.jpg"
-        }, 
-        {
-            thumb: "https://cdn.uviewui.com/uview/goods/4.jpg"
-        }, 
-        {
-            thumb: "https://cdn.uviewui.com/uview/goods/5.jpg"
+    const recommendProducts = ref([])
+    const getRecommendProducts = async () => {
+        const res = await getRecommendProductsApi()
+        if(res.data.records.length) {
+            recommendProducts.value = [ ...res.data.records ]
         }
-    ]
+    }
+
+    const specialProducts = ref([])
+    const getSpecialProducts = async () => {
+        const res = await getSpecialProductsApi()
+        if(res.data.records.length) {
+            specialProducts.value = [ ...res.data.records ]
+        }
+    }
 
     const goodsStore = useGoodsStore()
-    const toDetail = (item) => {
-        console.log(item, 'item');
-        goodsStore.goodsItem = { ...item }
-        // TODO item
+    const toDetail = (id) => {
+        goodsStore.productId = id
+
         uni.navigateTo({
             url: '/pagesA/pages/goodsItem/index'
         })
@@ -50,9 +48,20 @@
         })
     }
 
-    onMounted(() => {
-        getSwiperList()  
+    onMounted(async () => {
+        await getSwiperList()
+        await getRecommendProducts()
+        await getSpecialProducts()
+        uni.hideLoading()
     })
+
+    onLoad(() => {
+        uni.showLoading({
+            title: '加载中'
+        });
+    })
+
+
 </script>
 
 <template>
@@ -64,6 +73,7 @@
                 circular
                 indicatorActiveColor="#E4697B"
                 indicatorMode="dot"
+                :displayMultipleItems="0"
             ></u-swiper> 
         </view>
         <view>
@@ -105,52 +115,66 @@
             <u-scroll-list
                 :indicator="false"
             >
-                <view 
-                    v-for="(item, index) in list" 
-                    :key="index" 
-                    class="goods_item bg-hotpink"
-                    @click="toDetail(item)"
-                >
-                    <view class="p-3">
-                        <image :src="item.thumb" mode="aspectFit" class="w-30 h-30" />
-                        <text class="color-#999">
-                            唐圆领袍复原款等运来
-                        </text>
-                        <view class="flex justify-between">
-                            <text class="color-#DC143C font-600">¥ 89.10</text>
-                            <text class="old_price">¥ 119</text>
+                <template v-if="!specialProducts.length">
+                    <u-empty
+                        text="暂无商品数据"
+                        mode="data"
+                    >
+                    </u-empty>
+                </template>
+                <template v-else>
+                    <view 
+                        v-for="item of specialProducts" 
+                        :key="item.id" 
+                        class="goods_item bg-hotpink"
+                        @click="toDetail(item.productId)"
+                    >
+                        <view class="p-3 max-w-38">
+                            <image  
+                                v-if="item.attribute.carouselUrl"
+                                :src="item.attribute.carouselUrl" 
+                                mode="aspectFit" 
+                                class="w-30 h-30"
+                            />
+                            <text class="color-#999">
+                                {{ item.attribute.desc }}
+                            </text>
+                            <view class="flex justify-between">
+                                <text class="color-#DC143C font-600">¥ {{ item.price }}</text>
+                                <text class="old_price">¥ {{ item.specialPrice }}</text>
+                            </view>
                         </view>
                     </view>
-                </view>
+                </template>
             </u-scroll-list>
               
         </view>
         <view class="bg-#fff px-4">
-            <view class="text-5 font-600">热门推荐</view>
-            <view class="pb-2">
-                <view class="hot_card layout-slide">
-                    <image src="https://cdn.uviewui.com/uview/goods/1.jpg" mode="aspectFit" class="h-30" />
-                    <view class="flex flex-col">
-                        <text class="color-#999 content">
-                            原创宋制汉服女重工刺绣长衫精子齐腰褶裙春夏款原创宋制汉服女重工刺绣长衫精子齐腰褶裙春夏款
-                        </text>
-                        <text class="color-#DC143C font-600">
-                            ¥ 29.00 - 228.00
-                        </text>
+        <view class="text-5 font-600">热门推荐</view>
+            <template v-if="!recommendProducts.length">
+                <u-empty
+                    text="暂无商品数据"
+                    mode="data"
+                >
+                </u-empty>
+            </template>
+            <template v-else>
+                <template v-for="item of recommendProducts" :key="item.id">
+                    <view class="mt-5">
+                        <view class="hot_card layout-items-center" @click="toDetail(item.productId)">
+                            <image :src="item.attribute.carouselUrl" mode="aspectFit" class="w-30 h-30" />
+                            <view class="flex flex-col">
+                                <text class="color-#999 content">
+                                    {{ item.attribute.desc }}
+                                </text>
+                                <text class="color-#DC143C font-600">
+                                    ¥ {{ item.price }}
+                                </text>
+                            </view>
+                        </view>
                     </view>
-                </view>
-                <view class="hot_card layout-slide">
-                    <image src="https://cdn.uviewui.com/uview/goods/1.jpg" mode="aspectFit" class="h-30" />
-                    <view class="flex flex-col">
-                        <text class="color-#999 content">
-                            原创宋制汉服女重工刺绣长衫精子齐腰褶裙春夏款原创宋制汉服女重工刺绣长衫精子齐腰褶裙春夏款
-                        </text>
-                        <text class="color-#DC143C font-600">
-                            ¥ 29.00 - 228.00
-                        </text>
-                    </view>
-                </view>
-            </view>
+                </template>
+            </template>
         </view>
     </view>
 </template>
@@ -209,7 +233,6 @@
         background: #e0e0e0;
         box-shadow: 20px 20px 60px #bebebe,
                 -20px -20px 60px #ffffff;
-        margin: 10px 0;
     }
 
     .content {

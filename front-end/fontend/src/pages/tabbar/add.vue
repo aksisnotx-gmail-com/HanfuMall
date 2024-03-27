@@ -1,36 +1,45 @@
 <script setup>
     import env from '@/utils/config';
-    import { uploadImgApi } from '@/api/file/index.js'
+    import { addDiscoveryApi } from '@/api/tabbar/watch'
 
     const comment = ref('')
-    const fileList = ref([
-        {
-            url: 'https://cdn.uviewui.com/uview/swiper/1.jpg'
-        },
-        {
-            url: 'https://cdn.uviewui.com/uview/swiper/1.jpg',
-        }
-    ])
+    const fileList = ref([])
 
     // 文件读取完毕的函数
     const afterRead = (event) => {
+        const token = uni.getStorageSync('token')
+        if(!token) {
+            uni.showToast({
+                title: '登录过期~',
+                icon: 'error',
+                mask: true,
+                duration: 3000
+            })
+            return
+        }
         uni.uploadFile({
             header: {
-                'Content-Type': 'multipart/form-data' // 请求体的编码格式
+                token: token
             },
-            url: env + 'file/upload', // 后端接口文档上的接口地址
+            url: env.fileUrl, // 后端接口文档上的接口地址
             filePath: event.file.url, // 图片的路径
             name: 'file',
-            file: event.file, // 文件对象
             // 上传成功回调
             success: function (res) {
-                const data = JSON.parse(res.data)
-                console.log(data)
+                const data = JSON.parse(res.data)            
                 // 上传成功之后拿到 res ，然后进行你的下一步操作
+                fileList.value.push({
+                    url: data.message
+                })
             },
             // 上传失败回调
             fail: function (err) {
-                console.log(err)
+                uni.showToast({
+                    title: '上传失败',
+                    icon: 'error',
+                    mask: true,
+                    duration: 3000
+                })
             }
         })
     }
@@ -41,17 +50,48 @@
     }
 
     const uToastRef = ref(null)
-    const onPublish = () => {
-        uToastRef.value.show({
-            type: 'success',
-            message: '发布成功, 即将返回首页',
-            icon: 'https://cdn.uviewui.com/uview/demo/toast/success.png',
-            complete() {
-               uni.switchTab({
-                    url: '/pages/home/index'
-                })
-            }
-        })
+    const onPublish = async () => {
+        const img = fileList.value.map(item => item.url)
+        const descText = comment.value.trim()
+        if(!descText.length) {
+            uni.showToast({
+                title: '请输入文本',
+                icon: 'error',
+                mask: true,
+                duration: 3000
+            })
+            return
+        }
+        if(!img.length) {
+            uni.showToast({
+                title: '请上传图片',
+                icon: 'error',
+                mask: true,
+                duration: 3000
+            })
+            return
+        }
+
+        const objParam = {
+            descText,
+            img
+        }
+        const res = await addDiscoveryApi(objParam)
+        if(res) {
+            uToastRef.value.show({
+                type: 'success',
+                message: '发布成功, 即将返回发现页',
+                icon: 'https://cdn.uviewui.com/uview/demo/toast/success.png',
+                complete() {
+                uni.switchTab({
+                        url: '/pages/tabbar/watch'
+                    })
+                }
+            })
+        } else {
+            fileList.value.splice(0, Infinity)
+            comment.value = ''
+        }
     }
 </script>
 

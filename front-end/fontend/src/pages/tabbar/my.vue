@@ -17,7 +17,6 @@
                 sizeType: ['compressed'], //original 原图，compressed 压缩图，默认二者都有
                 sourceType: ['album'], //album 从相册选图，camera 使用相机，默认二者都有。如需直接开相机或直接选相册，请只使用一个选项
                 success: (res) => { //成功返回的函数
-                    console.log('图片路径为：', res.tempFilePaths[0]) //选着的图片
                     var imageSrc = res.tempFilePaths[0] //将图片的地址赋值给imageSrc
                     uni.uploadFile({ //上传图片
                         url: '@/detail_3/detail_3.vue', //开发者服务器 url
@@ -25,7 +24,6 @@
                         fileType: 'image', //文件类型，image/video/audio
                         name: 'data', //文件对应的 key , 开发者在服务器端通过这个 key 可以获取到文件二进制内容
                         success: (res) => { //接口调用成功的回调函数
-                            console.log('uploadImage success, res is:', res)
                             uni.showToast({ //消息提示框
                                 title: '上传成功',
                                 icon: 'success',
@@ -38,7 +36,6 @@
                             this.imageSrc = imageSrc
                         },
                         fail: (err) => { //接口调用失败的回调函数	
-                            console.log('失败返回：', err);
                             uni.showModal({ //消息提示框
                                 content: err.errMsg, //错误信息
                                 showCancel: false
@@ -128,7 +125,6 @@
     ]
 
     const onClickFunction = (item) => {
-        console.log(item, 'item');
         const { id } = item
         const obj = {
             '1': 'message',

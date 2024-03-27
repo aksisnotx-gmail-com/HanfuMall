@@ -38,7 +38,7 @@ export const useGoodsStore = defineStore('goods', {
             descUrls,
             specCombinationList,
             specList
-          } = res
+          } = res.data
           this.productInfo.carousel = carousel
           this.productInfo.productName = productName
           this.productInfo.deliveryAddress = deliveryAddress
@@ -104,7 +104,8 @@ function getStyleList (productList) {
       value: item.desc, 
       img: item.carouselUrl,
       price: item.price,
-      stock: item.stock, 
+      stock: item.stock,
+      productSkuId: item.id,
       isActive: false, 
       isDisabled: false 
     }))

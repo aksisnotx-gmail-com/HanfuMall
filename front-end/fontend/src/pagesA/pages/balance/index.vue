@@ -9,10 +9,12 @@
         })
     }
 
+
     const submitOrder = () => {
         if(!Object.keys(address.value)?.length) {
             uni.showToast({
                 title: '请选择地址',
+                icon: 'none',
                 duration: 2000
             })
             return

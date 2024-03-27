@@ -1,73 +1,108 @@
 <script setup>
-    import { getAllDiscoveryApi } from '@/api/tabbar/watch'
-    const current = ref(1)
+    import { getAllDiscoveryApi, likeOrCancelApi } from '@/api/tabbar/watch'
+    import { useCommentStore } from '@/store/modules/comment'
+
+    const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
 
     const discoveryList = ref([])
 
-    const getAllDiscovery = async (current = 1) => {
-        const res = await getAllDiscoveryApi(current)
-		const records = res.records
+    const getAllDiscovery = async (currentt = 1) => {
+        const res = await getAllDiscoveryApi('ALL', currentt)
+		const { records, current, size, total } = res.data
 		const len = records.length
         if(len) {
-
-        } else {
-            reachBottom.value = true
+            pageInfo.current = current
+            pageInfo.size = size
+            pageInfo.total = total
+            discoveryList.value = [ ...discoveryList.value, ...records ]
         }
     }
 
-    const urls2 = [
-        'https://cdn.uviewui.com/uview/album/1.jpg',
-        'https://cdn.uviewui.com/uview/album/2.jpg',
-        'https://cdn.uviewui.com/uview/album/3.jpg',
-        'https://cdn.uviewui.com/uview/album/4.jpg',
-        'https://cdn.uviewui.com/uview/album/5.jpg',
-        'https://cdn.uviewui.com/uview/album/6.jpg',
-        'https://cdn.uviewui.com/uview/album/7.jpg',
-        'https://cdn.uviewui.com/uview/album/8.jpg',
-        'https://cdn.uviewui.com/uview/album/9.jpg',
-        'https://cdn.uviewui.com/uview/album/10.jpg',
-    ]
-
-    const JumpDetail = () => {
+    const commentStore = useCommentStore()
+    const JumpDetail = (id) => {
+        commentStore.discoveryId = id
         uni.navigateTo({
             url: '/pagesA/pages/wDetail/index'
         })
     }
 
-    const reachBottom = ref(false)
-	onReachBottom(() => {		
-		current.value++
-		getAllDiscovery(current.value)
+    const onLikeOrCancel = async (discoveryId) => {
+        const res = await likeOrCancelApi(discoveryId)
+        const { data, message } = res
+        if(data) {
+            uni.showToast({
+                title: message,
+                icon: 'success',
+                mask: true
+            })
+            getAllDiscovery(pageInfo.current)
+        } else {
+            uni.showToast({
+                title: message,
+                icon: 'error',
+                mask: true
+            })
+        }
+    }
+
+	onReachBottom(async () => {		
+        uni.showLoading({
+            title: '加载中'
+        });
+		const currentTotal = pageInfo.current * pageInfo.size
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getAllDiscovery(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
+
 	})
 
+    onLoad(() => {
+        getAllDiscovery()
+    })
 </script>
 
 <template>
     <view class="bg-#f4f4f4">
-        <template v-for="item of 10" :key="item">
-            <view class="bg-#fff mb-3" @click="JumpDetail">
+        <template v-for="item of discoveryList" :key="item.id">
+            <view class="bg-#fff mb-3">
                 <view class="u-demo-block">
                     <view class="u-demo-block__content">
-                        <view class="album">
+                        <view class="album" @click.stop="JumpDetail(item.id)">
                             <view class="album__avatar">
                                 <image
-                                src="https://ijry.github.io/uview-plus/h5/assets/logo-8d54bbeb.png"
+                                :src="item.user.avatar"
                                 mode="aspectFit"
                                 style="width: 32px;height: 32px;"
                                 ></image>
                             </view>
                             <view class="album__content">
                                 <u--text
-                                text="uview-plus UI"
+                                :text="item.user.nickname"
                                 type="primary"
                                 bold
                                 size="17"
                                 ></u--text>
                                 <u--text
                                 margin="0 0 8px 0"
-                                text="全面的组件和便捷的工具会让您信手拈来，如鱼得水"
+                                :text="item.descText"
                                 ></u--text>
-                                <u-album :urls="urls2"></u-album>
+                                <view @click.stop>
+                                    <u-album :urls="item.img"></u-album>
+                                </view>
                             </view>
                         </view>
                     </view>
@@ -77,30 +112,20 @@
                     <u-icon 
                         name="thumb-up" 
                         size="24"
-                        label="118"
+                        :label="item.likes"
                         space="1"
+                        @click="onLikeOrCancel(item.id)"
                     ></u-icon>
                     <u-icon 
                         name="chat" 
                         size="24"
-                        label="18"
+                        :label="item.comments?.length || 0" 
                         space="1"
+                        @click="JumpDetail(item.id)"
                     ></u-icon>
                 </view>
             </view>
         </template>
-
-        <view 
-			v-if="reachBottom"
-			class="h-10 px-10"
-		>
-			<u-divider 
-				text="已经到底啦~" 
-				hairline
-				textColor="#999"
-				lineColor="#999"
-			></u-divider>
-		</view>
     </view>
 </template>
 

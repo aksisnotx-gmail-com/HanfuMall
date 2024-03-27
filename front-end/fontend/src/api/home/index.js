@@ -46,3 +46,24 @@ export function getProductByIdApi (productId) {
         method: 'get'
     })
 }
+
+
+/**
+ * @description 获取推荐商品
+ */
+export function getRecommendProductsApi () {
+    return service({
+        url: `product/recommendProducts`,
+        method: 'get'
+    })
+}
+
+/**
+ * @description 获取限时特惠商品
+ */
+export function getSpecialProductsApi () {
+    return service({
+        url: `product/specialProducts`,
+        method: 'get'
+    })
+}
