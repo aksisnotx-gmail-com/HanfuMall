@@ -184,13 +184,15 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
         //获取未读的信息：未读的信息分两种: 1. 回复自己的 2. 评论自己的
         //1. 查询所有”发现“未读评论
         List<String> discoveryIds = this.lambdaQuery().eq(DiscoveryEntity::getUserId, loginUserId).list().stream().map(DiscoveryEntity::getId).toList();
-        List<DiscoveryCommentEntity> unreadComment = commentService.getUnreadComment(discoveryIds);
+        List<DiscoveryCommentEntity> unreadComment = commentService.getUnreadComment(discoveryIds).stream().
+                peek(t -> t.setUser(userService.getById(t.getUserId(),false))).toList() ;
+
 
         //2. 未读回复
         //查询自己所有的评论、回复
         List<String> replyIds = commentService.getCommentByUserId(loginUserId).stream().map(DiscoveryCommentEntity::getId).toList();
         //查询别人对我的评论、回复是否回复了
-        List<DiscoveryCommentEntity> unreadReply = commentService.getUnreadReply(replyIds);
+        List<DiscoveryCommentEntity> unreadReply = commentService.getUnreadReply(replyIds).stream().peek(t -> t.setUser(userService.getById(t.getUserId(),false))).toList();
         return MessageListVO.create(unreadLikes, Map.of(COMMENT,unreadComment,REPLY,unreadReply));
     }
 
