@@ -163,6 +163,13 @@
         <!--    随环境参数在此填写，自定义标签，使用@标签名@       -->
         <save.path>D:\hanfu\Temp\2024\</save.path>
       </properties>
+    </profile>
+    <profile>
+      <id>local</id>
+      <properties>
+        <spring.active>local</spring.active>
+        <save.path>D:\hanfu\Temp\2024\</save.path>
+      </properties>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
