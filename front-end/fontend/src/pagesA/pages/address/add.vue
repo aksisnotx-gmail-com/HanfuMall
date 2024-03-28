@@ -1,6 +1,7 @@
 <script setup>
     import citySelect from './components/citySelect.vue';
     import { useAddressStore } from '@/store/modules/address'
+    import { updateApi } from '@/api/auth'
 
     const addressStore = useAddressStore()
 
@@ -50,9 +51,7 @@
             type: 'string',
             required: true,
             message: '请输入详细地址',
-            trigger: ['input', 'blur'],
-            min: 6,
-            max: 20
+            trigger: ['input', 'blur']
         }
     })
 
@@ -67,15 +66,28 @@
 
     const addressForm = ref(null)
     const onSaveAddress = () => {
-        addressForm.value.validate().then(valid => {
+        addressForm.value.validate().then(async (valid) => {
             if(valid) {
-                const len = addressStore.addressList.length
-                addressStore.addressList.push({
+                const objParams = {
                     ...addressInfo,
-                    id: len + 1, 
+                    id: uuid(), 
                     address: addressInfo.area + addressInfo.address,
                     detailAddress: addressInfo.address
-                })
+                }
+
+                const addressItem = JSON.stringify(objParams)
+
+                const index = addressStore.addressList.findIndex(item => item.id === addressStore.editAddress.id)
+
+                if(index < 0) {
+                    addressStore.shippingAddress.push(addressItem)
+                    addressStore.addressList.push(objParams)
+                    await addressStore.updateAddress(addressStore.shippingAddress)
+                } else {
+                    addressStore.shippingAddress.splice(index, 1, addressItem)
+                    addressStore.addressList.splice(index, 1, objParams)
+                    await addressStore.updateAddress(addressStore.shippingAddress)
+                }
 
                 uni.navigateBack()
             }
@@ -85,6 +97,16 @@
     onShow(() => {
         initAddress()
     })
+
+    function uuid() {
+        let d = new Date().getTime();
+        let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            let r = (d + Math.random()*16)%16 | 0;
+            d = Math.floor(d/16);
+            return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    }
 </script>
 
 <template>

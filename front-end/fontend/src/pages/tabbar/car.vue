@@ -18,9 +18,10 @@
 		pageInfo.total = total
 		list.value = [ ...records.map(item => ({
 			id: item.id,
+			skuId: item.productMap.SKU.id,
 			img: item.productMap.PRODUCT.carousel[0],
 			name: item.productMap.SKU.attribute.desc,
-			size: item.productMap.SKU.size,
+			size: item.size,
 			count: item.number,
 			price: item.productMap.SKU.price,
 			sumPrice: item.number * item.productMap.SKU.price,
@@ -42,6 +43,10 @@
 			})
 			return
 		}
+
+		itemGrounpChecked.value.forEach(async (item) => {
+			await addOrReduceApi(item, -999)
+		})
 
 		list.value = list.value.filter(item => !itemGrounpChecked.value.includes(item.id))
 		itemGrounpChecked.value.splice(0, Infinity)
@@ -150,6 +155,15 @@
                 duration: 1000
             })
         }
+	})
+
+	onPullDownRefresh(async () => {
+		uni.showLoading({
+            title: '加载中'
+        });
+		await getAllCar(pageInfo.current)
+		uni.stopPullDownRefresh()
+		uni.hideLoading()
 	})
 </script>
 

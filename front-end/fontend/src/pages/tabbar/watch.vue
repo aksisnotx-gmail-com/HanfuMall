@@ -70,9 +70,27 @@
 
 	})
 
-    onLoad(() => {
-        getAllDiscovery()
+    onMounted(async () => {
+        await getAllDiscovery()
+        uni.hideLoading()
     })
+
+    onLoad(() => {
+        uni.showLoading({
+            title: '加载中'
+        })
+    })
+
+    onPullDownRefresh(async () => {
+        discoveryList.value.splice(0, Infinity)
+
+		uni.showLoading({
+            title: '加载中'
+        });
+        await getAllDiscovery(pageInfo.current)
+		uni.stopPullDownRefresh()
+		uni.hideLoading()
+	})
 </script>
 
 <template>

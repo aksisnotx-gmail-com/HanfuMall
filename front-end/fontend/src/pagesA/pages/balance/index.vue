@@ -1,6 +1,8 @@
 <script setup>
     import { useCarStore } from '@/store/modules/car'
     import { useAddressStore } from '@/store/modules/address'
+    import { createOrderApi } from '@/api/tabbar/order'
+
     const carStore = useCarStore()
 
     const JumpAddress = () => {
@@ -10,8 +12,8 @@
     }
 
 
-    const submitOrder = () => {
-        if(!Object.keys(address.value)?.length) {
+    const submitOrder = async () => {
+        if(!Object.keys(address.value).length) {
             uni.showToast({
                 title: '请选择地址',
                 icon: 'none',
@@ -20,12 +22,64 @@
             return
         }
 
-        // TODO 提交订单的接口 考虑汉币的数量
-        uni.showToast({
-            title: '支付成功',
-            icon: 'success',
-            duration: 2000
+        if(!carStore.goodsList.length) {
+            uni.showToast({
+                title: '暂无订单',
+                icon: 'error',
+                duration: 2000
+            })
+            return
+        }
+
+        uni.showModal({
+            title: '提示',
+            content: '支付订单?',
+            success: function (res) {
+                if (res.confirm) {
+                    
+                } else if (res.cancel) {
+                    
+                }
+            }
+        });
+    }
+
+    const createOrder = async () => {
+        const addressJson = JSON.stringify(address.value)
+        const orderParams = reactive([])
+        carStore.goodsList.forEach((item) => {
+            const {
+                skuId,
+                count,
+                sumPrice,
+                size
+            } = item
+
+            const params = {
+                deliveryAddress: addressJson,
+                skuId,
+                number: count,
+                totalPrice: sumPrice,
+                size
+            }    
+            orderParams.push(params)
         })
+
+        const res = await createOrderApi(orderParams)
+        if(res.data) {
+            // TODO 提交订单的接口 考虑汉币的数量
+            uni.showToast({
+                title: '生成订单成功',
+                icon: 'success',
+                duration: 2000
+            })
+        } else {
+            uni.showToast({
+                title: res.message,
+                icon: 'error',
+                duration: 2000
+            })
+        }
     }
 
     const addressStore = useAddressStore()
