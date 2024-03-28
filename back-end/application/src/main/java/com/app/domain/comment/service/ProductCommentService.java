@@ -68,12 +68,12 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
 
         //管理员
         if (Role.ADMIN.equals(loginUser.getRole())) {
-            return this.removeById(commentId);
+            return this.removeById(commentId) && orderService.updateById(entity);
         }
 
 
         AssertUtils.assertTrue(one.getUserId().equals(loginUser.getId()), "无权删除");
-        return this.removeById(commentId);
+        return this.removeById(commentId) && orderService.updateById(entity);
     }
 
     public Page<CommentVO> getMyEvaluate(String loginUserId) {
