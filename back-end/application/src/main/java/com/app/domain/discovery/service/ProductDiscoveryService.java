@@ -6,6 +6,7 @@ import com.app.domain.discovery.entity.DiscoveryEntity;
 import com.app.domain.discovery.entity.vo.MessageListVO;
 import com.app.domain.discovery.enums.CommentType;
 import com.app.domain.discovery.enums.GetType;
+import com.app.domain.discovery.enums.QueryType;
 import com.app.domain.discovery.enums.ReadType;
 import com.app.domain.discovery.mapper.ProductDiscoveryMapper;
 import com.app.domain.user.entity.UserEntity;
@@ -218,4 +219,19 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     }
 
 
+    public Object getByType(QueryType type, String id) {
+        switch (type){
+            case DISCOVERY -> {
+                DiscoveryEntity entity = this.getById(id);
+                entity.setUser(userService.getById(entity.getUserId()));
+                return entity;
+            }
+            case COMMENT -> {
+                DiscoveryCommentEntity comment = commentService.getById(id);
+                comment.setUser(userService.getById(comment.getUserId(),false));
+                return comment;
+            }
+            default ->  {throw  new GlobalException("未知类型");}
+        }
+    }
 }

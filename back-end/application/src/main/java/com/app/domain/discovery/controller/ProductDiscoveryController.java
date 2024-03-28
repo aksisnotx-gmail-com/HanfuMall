@@ -6,6 +6,7 @@ import com.app.domain.discovery.entity.DiscoveryCommentEntity;
 import com.app.domain.discovery.entity.DiscoveryEntity;
 import com.app.domain.discovery.entity.vo.MessageListVO;
 import com.app.domain.discovery.enums.GetType;
+import com.app.domain.discovery.enums.QueryType;
 import com.app.domain.discovery.enums.ReadType;
 import com.app.domain.discovery.param.ReadParam;
 import com.app.domain.user.entity.LoginUser;
@@ -92,5 +93,11 @@ public class ProductDiscoveryController extends Controller {
     @Operation(summary = "消息中心")
     public RespEntity<MessageListVO> getMsg() {
         return RespEntity.success(discoveryService.getMsg(LoginUser.getLoginUserId()));
+    }
+
+    @GetMapping("/getByType")
+    @Operation(summary = "根据类型获取发现/评论")
+    public RespEntity<Object> getByType(@RequestParam QueryType type,@RequestParam String id) {
+        return RespEntity.success(discoveryService.getByType(type,id));
     }
 }
