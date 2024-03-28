@@ -36,6 +36,8 @@ public class OrderEntity extends Entity {
 
     public static final Integer UN_HANDLER = -1;
 
+    public static final Integer DELETE = 2;
+
     @Serial
     private static final long serialVersionUID = 6509027597663570020L;
 
@@ -63,7 +65,7 @@ public class OrderEntity extends Entity {
     private ProductDetailsEntity productDetail;
 
     //是否评价(1 已评价 0 未评价 -1 未购买)
-    @Schema(description = "是否评价(1 已评价 0 未评价 -1 表示未处理商品评价)")
+    @Schema(description = "是否评价(1 已评价 0 未评价 -1 表示未处理商品评价 2 已删除 )")
     private Integer isEvaluate;
 
     @Schema(description = "购买数量")

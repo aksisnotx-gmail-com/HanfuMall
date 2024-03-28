@@ -41,8 +41,8 @@ public class ProductCommentController extends Controller {
     //删除评论，如果角色是买家只能删除自己的评论
     @GetMapping("/delete/")
     @Operation(summary = "删除评价")
-    public RespEntity<Boolean> deleteComment(@RequestParam String commentId) {
-        return RespEntity.success(commentService.deleteComment(commentId,LoginUser.getLoginUser()));
+    public RespEntity<Boolean> deleteComment(@RequestParam String commentId, @RequestParam String orderId) {
+        return RespEntity.success(commentService.deleteComment(commentId,LoginUser.getLoginUser(),orderId));
     }
 
     @GetMapping("/getMyEvaluate")

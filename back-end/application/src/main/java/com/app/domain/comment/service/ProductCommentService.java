@@ -58,15 +58,19 @@ public class ProductCommentService extends AbstractService<ProductCommentMapper,
         return page;
     }
 
-    public Boolean deleteComment(String commentId, UserEntity loginUser) {
+    public Boolean deleteComment(String commentId, UserEntity loginUser,String orderId) {
         ProductCommentEntity one = this.lambdaQuery()
                 .eq(ProductCommentEntity::getId, commentId).one();
         AssertUtils.notNull(one, "评价不存在");
+
+        OrderEntity entity = orderService.getById(orderId);
+        entity.setIsEvaluate(OrderEntity.DELETE);
 
         //管理员
         if (Role.ADMIN.equals(loginUser.getRole())) {
             return this.removeById(commentId);
         }
+
 
         AssertUtils.assertTrue(one.getUserId().equals(loginUser.getId()), "无权删除");
         return this.removeById(commentId);
