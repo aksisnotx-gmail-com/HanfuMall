@@ -2,6 +2,7 @@ package com.app.domain.order.controller;
 
 import com.app.controller.Controller;
 import com.app.domain.comment.entity.ProductCommentEntity;
+import com.app.domain.order.enmus.OrderState;
 import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.order.param.OrderParam;
 import com.app.domain.user.entity.LoginUser;
@@ -113,5 +114,11 @@ public class OrderController extends Controller {
     @Operation(summary = "获取待评价的商品")
     public RespEntity<Page<OrderEntity>> getWaitEvaluate() {
         return RespEntity.success(orderService.getWaitEvaluate(LoginUser.getLoginUser()));
+    }
+
+    @GetMapping("/getOrderById")
+    @Operation(summary = "获取订单通过类型")
+    public RespEntity<Page<OrderEntity>> getOrderByType( @RequestParam OrderState type) {
+        return RespEntity.success(orderService.getOrderByType(type,LoginUser.getLoginUser()));
     }
 }

@@ -234,4 +234,12 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
                 eq(OrderEntity::getIsEvaluate, OrderEntity.EVALUATE).
                 page(CommonPageRequestUtils.defaultPage());
     }
+
+    public Page<OrderEntity> getOrderByType(OrderState type, UserEntity loginUser) {
+        if (Role.ADMIN.equals(loginUser.getRole())) {
+            return this.lambdaQuery().eq(OrderEntity::getState, type).page(CommonPageRequestUtils.defaultPage());
+        }
+
+        return new Page<>();
+    }
 }
