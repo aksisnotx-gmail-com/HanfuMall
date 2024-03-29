@@ -16,6 +16,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 评论内容(SysDiscoveryComment)表实体类
@@ -67,5 +68,20 @@ public class DiscoveryCommentEntity extends Entity {
     @JsonView(IGNORE.class)
     @TableField(exist = false)
     private List<DiscoveryCommentEntity> replies;
+
+    @Schema(description = "发现Id")
+    @JsonView(INSERT.class)
+    @NotBlank(message = "发现Id不能为空",groups = INSERT.class)
+    private String discoveryId;
+
+    @Schema(description = "所属发现")
+    @JsonView(IGNORE.class)
+    @TableField(exist = false)
+    private DiscoveryEntity discovery;
+
+    @Schema(description = "当前评论/回复上一级是什么")
+    @JsonView(IGNORE.class)
+    @TableField(exist = false)
+    private Object parent;
 }
 
