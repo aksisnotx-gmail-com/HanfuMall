@@ -13,6 +13,7 @@
     const commentList = ref([])
     const getCommentList = async (id) => {
         const res = await getAllCommentApi(id)
+
         const {
             user,
             img,
@@ -46,7 +47,6 @@
         commentInfo.commentShow = true
         commentInfo.commentType = commentType
         commentInfo.commentId = commentStore.discoveryId
-        
     }
 
     const confirm = async () => {
@@ -55,13 +55,16 @@
 
         const commentId = commentInfo.commentId
         const commentType = commentInfo.commentType
+        const discoveryId = commentStore.discoveryId
 
 
         const objParam = {
             commentId,
             content,
-            commentType
+            commentType,
+            discoveryId
         }
+
         const res = await commentApi(objParam)
         const { data, message } = res
         if(data) {
@@ -84,6 +87,10 @@
             commentInfo.commentShow = false
             commentInfo.commentVal = ''
         }
+    }
+
+    const onUpdateCurCommentList = () => {
+        getCommentList(commentStore.discoveryId)
     }
 
     const commentStore = useCommentStore()
@@ -131,6 +138,7 @@
         <view class="bg-#fff mt-1 p-3">
             <CommentItem 
                 :commentList="commentList"
+                @updateCommentList="onUpdateCurCommentList"
             />
         </view>
 

@@ -1,6 +1,11 @@
 <script setup>
-    import { useUserStore } from '@/store/modules/user.js'
+    import { useUserStore } from '@/store/modules/user'
+    import { useMsgStore } from '@/store/modules/msg'
+
+    import env from '@/utils/config'
+
     const userStore = useUserStore()
+    const msgStore = useMsgStore()
 
     const { userInfo } = storeToRefs(userStore)
 
@@ -10,19 +15,19 @@
         })
     }
 
-    const imageSrc = ref('')
+    const imageUrl = ref('')
     const chooseImage = () => {
         uni.chooseImage({
                 count: 1, //最多可以选择的图片张数，默认9
                 sizeType: ['compressed'], //original 原图，compressed 压缩图，默认二者都有
                 sourceType: ['album'], //album 从相册选图，camera 使用相机，默认二者都有。如需直接开相机或直接选相册，请只使用一个选项
                 success: (res) => { //成功返回的函数
-                    var imageSrc = res.tempFilePaths[0] //将图片的地址赋值给imageSrc
+                    const imageSrc = res.tempFilePaths[0] //将图片的地址赋值给imageSrc
                     uni.uploadFile({ //上传图片
-                        url: '@/detail_3/detail_3.vue', //开发者服务器 url
+                        url: env.fileUrl, //开发者服务器 url
                         filePath: imageSrc, //要上传文件资源的路径。
                         fileType: 'image', //文件类型，image/video/audio
-                        name: 'data', //文件对应的 key , 开发者在服务器端通过这个 key 可以获取到文件二进制内容
+                        name: 'file', //文件对应的 key , 开发者在服务器端通过这个 key 可以获取到文件二进制内容
                         success: (res) => { //接口调用成功的回调函数
                             uni.showToast({ //消息提示框
                                 title: '上传成功',
@@ -30,10 +35,10 @@
                                 duration: 1000
                             }),
                             uni.setStorage({
-                                key:'image1',
-                                data:imageSrc
+                                key:'bgImg',
+                                data: imageSrc
                             })
-                            this.imageSrc = imageSrc
+                            imageUrl.value = imageSrc
                         },
                         fail: (err) => { //接口调用失败的回调函数	
                             uni.showModal({ //消息提示框
@@ -64,6 +69,18 @@
                     }
                 }) 
                 }
+        })
+    }
+
+    const changeImg = () => {
+        uni.showModal({
+            title: '提示',
+            content: '确定更换背景图片吗',
+            success: function (res) {
+                if (res.confirm) {
+                    chooseImage()
+                }
+            }
         })
     }
 
@@ -180,20 +197,35 @@
             userInfo.value.nickname = uni.getStorageSync('nickname')
             userInfo.value.phoneNumber = uni.getStorageSync('phoneNumber')
         }
+        refresh()
+    })
+
+    const refresh = () => {
+        const bgImg = uni.getStorageSync('bgImg')
+        imageUrl.value = bgImg ? bgImg : ''
+    }
+
+    onShow(() => {
+        msgStore.addUnReadinfo()
     })
 
     onUnload(() => {
         // 页面卸载时
-        imageSrc.value = '';
+        imageUrl.value = '';
     })
 </script>
 
 <template>
     <view class="w-100vw bg-#ccc">
         <view class="bg">
-            <template v-if="imageSrc">
+            <template v-if="imageUrl">
                 <!-- 如果存在图片 -->
-                <image :src="imageSrc" class="image" mode="widthFix"></image>
+                <image 
+                    :src="imageUrl" 
+                    class="image" 
+                    mode="widthFix"
+                    @click="changeImg"
+                ></image>
             </template>
             <template v-else>
                 <!-- 没有原始图片 -->
@@ -259,7 +291,7 @@
                 <view class="flex items-center" @click="onClickFunction(item)">
                     <image 
                         :src="'/static/tabbar/' + item.icon" 
-                        mode="widthFix"
+                        mode="aspectFit"
                         class="w-8 h-8"
                     >
                     </image>
@@ -319,6 +351,7 @@
 <style lang="scss" scoped>
     .image {
         width: 100%;
+        height: 200px;
     }
     
     .tit {
@@ -328,9 +361,9 @@
         background-color: antiquewhite;
     }
     
-    .bg {
+    /* .bg {
         padding: 20px 12px;
-    }
+    } */
     
     .uni-hello-addfile {
         height: 200rpx;

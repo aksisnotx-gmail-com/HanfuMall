@@ -46,7 +46,8 @@
 				{
 					"path": "pages/comment/index",
 					"style": {
-						"navigationBarTitleText": "商品评论"
+						"navigationBarTitleText": "商品评论",
+						"onReachBottomDistance": 50
 					}
 				},
 				{
@@ -66,9 +67,6 @@
 					"path": "pages/wDetail/index",
 					"style": {
 						"navigationBarTitleText": "图文详情"
-					},
-					"usingComponents": {  
-						"comment-item": "/components/comment-item"  
 					}
 				},
 				{
@@ -105,7 +103,8 @@
 					"path": "pages/my/order",
 					"style": {
 						"navigationBarTitleText": "订单",
-						"onReachBottomDistance": 50
+						"onReachBottomDistance": 50,
+						"enablePullDownRefresh": true
 					}
 				},
 				{
@@ -121,6 +120,18 @@
 					}
 				},
 				{
+					"path": "pages/my/like",
+					"style": {
+						"navigationBarTitleText": "赞"
+					}
+				},
+				{
+					"path": "pages/my/cmt",
+					"style": {
+						"navigationBarTitleText": "评论"
+					}
+				},
+				{
 					"path": "pages/my/moneny",
 					"style": {
 						"navigationBarTitleText": "汉币中心"
@@ -129,7 +140,14 @@
 				{
 					"path": "pages/my/reviewed",
 					"style": {
-						"navigationBarTitleText": "已评价"
+						"navigationBarTitleText": "已评价",
+						"onReachBottomDistance": 50
+					}
+				},
+				{
+					"path": "pages/my/evaluate",
+					"style": {
+						"navigationBarTitleText": "评价"
 					}
 				},
 				{
@@ -183,6 +201,9 @@
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "绾青丝汉服社",
 		"navigationBarBackgroundColor": "#7494D1",
-		"backgroundColor": "#F8F8F8"
+		"backgroundColor": "#F8F8F8",
+		"usingComponents": {  
+			"comment-item": "/components/comment-item"  
+		}
 	}
 }

@@ -1,20 +1,47 @@
 <script setup>
-    const list = [
+    import { useMsgStore } from '@/store/modules/msg'
+
+    const msgStore = useMsgStore()
+
+    const { unReadLikes, unReadComments } = storeToRefs(msgStore)
+
+    const list = reactive([
         {
             id: 1,
             icon: 'good.svg',
-            title: '点赞'
+            title: '点赞',
+            count: 0
         },
         {
             id: 2,
             icon: 'comment.svg',
-            title: '评论'
+            title: '评论',
+            count: 0
         }
-    ]
+    ])
 
     const onClickFunction = (item) => {
-        console.log(item, 'item')
+        const { title, count } = item
+        if(!count) return
+
+        const obj = {
+            '点赞': '/pagesA/pages/my/like',
+            '评论': '/pagesA/pages/my/cmt'
+        }
+
+        uni.navigateTo({
+            url: obj[title]
+        })
     }
+
+    onMounted(() => {
+        
+    })
+
+    onLoad(() => {
+       list[0].count = unReadLikes.value.length || 0
+       list[1].count = unReadComments.value.length || 0
+    })
 </script>
 
 <template>
@@ -36,11 +63,18 @@
                         ]"
                     >
                     <text class="color-#666">{{ item.title }}</text>
-                    <u-icon 
-                    name="arrow-right" 
-                    color="#FC7DA6" 
-                    size="18"
-                    ></u-icon>
+                    <view class="flex justify-center items-center">
+                        <view 
+                            class="badge" 
+                            v-if="item.count != 0"
+                        >
+                            {{ item.count }}</view>
+                        <u-icon 
+                        name="arrow-right" 
+                        color="#FC7DA6" 
+                        size="18"
+                        ></u-icon>
+                    </view>
                 </view>
             </view>
        </template>
@@ -50,5 +84,17 @@
 <style scoped>
     .border_b {
         border-bottom: 1px solid #ccc;
+    }
+
+    .badge {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 16px;
+        height: 16px;
+        background: #FC7DA6;
+        border-radius: 50%;
+        font-size: 12px;
+        color: #fff;
     }
 </style>

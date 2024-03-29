@@ -1,45 +1,122 @@
 <script setup>
+    import { getMyEvaluateApi, delMyEvaluateApi } from '@/api/tabbar/my'
 
+    const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
+
+    const evaluateList = ref([])
+    const getMyEvaluate = async (currentt = 1) => {
+        const res = await getMyEvaluateApi(currentt)
+		const { records, total, size, current } = res.data
+		pageInfo.current = current
+		pageInfo.size = size
+		pageInfo.total = total
+        evaluateList.value = [ ...evaluateList.value, ...records ]
+    }
+
+    const delEvaluate = (commentId, orderId) => {
+        uni.showModal({
+            title: '提示',
+            content: '确定要删除该评论吗？',
+            success: async ({ confirm }) => {
+                if(confirm) {
+                    const res = await delMyEvaluateApi(commentId, orderId)
+                    if(res.code === 200) {
+                        
+                        await getMyEvaluate(pageInfo.current)
+
+                        uni.showToast({
+                            title: '删除成功',
+                            icon: 'success',
+                            duration: 2000
+                        })
+                    }
+                }
+            }
+        })
+    }
+
+    onReachBottom(async () => {
+        if(!evaluateList.value.length) return
+        
+		uni.showLoading({
+            title: '加载中'
+        });
+		const currentTotal = pageInfo.current * pageInfo.size
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getMyEvaluate(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
+	})
+
+    onMounted(async () => {
+        await getMyEvaluate()
+        uni.hideLoading()
+    })
+
+    onLoad(() => {
+        uni.showLoading({
+            title: '加载中'
+        })
+    }) 
 </script>
 
 <template>
     <view class="bg-#f2f2f2 pb-6">
-        <template v-for="item of 3" :key="item">
+        <template v-if="!evaluateList.length">
+            <view class="h-100vh flex justify-center items-center">
+                <u-empty
+                mode="data"
+                >
+            </u-empty>
+            </view>
+        </template>
+        <template v-for="item of evaluateList" :key="item.comment.id">
             <view class="bg-#fff px-3 mb-3">
                 <view 
                     class="h-10 layout-slide font-600 color-#666"
                 >
-                    <text class="text-3.5">2023-10-10</text>
-                    <text>删除</text>
+                    <text class="text-3.5">{{ item.comment.createTime }}</text>
+                    <text @click="delEvaluate(item.comment.id, item.order.id)">删除</text>
                 </view>
                 <view class="color-#666 flex flex-col">
-                    <text class="comment">我的评价内容(文本+图片)</text>
+                    <text class="comment">{{ item.comment.commentContent }}</text>
                     <view class="flex justify-around">
-                        <image
-                            class="w-25 h-20"
-                            src="https://ts3.cn.mm.bing.net/th?id=OIP-C.YwQZJ_SoLGm-kVT-e-Xc2AHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" 
-                            mode="aspectFit|aspectFill|widthFix"
-                        />
-                        <image
-                            class="w-25 h-20"
-                            src="https://ts3.cn.mm.bing.net/th?id=OIP-C.YwQZJ_SoLGm-kVT-e-Xc2AHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" 
-                            mode="aspectFit|aspectFill|widthFix"
-                        />
-                        <image
-                            class="w-25 h-20"
-                            src="https://ts3.cn.mm.bing.net/th?id=OIP-C.YwQZJ_SoLGm-kVT-e-Xc2AHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" 
-                            mode="aspectFit|aspectFill|widthFix"
-                        />
+                        <template v-if="item.comment.commentImgUrl">
+                            <template v-for="url of item.comment.commentImgUrl" :key="url">
+                                <image
+                                    class="w-25 h-20"
+                                    :src="url"
+                                    mode="aspectFit"
+                                />
+                            </template>
+                        </template>
                     </view>
                 </view>
                 <u-divider text="" hairline></u-divider>
                 <view class="flex gap-3 pb-5">
                     <image
                         class="w-25 h-15"
-                        src="https://ts3.cn.mm.bing.net/th?id=OIP-C.YwQZJ_SoLGm-kVT-e-Xc2AHaEo&w=316&h=197&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2" 
-                        mode="aspectFit|aspectFill|widthFix"
+                        v-if="item.order.productSku"
+                        :src="item.order.productSku.attribute.carouselUrl" 
+                        mode="aspectFit"
                     />
-                    <text class="text-3">原创宋制汉服女重工刺绣长衫精子齐腰褶裙春夏款</text>
+                    <view class="flex flex-col gap-1">
+                        <text class="text-3 font-600">{{ item.order.productDetail.productName }}</text>
+                        <text class="text-3 color-#999">{{ item.order.productSku.attribute.desc }}</text>
+                    </view>
                 </view>
             </view>
         </template>

@@ -16,7 +16,9 @@
 		pageInfo.current = current
 		pageInfo.size = size
 		pageInfo.total = total
-		list.value = [ ...records.map(item => ({
+		list.value = [ 
+		...list.value,
+		...records.map(item => ({
 			id: item.id,
 			skuId: item.productMap.SKU.id,
 			img: item.productMap.PRODUCT.carousel[0],
@@ -49,28 +51,30 @@
 		})
 
 		list.value = list.value.filter(item => !itemGrounpChecked.value.includes(item.id))
-		itemGrounpChecked.value.splice(0, Infinity)
+		const len = itemGrounpChecked.value.length
+		itemGrounpChecked.value.splice(0, len)
 	}
 
 	const handleCheck = (detail) => {
 		console.log(detail, 'detail');
 	}
 
-	const allCheckedName = 'all'
 	// 全选
 	const isAllChecked = computed({
 		get(){
 			const listLen = list.value.length
 			const checkedLen = itemGrounpChecked.value.length
 			if(!listLen) return []
-			if(listLen === checkedLen) return [ allCheckedName ]
+			if(listLen === checkedLen) return [ 'all' ]
 		},
 		// 全选---->list列表
 		set(val){
+			console.log(val, 'val');
 			if(val.length) {
 				itemGrounpChecked.value = list.value.map(item => item.id)
 			} else {
-				itemGrounpChecked.value.splice(0, Infinity)
+				const len = itemGrounpChecked.value.length
+				itemGrounpChecked.value.splice(0, len)
 			}
 		}
 	})
@@ -138,6 +142,9 @@
 	})
 
 	onReachBottom(async () => {		
+		const len = list.value.length
+		list.value.splice(0, len)
+
 		uni.showLoading({
             title: '加载中'
         });
@@ -158,10 +165,13 @@
 	})
 
 	onPullDownRefresh(async () => {
+		const len = list.value.length
+		list.value.splice(0, len)
+		
 		uni.showLoading({
             title: '加载中'
         });
-		await getAllCar(pageInfo.current)
+		await getAllCar()
 		uni.stopPullDownRefresh()
 		uni.hideLoading()
 	})
@@ -177,49 +187,58 @@
 		</view>
 
 		<view class="px-2">
-			<u-checkbox-group v-model="itemGrounpChecked" @change="handleCheck">
-				<view class="list" v-for="item in list" :key='item.id'>
-					<view class="l">
-						<!-- 列表的复选框 -->
-						<u-checkbox
-						:name="item.id"
-						shape="circle" 
-						activeColor="#7DA1DC"
-					></u-checkbox>
-					<image :src="item.img" mode="aspectFit" class="img"></image>
-					</view>
-					<view class="center">
-						<view class="name">
-							{{item.name}}
+			<template v-if="!list.length">
+				<u-empty
+					mode="car"
+					icon="http://cdn.uviewui.com/uview/empty/car.png"
+				>
+				</u-empty>
+			</template>
+			<template v-else>
+				<u-checkbox-group v-model="itemGrounpChecked" @change="handleCheck">
+					<view class="list" v-for="item in list" :key='item.id'>
+						<view class="l">
+							<!-- 列表的复选框 -->
+							<u-checkbox
+							:name="item.id"
+							shape="circle" 
+							activeColor="#7DA1DC"
+						></u-checkbox>
+						<image :src="item.img" mode="aspectFit" class="img"></image>
 						</view>
-						<view class="size">
-							尺寸: {{item.size}}
-						</view>
-						<view class="count">
-							数量: x{{item.count}}
-						</view>
-					</view>
-					<view class="r">
-						<!-- 商品小计 -->
-						<view class="price">
-							<!-- ￥{{item.price*item.count}}元 -->
-							￥{{item.sumPrice}}元
-							
-						</view>
-						<view class="update-count">
-							<view class="reduce" @tap="reduce(item)">
-							-
+						<view class="center">
+							<view class="name">
+								{{item.name}}
 							</view>
-							<view class="cart-count">
-								{{item.count}}
+							<view class="size">
+								尺寸: {{item.size}}
 							</view>
-							<view class="add" @tap="add(item)">
-								+
+							<view class="count">
+								数量: x{{item.count}}
 							</view>
 						</view>
+						<view class="r">
+							<!-- 商品小计 -->
+							<view class="price">
+								<!-- ￥{{item.price*item.count}}元 -->
+								￥{{item.sumPrice}}元
+								
+							</view>
+							<view class="update-count">
+								<view class="reduce" @tap="reduce(item)">
+								-
+								</view>
+								<view class="cart-count">
+									{{item.count}}
+								</view>
+								<view class="add" @tap="add(item)">
+									+
+								</view>
+							</view>
+						</view>
 					</view>
-				</view>
-			</u-checkbox-group>
+				</u-checkbox-group>
+			</template>
 		</view>
 		
 		<!-- 底部导航栏 -->
@@ -230,7 +249,7 @@
 						v-model="isAllChecked" 	
 					>
 						<u-checkbox 
-							:name="allCheckedName"
+							name="all"
 							shape="circle"
 							activeColor="#7DA1DC" 
 							label="全选" 
@@ -250,7 +269,7 @@
 						v-model="isAllChecked" 	
 					>
 						<u-checkbox 
-							:name="allCheckedName"
+							name="all"
 							shape="circle"
 							activeColor="#7DA1DC" 
 							label="全选" 

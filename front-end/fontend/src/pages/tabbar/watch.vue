@@ -82,12 +82,14 @@
     })
 
     onPullDownRefresh(async () => {
-        discoveryList.value.splice(0, Infinity)
+        const len = discoveryList.value.length
+		discoveryList.value.splice(0, len)
 
 		uni.showLoading({
             title: '加载中'
         });
-        await getAllDiscovery(pageInfo.current)
+        await getAllDiscovery()
+        
 		uni.stopPullDownRefresh()
 		uni.hideLoading()
 	})

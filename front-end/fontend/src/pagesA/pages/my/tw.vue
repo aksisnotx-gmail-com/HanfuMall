@@ -105,48 +105,59 @@
 
 <template>
     <view class="min-h-100vh bg-#f2f2f2 pb-4">
-        <template v-for="item of discoveryList" :key="item.id">
-            <view class="bg-#fff mb-3">
-                <view class="u-demo-block">
-                    <view class="u-demo-block__content">
-                        <view class="album" @click.stop="JumpDetail(item.id)">
-                            <view class="album__content px-3 flex flex-col">
-                                <view 
-                                    class="flex justify-between items-center h-10"
-                                    @click.stop="onEdit(item.id)"
-                                >
-                                    <text class="color-#666">{{ item.createTime }}</text>
-                                    <u-icon 
-                                        name="arrow-down" 
-                                        size="22"
-                                    ></u-icon>
+        <template v-if="!discoveryList.length">
+            <view class="h-100vh flex justify-center items-center">
+                <u-empty
+                    mode="data"
+                >
+                </u-empty>
+            </view>
+        </template>
+
+        <template v-else>
+            <template v-for="item of discoveryList" :key="item.id">
+                <view class="bg-#fff mb-3">
+                    <view class="u-demo-block">
+                        <view class="u-demo-block__content">
+                            <view class="album" @click.stop="JumpDetail(item.id)">
+                                <view class="album__content px-3 flex flex-col">
+                                    <view 
+                                        class="flex justify-between items-center h-10"
+                                        @click.stop="onEdit(item.id)"
+                                    >
+                                        <text class="color-#666">{{ item.createTime }}</text>
+                                        <u-icon 
+                                            name="arrow-down" 
+                                            size="22"
+                                        ></u-icon>
+                                    </view>
+                                    <text class="color-#666">{{ item.descText }}</text>
+                                    <u-album 
+                                        :urls="item.img"
+                                        multipleSize="110"
+                                    ></u-album>
                                 </view>
-                                <text class="color-#666">{{ item.descText }}</text>
-                                <u-album 
-                                    :urls="item.img"
-                                    multipleSize="110"
-                                ></u-album>
                             </view>
                         </view>
                     </view>
+                    <u-divider text="" hairline></u-divider>
+                    <view class="h-8 flex justify-end px-10 gap-6">
+                        <u-icon 
+                            name="thumb-up" 
+                            size="24"
+                            :label="item.likes"
+                            space="1"
+                        ></u-icon>
+                        <u-icon 
+                            name="chat" 
+                            size="24"
+                            :label="item.comments.length || 0"
+                            space="1"
+                            @click.stop="JumpDetail(item.id)"
+                        ></u-icon>
+                    </view>
                 </view>
-                <u-divider text="" hairline></u-divider>
-                <view class="h-8 flex justify-end px-10 gap-6">
-                    <u-icon 
-                        name="thumb-up" 
-                        size="24"
-                        :label="item.likes"
-                        space="1"
-                    ></u-icon>
-                    <u-icon 
-                        name="chat" 
-                        size="24"
-                        :label="item.comments.length || 0"
-                        space="1"
-                        @click.stop="JumpDetail(item.id)"
-                    ></u-icon>
-                </view>
-            </view>
+            </template>
         </template>
 
         <u-action-sheet

@@ -82,7 +82,8 @@
 	async function getProductByType (type) {
 		if(!type) return
 
-		tabbar[viewInfo.current].proList.splice(0, Infinity)
+		const proLen = tabbar[viewInfo.current].proList.length
+		tabbar[viewInfo.current].proList.splice(0, proLen)
 
 		const res = await getProductByTypeApi(type)
 		const { records } = res.data

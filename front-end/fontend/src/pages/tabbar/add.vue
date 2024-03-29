@@ -89,7 +89,9 @@
                 }
             })
         } else {
-            fileList.value.splice(0, Infinity)
+            const len = fileList.value.length
+            fileList.value.splice(0, len)
+            
             comment.value = ''
         }
     }

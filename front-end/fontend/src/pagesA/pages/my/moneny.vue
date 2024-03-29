@@ -1,16 +1,48 @@
 <script setup>
+    import { getWalletApi, rechargeWalletApi } from '@/api/tabbar/my'
 
-    const curMoneny = ref(33)
-    const rechargeShow = ref(false)
-
-    const rechargeStyle = {
+    const curMoneny = ref(0)
+    const getWallet = async () => {
+        const res = await getWalletApi()
+        const { message, code, data } = res
+        if(code !== 200) {
+            uni.showToast({
+                icon: 'error',
+                duration: 3000,
+                title: message
+            })
+        } else {
+            curMoneny.value = data.balance
+        }
+        
     }
+
+    const rechargeShow = ref(false)
 
     const rechargeNum = ref(0)
     const onClose = () => {
         rechargeShow.value = false
     }
 
+    const onRecharge = async (decimal) => {
+        uni.showLoading({
+            title: '充值中...',
+            mask: true
+        })
+
+        const res = await rechargeWalletApi(decimal)
+        if(res.data) {
+            uni.showToast({
+                icon: 'success',
+                duration: 3000,
+                title: '充值成功'
+            })
+            await getWallet()
+            uni.hideLoading()
+            rechargeShow.value = false
+        }
+
+    }
     const onAddMoneny = () => {
         if(!rechargeNum.value) {
             uni.showToast({
@@ -31,9 +63,18 @@
             return
         }
 
-        rechargeShow.value = false
-        curMoneny.value += Number(rechargeNum.value)
+        onRecharge(rechargeNum.value)
     }
+
+    const onJumpCar = () => {
+        uni.switchTab({
+            url: '/pages/tabbar/car'
+        })
+    }
+
+    onShow(() => {
+        getWallet()
+    })
 </script>
 
 <template>
@@ -62,7 +103,10 @@
                         mode="aspectFit"
                         class="w-15 h-15"
                     />
-                    <text class="border_xy py-1 px-3 color-#666">去购买</text>
+                    <text 
+                        class="border_xy py-1 px-3 color-#666"
+                        @click="onJumpCar"
+                    >去购买</text>
                 </view>
             </view>
             <u-divider text="" hairline></u-divider>
@@ -75,7 +119,6 @@
         <u-popup 
             :show="rechargeShow"
             @close="onClose"
-            :customStyle="rechargeStyle"
             :safeAreaInsetBottom="false"
         >
             <view class="h-40">

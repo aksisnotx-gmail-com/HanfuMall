@@ -29,7 +29,8 @@
 
 	const onClear = () => {
 		keyword.value = ''
-		productList.value.splice(0, Infinity)
+		const len = productList.value.length
+		productList.value.splice(0, len)
 		getAllProduct(pageInfo.current)
 	}
 
@@ -72,7 +73,8 @@
 	}
 
 	const getProductBySearch = async (productName) => {
-		productList.value.splice(0, Infinity)
+		const proLen = productList.value.length
+		productList.value.splice(0, proLen)
 		const res = await getProductBySearchApi(productName)
 		const { records } = res.data
 		const len = records.length

@@ -1,7 +1,8 @@
 <script setup>
     import { useCarStore } from '@/store/modules/car'
     import { useAddressStore } from '@/store/modules/address'
-    import { createOrderApi } from '@/api/tabbar/order'
+    import { createOrderApi, orderPayApi } from '@/api/tabbar/order'
+    import { addOrReduceApi } from '@/api/tabbar/car'
 
     const carStore = useCarStore()
 
@@ -11,6 +12,76 @@
         })
     }
 
+
+    const orderId = ref([])
+    const createOrder = async () => {
+        const addressJson = JSON.stringify(address.value)
+        const orderParams = reactive([])
+        const carIdList = reactive([])
+        carStore.goodsList.forEach((item) => {
+            const {
+                id,
+                skuId,
+                count,
+                sumPrice,
+                size
+            } = item
+
+            const params = {
+                deliveryAddress: addressJson,
+                skuId,
+                number: count,
+                totalPrice: sumPrice,
+                size
+            }    
+            orderParams.push(params)
+            carIdList.push(id)
+        })
+        const res = await createOrderApi(orderParams)
+
+        if(res.code === 200) {
+            uni.showToast({
+                title: '生成订单成功',
+                icon: 'success',
+                duration: 2000
+            })
+            orderId.value = res.data.map(item => item.id)
+        } else {
+            uni.showToast({
+                title: res.message,
+                icon: 'error',
+                duration: 2000
+            })
+        }
+
+        // 删除创建订单的购物车商品
+        if(!carIdList.length) return
+
+        carIdList.forEach(async (item) => {
+            await addOrReduceApi(item, -999)
+        })
+    }
+
+    const payOrder = async () => {
+        if(!orderId.value.length) return
+
+        orderId.value.forEach(async (item) => {
+            await orderPayApi(item)
+        })
+        uni.showToast({
+            title: '支付成功',
+            icon: 'success',
+            duration: 2000,
+            success() {
+                setTimeout(() => {
+                    uni.navigateBack({
+                        delta: 1
+                    })
+                })
+            }
+        })
+
+    }
 
     const submitOrder = async () => {
         if(!Object.keys(address.value).length) {
@@ -34,52 +105,15 @@
         uni.showModal({
             title: '提示',
             content: '支付订单?',
-            success: function (res) {
+            success: async function (res) {
                 if (res.confirm) {
-                    
+                    await createOrder()
+                    await payOrder()
                 } else if (res.cancel) {
-                    
+                    createOrder()
                 }
             }
         });
-    }
-
-    const createOrder = async () => {
-        const addressJson = JSON.stringify(address.value)
-        const orderParams = reactive([])
-        carStore.goodsList.forEach((item) => {
-            const {
-                skuId,
-                count,
-                sumPrice,
-                size
-            } = item
-
-            const params = {
-                deliveryAddress: addressJson,
-                skuId,
-                number: count,
-                totalPrice: sumPrice,
-                size
-            }    
-            orderParams.push(params)
-        })
-
-        const res = await createOrderApi(orderParams)
-        if(res.data) {
-            // TODO 提交订单的接口 考虑汉币的数量
-            uni.showToast({
-                title: '生成订单成功',
-                icon: 'success',
-                duration: 2000
-            })
-        } else {
-            uni.showToast({
-                title: res.message,
-                icon: 'error',
-                duration: 2000
-            })
-        }
     }
 
     const addressStore = useAddressStore()
