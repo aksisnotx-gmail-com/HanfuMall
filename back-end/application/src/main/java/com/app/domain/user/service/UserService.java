@@ -97,7 +97,9 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
     public UserEntity login(String phoneNumber, String password,Boolean isWeChatLogin) {
         UserEntity user = getUserByPhoneNumber(phoneNumber);
         AssertUtils.notNull(user, "用户不存在");
-        AssertUtils.assertTrue(user.getIsWechatLogin().equals(UN_WECHAT_LOGIN), "前台用户请去注册");
+        if (!isWeChatLogin) {
+            AssertUtils.assertTrue(!user.getIsWechatLogin().equals(WECHAT_LOGIN), "前台用户请去注册");
+        }
         //isWeChatLogin 微信登录则用手机号码解密
         AssertUtils.assertTrue(MD5Utils.decrypt(isWeChatLogin ? phoneNumber : password,user.getPwd()), "密码错误");
         return LoginUser.store(user);

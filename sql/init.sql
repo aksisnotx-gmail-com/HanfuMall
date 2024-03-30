@@ -37,7 +37,8 @@ create table sys_discovery_comment
     content      text         null comment '评论内容',
     user_id      varchar(255) null comment '评论人',
     is_read      int          null comment '是否已读(1 已读 0 未读)',
-    comment_type varchar(255) null comment '评论类型'
+    comment_type varchar(255) null comment '评论类型',
+    discovery_id varchar(255) null comment '发现ID'
 )
     comment '评论内容';
 
