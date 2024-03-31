@@ -1,5 +1,6 @@
 package com.app.domain.user.entity;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.IdUtil;
 import com.app.domain.user.enums.Role;
 import com.app.toolkit.redis.RedisUtils;
@@ -58,7 +59,7 @@ public  class LoginUser {
     }
 
     public static UserEntity store(UserEntity user) {
-        final String token = UUID.randomUUID().toString();
+        final String token = createToken(user.getId());
         user.setToken(token);
         redisUtils.opsForValue(token,user,HALF_MONTH);
         //存到本地内存中
@@ -70,5 +71,14 @@ public  class LoginUser {
         //更新用户
         redisUtils.opsForValue(user.getToken(),user);
         return getLoginUser();
+    }
+
+    public static boolean remove(String userId) {
+        return redisUtils.delete(createToken(userId)) == 1L;
+    }
+
+    private static String createToken(String userId) {
+        //两次BASE64加密就是TOKEN
+        return Base64.encode(Base64.encode(userId));
     }
 }

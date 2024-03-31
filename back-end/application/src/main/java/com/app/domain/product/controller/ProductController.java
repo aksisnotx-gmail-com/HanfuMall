@@ -37,9 +37,9 @@ public class ProductController extends Controller {
     }
 
     //删除商品
-    @GetMapping("/detail/delete")
-    @Operation(summary = "删除商品 - [删除]")
-    public RespEntity<Boolean> delete(@RequestParam("ids") List<String> idS) {
+    @PostMapping("/detail/delete")
+    @Operation(summary = "删除商品 - [修改]")
+    public RespEntity<Boolean> delete(@RequestBody List<String> idS) {
         //同时删除sku表
         return RespEntity.success(productDetailsService.deleteProductById(idS));
     }
@@ -113,7 +113,7 @@ public class ProductController extends Controller {
 
     //获取所有商品类型
     @GetMapping("/type")
-    @Operation(summary = "获取商品类型ID查询具体,没有ID查询所有的 - [新增]")
+    @Operation(summary = "获取商品类型有ID查询具体,没有ID查询所有的 - [新增]")
     public RespEntity<List<ProductTypeEntity>> getAllType(@RequestParam(required = false) String typeId) {
         return RespEntity.success(typeService.getAllType(typeId));
     }
@@ -127,7 +127,7 @@ public class ProductController extends Controller {
 
     //删除商品类型
     @GetMapping("/type/delete/{typeId}")
-    @Operation(summary = "删除商品类型")
+    @Operation(summary = "删除商品类型 - [新增]")
     public RespEntity<Boolean> deleteType(@PathVariable("typeId") String typeId) {
         return RespEntity.success(typeService.deleteType(typeId));
     }

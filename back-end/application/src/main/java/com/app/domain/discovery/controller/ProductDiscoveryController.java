@@ -33,7 +33,7 @@ public class ProductDiscoveryController extends Controller {
 
     //发布发现
     @PostMapping("/discovery/publish")
-    @Operation(summary = "发布发现 - [修改]")
+    @Operation(summary = "发布发现")
     public RespEntity<Boolean> publish(@RequestBody @JsonView(Entity.INSERT.class) DiscoveryEntity entity) {
         return RespEntity.success(discoveryService.publish(entity, LoginUser.getLoginUserId()));
     }

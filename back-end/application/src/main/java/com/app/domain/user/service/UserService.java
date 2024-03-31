@@ -139,25 +139,11 @@ public class UserService extends AbstractService<UserMapper,UserEntity> {
         throw new GlobalException("更新用户信息失败");
     }
 
+    public Boolean deleteUserById(String id) {
+        return this.removeById(id) && LoginUser.remove(id);
+    }
+
     private UserEntity getUserByPhoneNumber(String phoneNumber) {
         return this.lambdaQuery().eq(UserEntity::getPhoneNumber, phoneNumber).one();
     }
-
-    private String decrypt(String encryptedData, String sessionKey, String iv) {
-        // 使用Base64解码
-        byte[] dataByte = Base64.decode(encryptedData);
-        byte[] keyByte = Base64.decode(sessionKey);
-        byte[] ivByte = Base64.decode(iv);
-
-        // 创建AES实例并设置模式和填充方式
-        AES aes = new AES(Mode.CBC, Padding.PKCS5Padding, keyByte, ivByte);
-
-        // 解密
-        byte[] resultByte = aes.decrypt(dataByte);
-
-        // 转换解密结果为字符串
-        return new String(resultByte, CharsetUtil.CHARSET_UTF_8);
-    }
-
-
 }

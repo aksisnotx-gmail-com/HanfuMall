@@ -82,7 +82,7 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean closeOrder(String orderId, UserEntity user) {
         OrderState closeOrder = OrderState.CLOSE_ORDER;
-        OrderEntity one = getOne(orderId, closeOrder, user);
+        OrderEntity one = Role.ADMIN.equals(user.getRole()) ? getOneByAdmin(orderId, closeOrder, user) : getOne(orderId, closeOrder, user);
         //如果允许关闭订单 , 1.订单中的商品如果存在数量加回来 2.订单中的商品不存在则忽略
         ProductSkuEntity sku = skuService.getById(one.getProductSku().getId(), false);
         if (!Objects.isNull(sku)) {

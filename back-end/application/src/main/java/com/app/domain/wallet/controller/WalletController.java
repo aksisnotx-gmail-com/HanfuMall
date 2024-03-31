@@ -38,15 +38,15 @@ public class WalletController extends Controller {
 
     //查询
     @GetMapping("/query")
-    @Operation(summary = "查询 - [修改]")
+    @Operation(summary = "查询钱包余额,ID可以不传,不穿默认获取自己的 - [修改]")
     public RespEntity<WalletEntity> getWallet(@RequestParam(required = false) String userId) {
         return RespEntity.success(walletService.getWallet(StrUtil.isBlank(userId) ? LoginUser.getLoginUserId() : userId));
     }
 
     //查询用户的支出与收入记录
     @GetMapping("/queryRecords")
-    @Operation(summary = "支出与收入记录 - [新增]")
-    public RespEntity<Page<WalletRecordEntity>> getWalletRecords(@RequestParam String userId) {
-        return RespEntity.success(walletService.queryWalletRecord(userId));
+    @Operation(summary = "支出与收入记录,ID可以不传,不穿默认获取自己的 - [新增]")
+    public RespEntity<Page<WalletRecordEntity>> getWalletRecords(@RequestParam(required = false) String userId) {
+        return RespEntity.success(walletService.queryWalletRecord(StrUtil.isBlank(userId) ? LoginUser.getLoginUserId() : userId));
     }
 }

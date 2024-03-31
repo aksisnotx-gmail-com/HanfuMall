@@ -72,10 +72,10 @@ public class UserController extends Controller {
     }
 
     //删除用户
-    @DeleteMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     @Operation(summary = "删除用户 - [新增]")
     public RespEntity<Boolean> delete(@PathVariable String id) {
-        return RespEntity.success(userLoginService.removeById(id));
+        return RespEntity.success(userLoginService.deleteUserById(id));
     }
 
 }
