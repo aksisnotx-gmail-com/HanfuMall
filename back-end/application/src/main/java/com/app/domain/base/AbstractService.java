@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @author xxl
  * @since 2024/3/19
  */
-public class AbstractService<M extends BaseMapper<T>,T> extends ServiceImpl<M,T> implements IServiceEx<T> {
+public abstract class AbstractService<M extends BaseMapper<T>,T> extends ServiceImpl<M,T> implements IServiceEx<T> {
     public T getById(Serializable id,boolean isCheck) {
         T entity = super.getById(id);
         if (isCheck) {

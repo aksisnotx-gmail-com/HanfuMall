@@ -5,6 +5,8 @@ import com.app.domain.base.Entity;
 import com.app.domain.user.entity.LoginUser;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.param.WeChatLoginParam;
+import com.app.toolkit.web.CommonPageRequestUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.sdk.resp.RespEntity;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,5 +57,25 @@ public class UserController extends Controller {
     }
 
 
+    //查看用户列表
+    @GetMapping("/list")
+    @Operation(summary = "查看用户列表 - [新增]")
+    public RespEntity<Page<UserEntity>> list() {
+        return RespEntity.success(userLoginService.lambdaQuery().page(CommonPageRequestUtils.defaultPage()));
+    }
+
+    //查看用户详情信息
+    @GetMapping("/info/{id}")
+    @Operation(summary = "查看用户信息 - [新增]")
+    public RespEntity<UserEntity> info(@PathVariable String id) {
+        return RespEntity.success(userLoginService.getById(id));
+    }
+
+    //删除用户
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "删除用户 - [新增]")
+    public RespEntity<Boolean> delete(@PathVariable String id) {
+        return RespEntity.success(userLoginService.removeById(id));
+    }
 
 }

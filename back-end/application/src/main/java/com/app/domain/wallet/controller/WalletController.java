@@ -1,8 +1,11 @@
 package com.app.domain.wallet.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.app.controller.Controller;
 import com.app.domain.user.entity.LoginUser;
 import com.app.domain.wallet.entity.WalletEntity;
+import com.app.domain.wallet.entity.WalletRecordEntity;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.resp.RespEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +38,15 @@ public class WalletController extends Controller {
 
     //查询
     @GetMapping("/query")
-    @Operation(summary = "查询")
-    public RespEntity<WalletEntity> getWallet() {
-        return RespEntity.success(walletService.getWallet(LoginUser.getLoginUserId()));
+    @Operation(summary = "查询 - [修改]")
+    public RespEntity<WalletEntity> getWallet(@RequestParam(required = false) String userId) {
+        return RespEntity.success(walletService.getWallet(StrUtil.isBlank(userId) ? LoginUser.getLoginUserId() : userId));
     }
 
+    //查询用户的支出与收入记录
+    @GetMapping("/queryRecords")
+    @Operation(summary = "支出与收入记录 - [新增]")
+    public RespEntity<Page<WalletRecordEntity>> getWalletRecords(@RequestParam String userId) {
+        return RespEntity.success(walletService.queryWalletRecord(userId));
+    }
 }

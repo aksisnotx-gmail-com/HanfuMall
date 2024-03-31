@@ -1,7 +1,6 @@
 package com.app.domain.order.service;
 
 import com.app.domain.base.AbstractService;
-import com.app.domain.comment.entity.ProductCommentEntity;
 import com.app.domain.order.enmus.OrderState;
 import com.app.domain.order.entity.OrderEntity;
 import com.app.domain.order.mapper.OrderMapper;
@@ -11,7 +10,6 @@ import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.product.service.ProductSkuService;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.enums.Role;
-import com.app.domain.wallet.entity.WalletEntity;
 import com.app.domain.wallet.service.WalletService;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
@@ -99,16 +97,12 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     public Boolean payOrder(String orderId, UserEntity user) {
         OrderState makePayment = MAKE_PAYMENT;
         OrderEntity one = getOne(orderId,makePayment , user);
-        WalletEntity wallet = walletService.getOne(user.getId());
         //获取账单总余额
         BigDecimal price = one.getTotalPrice();
-        //获取余额
-        AssertUtils.assertTrue(wallet.getBalance().compareTo(price) >= 0, "余额不足,请前往汉币中心充值");
-        //余额 - 商品总价钱
-        wallet.setBalance(wallet.getBalance().subtract(price));
+        walletService.expenditure(price, user);
         //设置状态
         one.setState(makePayment);
-        return this.updateById(one) && walletService.updateById(wallet);
+        return this.updateById(one);
     }
 
     public Boolean applyRefundOrder(String orderId, UserEntity loginUser) {
@@ -132,12 +126,10 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         }
         //获取账单总余额
         BigDecimal price = one.getTotalPrice();
-        //获取订单人的钱包
-        WalletEntity wallet = walletService.getOne(one.getUserId());
         //余额 + 商品总价钱
-        wallet.setBalance(wallet.getBalance().add(price));
+        walletService.recharge(price, user);
         //更新订单 && 钱包 && 更新商品
-        return this.updateById(one) && walletService.updateById(wallet);
+        return this.updateById(one);
     }
 
     public Boolean sendOrder(String orderId, UserEntity loginUser) {
