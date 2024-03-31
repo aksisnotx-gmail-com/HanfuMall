@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import com.app.domain.base.Entity;
 import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.entity.ProductSkuEntity;
-import com.app.domain.product.enums.ProductType;
 import com.app.domain.product.param.ProductDetailParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -14,10 +13,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * @author xxl
@@ -41,7 +38,7 @@ public class ProductVO extends Entity {
 
     //商品类型：汉服、首饰
     @Schema(description = "商品类型")
-    private List<ProductType> productTypes;
+    private List<String> productTypes;
 
     //商品描述,图片都是为json
     @Schema(description = "商品描述")
@@ -70,8 +67,8 @@ public class ProductVO extends Entity {
     public static ProductVO create(ProductDetailsEntity entity,List<ProductSkuEntity> skuEntities){
         ProductVO vo = new ProductVO();
         BeanUtil.copyProperties(entity,vo);
-        //设置ProductType
-        vo.setProductTypes(entity.getProductTypeList());
+        //设置产品类型
+        vo.setProductTypes(entity.getProductTypeIds());
         //设置sku
         List<SkuVO> list = skuEntities.parallelStream().map(SkuVO::create).toList();
         //设置可供选择的规格组合

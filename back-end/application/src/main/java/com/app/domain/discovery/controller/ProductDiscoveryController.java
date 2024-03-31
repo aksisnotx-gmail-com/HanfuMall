@@ -33,7 +33,7 @@ public class ProductDiscoveryController extends Controller {
 
     //发布发现
     @PostMapping("/discovery/publish")
-    @Operation(summary = "发布发现")
+    @Operation(summary = "发布发现 - [修改]")
     public RespEntity<Boolean> publish(@RequestBody @JsonView(Entity.INSERT.class) DiscoveryEntity entity) {
         return RespEntity.success(discoveryService.publish(entity, LoginUser.getLoginUserId()));
     }
@@ -54,7 +54,7 @@ public class ProductDiscoveryController extends Controller {
 
     //查询所有的发现
     @GetMapping("/getAll/discovery")
-    @Operation(summary = "查询所有的发现(我的图文)")
+    @Operation(summary = "查询所有的发现(我的图文) - [修改] ")
     public RespEntity<Page<DiscoveryEntity>> getAllDiscovery(@RequestParam GetType type) {
         return RespEntity.success(discoveryService.getAllDiscovery(type,LoginUser.getLoginUserId()));
     }
@@ -99,5 +99,12 @@ public class ProductDiscoveryController extends Controller {
     @Operation(summary = "根据类型获取发现/评论")
     public RespEntity<Object> getByType(@RequestParam QueryType type,@RequestParam String id) {
         return RespEntity.success(discoveryService.getByType(type,id));
+    }
+
+    //审核图文
+    @GetMapping("/audit/{discoveryId}")
+    @Operation(summary = "审核图文 - [新增]")
+    public RespEntity<Boolean> audit(@PathVariable String discoveryId) {
+        return RespEntity.success(discoveryService.audit(discoveryId));
     }
 }

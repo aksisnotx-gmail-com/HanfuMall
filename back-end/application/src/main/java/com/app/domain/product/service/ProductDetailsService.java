@@ -5,7 +5,7 @@ import com.app.domain.base.AbstractService;
 import com.app.domain.base.Entity;
 import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.entity.ProductSkuEntity;
-import com.app.domain.product.enums.ProductType;
+import com.app.domain.product.entity.ProductTypeEntity;
 import com.app.domain.product.mapper.ProductDetailsMapper;
 import com.app.domain.product.param.ProductDetailModifyParam;
 import com.app.domain.product.param.ProductDetailParam;
@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,12 +44,13 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     //是否推荐
     private static final Integer IS_RECOMMEND = 1;
 
+    private final ProductTypeService typeService;
+
     @Transactional(rollbackFor = RuntimeException.class)
     public Boolean publishDetail(ProductDetailParam param) {
         ProductDetailsEntity entity = new ProductDetailsEntity();
         BeanUtil.copyProperties(param,entity);
-        //设置ProductType类型
-        entity.setProductTypeList(param.getProductTypeList());
+        typeService.getProductType(entity.getProductTypeIds());
         return this.saveOrUpdateBatchAround(List.of(entity), Entity::getId,null,(t1, t2, t3)-> {
             //把尺码信息插入到sku表
             List<ProductSkuEntity> list = param.getSkus().stream().map(t -> {
@@ -66,6 +66,8 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     public ProductVO getDetail(String productId) {
         ProductDetailsEntity productDetail = this.getById(productId);
         AssertUtils.notNull(productDetail,"商品详情不存在");
+        //转换商品类型
+        productDetail.setProductTypeIds(typeService.getProductType(productDetail.getProductTypeIds()).stream().map(ProductTypeEntity::getType).toList());
         //商品尺码信息
         List<ProductSkuEntity> list = skuService.lambdaQuery().eq(ProductSkuEntity::getProductId, productId).list();
         return ProductVO.create(productDetail,list);
@@ -80,16 +82,17 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return voPage;
     }
 
-    public Boolean deleteProductById(String id) {
-        return this.removeById(id);
+    @Transactional(rollbackFor = RuntimeException.class)
+    public Boolean deleteProductById(List<String> ids) {
+        return this.removeBatchByIds(ids);
     }
 
     public Boolean modifyDetail(ProductDetailModifyParam param) {
         ProductDetailsEntity entity = this.getById(param.getId());
         AssertUtils.notNull(entity,"商品详情不存在");
         BeanUtil.copyProperties(param,entity);
-        //设置ProductType
-        entity.setProductTypeList(param.getProductTypeList());
+        //校验所有的类型是否存在
+        typeService.getProductType(entity.getProductTypeIds());
         return  this.updateById(entity);
     }
 
@@ -115,9 +118,11 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return skuService.save(sku);
     }
 
-    public Page<ProductVO> getDetailByType(ProductType type) {
+    public Page<ProductVO> getDetailByType(String typeId) {
+        //获取产品类型
+        ProductTypeEntity entity = typeService.getById(typeId);
         Page<ProductVO> detail = getAllDetail();
-        List<ProductVO> list = detail.getRecords().stream().filter(t -> t.getProductTypes().contains(type)).toList();
+        List<ProductVO> list = detail.getRecords().stream().filter(t -> t.getProductTypes().contains(entity.getType())).toList();
         detail.setTotal(list.size());
         detail.setRecords(list);
         return detail;
@@ -156,4 +161,6 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         BeanUtil.copyProperties(page,voPage);
         return voPage;
     }
+
+
 }

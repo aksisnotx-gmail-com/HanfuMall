@@ -2,9 +2,8 @@ package com.app.domain.product.controller;
 
 import com.app.controller.Controller;
 import com.app.domain.base.Entity;
-import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.entity.ProductSkuEntity;
-import com.app.domain.product.enums.ProductType;
+import com.app.domain.product.entity.ProductTypeEntity;
 import com.app.domain.product.param.ProductDetailModifyParam;
 import com.app.domain.product.param.ProductDetailParam;
 import com.app.domain.product.param.ProductSizeModifyParam;
@@ -16,6 +15,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author xxl
@@ -30,36 +31,36 @@ public class ProductController extends Controller {
 
     //发布商品详情
     @PostMapping("/detail/publish")
-    @Operation(summary = "发布商品")
+    @Operation(summary = "发布商品 - [修改]")
     public RespEntity<Boolean> publishDetail(@RequestBody @Validated ProductDetailParam param) {
         return RespEntity.success(productDetailsService.publishDetail(param));
     }
 
     //删除商品
-    @GetMapping("/detail/delete/{id}")
-    @Operation(summary = "删除商品")
-    public RespEntity<Boolean> delete(@PathVariable("id") String id) {
+    @GetMapping("/detail/delete")
+    @Operation(summary = "删除商品 - [删除]")
+    public RespEntity<Boolean> delete(@RequestParam("ids") List<String> idS) {
         //同时删除sku表
-        return RespEntity.success(productDetailsService.deleteProductById(id));
+        return RespEntity.success(productDetailsService.deleteProductById(idS));
     }
 
     //获取商品详情
     @GetMapping("/detail/{productId}")
-    @Operation(summary = "获取商品")
+    @Operation(summary = "获取商品 - [修改]")
     public RespEntity<ProductVO> getDetail(@PathVariable("productId") String productId) {
         return RespEntity.success(productDetailsService.getDetail(productId));
     }
 
     //获取所有商品详情
     @GetMapping("/detail/all")
-    @Operation(summary = "获取所有商品")
+    @Operation(summary = "获取所有商品 - [修改]")
     public RespEntity<Page<ProductVO>> getAllDetail() {
         return RespEntity.success(productDetailsService.getAllDetail());
     }
 
     //修改商品信息
     @PostMapping("/detail/modify")
-    @Operation(summary = "修改商品")
+    @Operation(summary = "修改商品 - [修改]")
     public RespEntity<Boolean> modifyDetail(@RequestBody @Validated ProductDetailModifyParam param) {
         return RespEntity.success(productDetailsService.modifyDetail(param));
     }
@@ -86,9 +87,9 @@ public class ProductController extends Controller {
     }
 
     @GetMapping("/detail/type")
-    @Operation(summary = "根据类型获取所有商品")
-    public RespEntity<Page<ProductVO>> getDetailByType(@RequestParam ProductType type) {
-        return RespEntity.success(productDetailsService.getDetailByType(type));
+    @Operation(summary = "根据类型获取所有商品 - [修改]")
+    public RespEntity<Page<ProductVO>> getDetailByType(@RequestParam String typeId) {
+        return RespEntity.success(productDetailsService.getDetailByType(typeId));
     }
 
 
@@ -108,5 +109,33 @@ public class ProductController extends Controller {
     @Operation(summary = "推荐商品")
     public RespEntity<Page<ProductSkuEntity>> getRecommendProducts() {
         return RespEntity.success(productDetailsService.getRecommendProducts());
+    }
+
+    //获取所有商品类型
+    @GetMapping("/type")
+    @Operation(summary = "获取商品类型ID查询具体,没有ID查询所有的 - [新增]")
+    public RespEntity<List<ProductTypeEntity>> getAllType(@RequestParam(required = false) String typeId) {
+        return RespEntity.success(typeService.getAllType(typeId));
+    }
+
+    //增加商品类型
+    @PostMapping("/type/add")
+    @Operation(summary = "增加商品类型 - [新增]")
+    public RespEntity<Boolean> addType(@RequestBody @Validated(Entity.INSERT.class) @JsonView(Entity.INSERT.class) ProductTypeEntity param) {
+        return RespEntity.success(typeService.addType(param));
+    }
+
+    //删除商品类型
+    @GetMapping("/type/delete/{typeId}")
+    @Operation(summary = "删除商品类型")
+    public RespEntity<Boolean> deleteType(@PathVariable("typeId") String typeId) {
+        return RespEntity.success(typeService.deleteType(typeId));
+    }
+
+    //修改商品类型
+    @PostMapping("/type/modify")
+    @Operation(summary = "修改商品类型 - [新增]")
+    public RespEntity<Boolean> modifyType(@RequestBody @Validated(Entity.UPDATE.class) @JsonView(Entity.UPDATE.class) ProductTypeEntity param) {
+        return RespEntity.success(typeService.modifyType(param));
     }
 }

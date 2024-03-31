@@ -1,11 +1,9 @@
 package com.app.domain.product.entity;
 
 import com.app.domain.base.Entity;
-import com.app.domain.product.enums.ProductType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,17 +45,8 @@ public class ProductDetailsEntity extends Entity {
     private List<String> descUrls;
 
     //商品类型：汉服、首饰  List<ProductType>
-    @Schema(description = "商品类型")
+    @Schema(description = "商品类型ID")
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private List<String> productTypes;
-
-
-    public List<ProductType> getProductTypeList() {
-        return productTypes.stream().map(ProductType::valueOf).toList();
-    }
-
-    public void setProductTypeList(List<ProductType> productTypes) {
-        this.productTypes = productTypes.stream().map(ProductType::getValue).toList();
-    }
+    private List<String> productTypeIds;
 }
 

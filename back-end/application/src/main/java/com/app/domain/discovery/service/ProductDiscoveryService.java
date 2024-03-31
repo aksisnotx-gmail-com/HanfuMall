@@ -57,6 +57,7 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     public Boolean publish(DiscoveryEntity entity, String loginUserId) {
         entity.setUserId(loginUserId);
         entity.setLikes(0);
+        entity.setIsPass(DiscoveryEntity.UN_PASS);
         return this.save(entity);
     }
 
@@ -74,11 +75,14 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
     }
 
     public Page<DiscoveryEntity> getAllDiscovery(GetType type,String loginUserId) {
-        Page<DiscoveryEntity> page;
-        if (GetType.ALL.equals(type)) {
-            page = this.page(CommonPageRequestUtils.defaultPage());
-        }else {
-            page = this.lambdaQuery().eq(DiscoveryEntity::getUserId,loginUserId).page(CommonPageRequestUtils.defaultPage());
+        Page<DiscoveryEntity> page = null;
+
+        switch (type) {
+            case DISCOVERY_UN_PASS -> page = this.lambdaQuery().eq(DiscoveryEntity::getIsPass, DiscoveryEntity.UN_PASS).page(CommonPageRequestUtils.defaultPage());
+            //如果是所有的则查询审核通过的发现
+            case ALL ->  page = this.lambdaQuery().eq(DiscoveryEntity::getIsPass, DiscoveryEntity.PASS).page(CommonPageRequestUtils.defaultPage());
+            case ALL_DISCOVERY -> page = this.lambdaQuery().page(CommonPageRequestUtils.defaultPage());
+            case MY -> page = this.lambdaQuery().eq(DiscoveryEntity::getUserId,loginUserId).page(CommonPageRequestUtils.defaultPage());
         }
 
         //设置User信息
@@ -251,5 +255,11 @@ public class ProductDiscoveryService extends AbstractService<ProductDiscoveryMap
             }
             default ->  {throw  new GlobalException("未知类型");}
         }
+    }
+
+    public Boolean audit(String discoveryId) {
+        DiscoveryEntity entity = getById(discoveryId);
+        entity.setIsPass(DiscoveryEntity.PASS);
+        return this.updateById(entity);
     }
 }

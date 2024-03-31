@@ -27,6 +27,16 @@ import java.util.Objects;
 @TableName(value = "sys_discovery",autoResultMap = true)
 public class DiscoveryEntity extends Entity {
 
+    /**
+     * 审核通过
+     */
+    public static final Integer PASS = 1;
+
+    /**
+     * 审核未通过
+     */
+    public static final Integer UN_PASS = 0;
+
     @Serial
     private static final long serialVersionUID = 1320708788200717542L;
 
@@ -61,6 +71,10 @@ public class DiscoveryEntity extends Entity {
     @JsonView(IGNORE.class)
     @Schema(description = "未读赞的信息列表，这个数组的size表示多少未读赞")
     private List<String> unreadLikes;
+
+    @Schema(description = "是否通过审核 1 通过 0 未通过")
+    @JsonView(IGNORE.class)
+    private Integer isPass;
 
     @Schema(description = "评论信息")
     @JsonView(IGNORE.class)

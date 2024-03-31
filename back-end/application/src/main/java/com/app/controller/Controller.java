@@ -6,6 +6,7 @@ import com.app.domain.discovery.service.ProductDiscoveryService;
 import com.app.domain.file.service.FileService;
 import com.app.domain.order.service.OrderService;
 import com.app.domain.product.service.ProductDetailsService;
+import com.app.domain.product.service.ProductTypeService;
 import com.app.domain.shippingcart.service.ShoppingCartService;
 import com.app.domain.user.service.UserService;
 import com.app.domain.wallet.service.WalletService;
@@ -47,4 +48,7 @@ public class Controller {
 
     @Resource
     protected WalletService walletService;
+
+    @Resource
+    protected ProductTypeService typeService;
 }

@@ -1,6 +1,5 @@
 package com.app.domain.product.param;
 
-import com.app.domain.product.enums.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -47,7 +46,7 @@ public class ProductDetailModifyParam implements Serializable {
     private List<String> descUrls;
 
     //商品类型：汉服、首饰
-    @Schema(description = "商品类型URL")
+    @Schema(description = "商品类型ID")
     @NotEmpty(message = "商品类型不能为空")
-    private List<ProductType> productTypeList;
+    private List<String> productTypeIds;
 }

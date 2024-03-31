@@ -1,25 +1,15 @@
 package com.app.domain.shippingcart.entity;
 
-import java.io.Serial;
-import java.util.Date;
-
 import com.app.domain.base.Entity;
-import com.app.domain.product.entity.ProductDetailsEntity;
-import com.app.domain.product.entity.ProductSkuEntity;
-import com.app.domain.product.enums.ProductType;
-import com.app.domain.product.param.vo.ProductVO;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
-import java.util.List;
+import java.io.Serial;
 import java.util.Map;
 
 /**
