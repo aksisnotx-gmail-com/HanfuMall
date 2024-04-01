@@ -37,11 +37,11 @@ public class ProductController extends Controller {
     }
 
     //删除商品
-    @PostMapping("/detail/delete")
-    @Operation(summary = "删除商品 - [修改]")
-    public RespEntity<Boolean> delete(@RequestBody List<String> idS) {
+    @GetMapping("/detail/delete/{id}")
+    @Operation(summary = "删除商品")
+    public RespEntity<Boolean> delete(@PathVariable String id) {
         //同时删除sku表
-        return RespEntity.success(productDetailsService.deleteProductById(idS));
+        return RespEntity.success(productDetailsService.deleteProductById(List.of(id)));
     }
 
     //获取商品详情
@@ -129,7 +129,7 @@ public class ProductController extends Controller {
     @GetMapping("/type/delete/{typeId}")
     @Operation(summary = "删除商品类型 - [新增]")
     public RespEntity<Boolean> deleteType(@PathVariable("typeId") String typeId) {
-        return RespEntity.success(typeService.deleteType(typeId));
+        return RespEntity.success(productDetailsService.deleteType(typeId));
     }
 
     //修改商品类型

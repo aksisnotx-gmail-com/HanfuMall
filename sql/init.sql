@@ -192,3 +192,7 @@ create table sys_wallet_record
 )
     comment '钱包流水记录';
 
+
+
+# 初始值
+insert into sys_product_type(type, id, update_time) values ('汉服','111111',NOW()),('汉元素','222222',NOW()),('配饰周边','333333',NOW())

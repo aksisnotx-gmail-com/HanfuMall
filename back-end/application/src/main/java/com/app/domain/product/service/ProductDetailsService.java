@@ -163,4 +163,23 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
     }
 
 
+    public Boolean deleteType(String typeId) {
+        ProductTypeEntity entity = typeService.getById(typeId);
+        //找到包含这个ID的
+        List<ProductDetailsEntity> list = this.lambdaQuery().like(ProductDetailsEntity::getProductTypeIds, entity.getId()).list();
+        //删除这个商品或者更新
+        list.stream().peek(t -> {
+            List<String> typeIds = t.getProductTypeIds();
+            typeIds.remove(entity.getId());
+            t.setProductTypeIds(typeIds);
+        }).toList().forEach(t -> {
+            List<String> typeIds = t.getProductTypeIds();
+            if (typeIds.isEmpty()) {
+                this.removeById(t);
+            }else {
+                this.updateById(t);
+            }
+        });
+        return typeService.removeById(typeId);
+    }
 }
