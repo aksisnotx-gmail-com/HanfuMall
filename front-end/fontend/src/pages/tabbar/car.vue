@@ -16,8 +16,7 @@
 		pageInfo.current = current
 		pageInfo.size = size
 		pageInfo.total = total
-		list.value = [ 
-		...list.value,
+		list.value = [
 		...records.map(item => ({
 			id: item.id,
 			skuId: item.productMap.SKU.id,
@@ -142,9 +141,6 @@
 	})
 
 	onReachBottom(async () => {		
-		const len = list.value.length
-		list.value.splice(0, len)
-
 		uni.showLoading({
             title: '加载中'
         });
@@ -180,7 +176,8 @@
 <template>
 	<view class="cart">
 		<view class="flex justify-end items-center bg-#fff h-14 mb-2.5">
-			<text 
+			<text
+
 				class="bg-#7DA1DC color-#fff px-5 py-2 mr-3 rd-1.5" 
 				@click="onControl"
 			>{{ modelTitle }}</text>

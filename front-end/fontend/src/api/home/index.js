@@ -10,9 +10,9 @@ export function getSwiperListApi () {
 /**
  * @description 根据分类获取商品列表
  */
-export function getProductByTypeApi (type) {
+export function getProductByTypeApi (typeId, current) {
     return service({
-        url: `product/detail/type?type=${type}`,
+        url: `product/detail/type?typeId=${typeId}&current=${current}`,
         method: 'get'
     })
 }
@@ -64,6 +64,16 @@ export function getRecommendProductsApi () {
 export function getSpecialProductsApi () {
     return service({
         url: `product/specialProducts`,
+        method: 'get'
+    })
+}
+
+/**
+ * @description 获取所有商品类型
+ */
+export function getProductTypeApi () {
+    return service({
+        url: `product/type`,
         method: 'get'
     })
 }

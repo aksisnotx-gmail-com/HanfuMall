@@ -15,7 +15,7 @@
         pageInfo.total = total
         pageInfo.size = size
         pageInfo.current = current
-        orderList.value = [ ...orderList.value, ...records ]
+        orderList.value = [ ...records ]
     }
 
     const onReceive = async (orderId) => {

@@ -16,7 +16,7 @@
         pageInfo.total = total
         pageInfo.size = size
         pageInfo.current = current
-        orderList.value = [ ...orderList.value, ...records ]
+        orderList.value = [ ...records ]
     }
 
     const closeOrder = async (orderId) => {
@@ -241,27 +241,31 @@
                         <template v-else-if="item.state == 'MAKE_PAYMENT'">
                             <view class="text-3 flex gap-5">
                                 <text class="border_xy py-1 px-1.5"
-                                    @click="applyRefundOrder(item.id)"
+                                @click="applyRefundOrder(item.id)"
                                 >申请退款</text>
-                                <template v-if="item.state == 'MAKE_PAYMENT'">
-                                    <text 
-                                        class="b-1 b-solid b-#FF679A rd-4.5 py-1 px-1.5 color-#FF679A"
-                                    >待发货</text>
-                                </template>
-                                <template v-else>
-                                    <text 
-                                        class="b-1 b-solid b-#FF679A rd-4.5 py-1 px-1.5 color-#FF679A"
-                                        @click="onReceive(item.id)"
-                                    >确认收货</text>
-                                </template>
+                                <text 
+                                    class="b-1 b-solid b-#FF679A rd-4.5 py-1 px-1.5 color-#FF679A"
+                                >待发货</text>
                             </view>
                         </template>
                         <template v-else-if="item.state == 'SHIP_ORDER'">
                             <view class="text-3 flex gap-5">
                                 <text 
+                                    class="border_xy py-1 px-1.5"
+                                    @click="applyRefundOrder(item.id)"
+                                >申请退款</text>
+                                <text 
                                     class="b-1 b-solid b-#FF679A rd-4.5 py-1 px-1.5 color-#FF679A"
-                                    @click="onEvaluate(item.id)"
-                                    >评价</text>
+                                    @click="onReceive(item.id)"
+                                >确认收货</text>
+                            </view>
+                        </template>
+                        <template v-else-if="item.state == 'CONFIRM_RECEIPT'">
+                            <view class="text-3 flex gap-5">
+                                <text 
+                                class="b-1 b-solid b-#FF679A rd-4.5 py-1 px-1.5 color-#FF679A"
+                                @click="onEvaluate(item.id)"
+                                >评价</text>
                             </view>
                         </template>
                         <template v-else>

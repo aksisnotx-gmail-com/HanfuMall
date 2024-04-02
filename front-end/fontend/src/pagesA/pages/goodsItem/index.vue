@@ -19,7 +19,7 @@
 
     const infoShow = ref(false)
     const chooisGoods = () => {
-        infoShow.value = true
+      infoShow.value = true
     }
 
     const open = () => {}
@@ -168,7 +168,6 @@
         })
         return
       }
-
       infoShow.value = false
       
     }

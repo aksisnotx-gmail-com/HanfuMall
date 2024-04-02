@@ -53,7 +53,8 @@
 				{
 					"path": "pages/classify/index",
 					"style": {
-						"navigationBarTitleText": "商品分类"
+						"navigationBarTitleText": "商品分类",
+						"onReachBottomDistance": 50
 					}
 				},
 				{

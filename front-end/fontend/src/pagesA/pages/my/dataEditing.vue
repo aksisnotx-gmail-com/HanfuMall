@@ -67,6 +67,8 @@
                     url: data.message
                 })
                 userInfo.avatar = data.message
+
+                uni.setStorageSync('avatar', data.message)
             },
             // 上传失败回调
             fail: function (err) {

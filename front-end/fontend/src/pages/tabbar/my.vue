@@ -206,7 +206,7 @@
     }
 
     onShow(() => {
-        msgStore.addUnReadinfo()
+        // msgStore.addUnReadinfo()
     })
 
     onUnload(() => {

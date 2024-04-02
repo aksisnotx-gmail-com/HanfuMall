@@ -1,22 +1,17 @@
 <script setup>
 	import { getProductByTypeApi } from '@/api/home'
 	import { useGoodsStore } from '@/store/modules/goods'
-    const goodsStore = useGoodsStore()
+	import { useTypeStore } from '@/store/modules/type'
 
-	const tabbar = reactive([
-        {
-            name: '汉服',
-            proList: []
-        },
-        {
-            name: '汉元素',
-            proList: []
-        },
-		{
-            name: '配饰周边',
-            proList: []
-        }
-    ])
+    const goodsStore = useGoodsStore()
+	const typeStore = useTypeStore()
+	const { tabbar } = storeToRefs(typeStore)
+
+	const pageInfo = reactive({
+        current: 1,
+        size: 20,
+        total: 0
+    })
 
     const viewInfo = reactive({
         scrollTop: 0,
@@ -25,9 +20,11 @@
         menuItemHeight: 0
     })
         
-    const swichMenu = (index) => {
+    const swichMenu = (typeId) => {
+        const index = tabbar.value.findIndex(item => item.id === typeId)
         if(index == viewInfo.current) return;
-		getProductByType(typeObj[Number(index)])
+
+		getProductByType(typeId)
 
         viewInfo.current = index;
         // 如果为0，意味着尚未初始化
@@ -58,17 +55,13 @@
         })
     }
 
-	const typeObj = {
-		0: "HAN_FU",
-		1: "HAN_YUAN_SU",
-		2: "ACCESSORIES"
-	}
-
     onLoad((option) => {
-        const { index } = option
-        viewInfo.current = Number(index)
+        const { typeId } = option
 
-		getProductByType(typeObj[index])
+		const index = tabbar.value.findIndex(item => item.id === typeId)
+        viewInfo.current = index
+
+		getProductByType(typeId)
     })
 
 
@@ -79,73 +72,109 @@
 		})
 	}
 
-	async function getProductByType (type) {
-		if(!type) return
+	async function getProductByType (typeId, currentPage = 1) {
+		if(!typeId) return
 
-		const proLen = tabbar[viewInfo.current].proList.length
-		tabbar[viewInfo.current].proList.splice(0, proLen)
+		const proLen = tabbar.value[viewInfo.current].proList.length
+		tabbar.value[viewInfo.current].proList.splice(0, proLen)
 
-		const res = await getProductByTypeApi(type)
-		const { records } = res.data
+		const res = await getProductByTypeApi(typeId, currentPage)
+		const { records, current, size, total } = res.data
+		pageInfo.current = current
+		pageInfo.size = size
+		pageInfo.total = total
 		const len = records.length
 		if(len) {
-			tabbar[viewInfo.current].proList = [ ...records ]
+			tabbar.value[viewInfo.current].proList = [ ...records ]
 		}
 	}
+
+	onReachBottom(async () => {
+		uni.showLoading({
+            title: '加载中'
+        });
+
+		const currentTotal = pageInfo.current * pageInfo.size
+
+		if(currentTotal < pageInfo.total) {
+            pageInfo.current++
+            await getProductByType(pageInfo.current)
+            uni.hideLoading()
+        } else {
+            uni.hideLoading()
+            uni.showToast({
+                title: '没有更多了',
+                icon: 'error',
+                mask: true,
+                duration: 1000
+            })
+        }
+	})
 </script>
 
 
 <template>
     <view class="u-menu-wrap">
-        <scroll-view scroll-y scroll-with-animation class="u-tab-view menu-scroll-view" :scroll-top="viewInfo.scrollTop">
-            <view 
-				v-for="(item,index) in tabbar" 
-				:key="index" 
-				class="u-tab-item" 
-				:class="[ viewInfo.current == index ? 'u-tab-item-active' : '']"
-            	:data-current="index" 
-				@click.stop="swichMenu(index)"
-			>
-                <text class="u-line-1">{{item.name}}</text>
-            </view>
-        </scroll-view>
-        <template v-for="(item,index) of tabbar" :key="index">
-            <scroll-view scroll-y class="right-box" v-if="viewInfo.current == index">
-                <view class="page-view">
-                    <view class="class-item">
-                        <view class="item-container">
-							<template v-if="!item.proList.length">
-								<u-empty
-									mode="data"
-								>
-								</u-empty>
-							</template>
-                            <template v-else>
-								<template v-for="iten of item.proList" :key="iten.id">
-									<template v-if="!iten.specCombinationList.length">
-										<u-empty
-											mode="data"
-										>
-										</u-empty>
-									</template>
-									<template v-else>
-										<template v-for="product of iten.specCombinationList" :key="product.id">
-											<view class="thumb-box" @click="onJumpDetail(iten.id)">
-												<image class="item-menu-image" :src="product.carouselUrl" mode="aspectFit"></image>
-												<view class="ml-3 h-100% flex flex-col justify-between font-600">
-													<text>{{ product.desc }}</text>
-													<text class="color-#FF0000 text-4.5">¥ {{ product.price }}</text>
+		<template v-if="!tabbar.length">
+			<div>
+				<u-empty
+					mode="data"
+				>
+				</u-empty>
+			</div>
+		</template>
+
+        <template v-else>
+			<scroll-view scroll-y scroll-with-animation class="u-tab-view menu-scroll-view" :scroll-top="viewInfo.scrollTop">
+					<view 
+						v-for="(item,index) in tabbar" 
+						:key="index" 
+						class="u-tab-item" 
+						:class="[ viewInfo.current == index ? 'u-tab-item-active' : '']"
+						:data-current="index" 
+						@click.stop="swichMenu(item.id)"
+					>
+						<text class="u-line-1">{{item.type}}</text>
+					</view>
+			</scroll-view>
+			<template v-for="(item,index) of tabbar" :key="index">
+				<scroll-view scroll-y class="right-box" v-if="viewInfo.current == index">
+					<view class="page-view">
+						<view class="class-item">
+							<view class="item-container">
+								<template v-if="!item.proList.length">
+									<u-empty
+										mode="data"
+									>
+									</u-empty>
+								</template>
+								<template v-else>
+									<template v-for="iten of item.proList" :key="iten.id">
+										<template v-if="!iten.specCombinationList.length">
+											<u-empty
+												mode="data"
+											>
+											</u-empty>
+										</template>
+										<template v-else>
+											<template v-for="product of iten.specCombinationList" :key="product.id">
+												<view class="thumb-box" @click="onJumpDetail(iten.id)">
+													<image class="item-menu-image" :src="product.carouselUrl" mode="aspectFit"></image>
+													<view class="ml-3 h-100% flex flex-col justify-between font-600">
+														<text>{{ product.desc }}</text>
+														<text class="color-#FF0000 text-4.5">¥ {{ product.price }}</text>
+													</view>
 												</view>
-											</view>
+											</template>
 										</template>
 									</template>
 								</template>
-							</template>
-                        </view>
-                    </view>
-                </view>
-            </scroll-view>
-        </template>
+							</view>
+						</view>
+					</view>
+				</scroll-view>
+			</template>
+		</template>
     </view>
 </template>
 
@@ -260,5 +289,4 @@
 		height: 200rpx;
 	}
 </style>
-import { onLoad } from '@dcloudio/uni-app';
 

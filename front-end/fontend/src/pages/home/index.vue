@@ -1,10 +1,17 @@
 <script setup>
-    import { getSwiperListApi, getRecommendProductsApi, getSpecialProductsApi } from '@/api/home'
+    import { 
+        getSwiperListApi, 
+        getRecommendProductsApi, 
+        getSpecialProductsApi
+    } from '@/api/home'
     import { useGoodsStore } from '@/store/modules/goods'
+    import { useTypeStore } from '@/store/modules/type'
 
     const swiperList = ref([])
     const getSwiperList = async () => {
         const res = await getSwiperListApi()
+        if(res.code !== 200) return
+
         const { records } = res.data
         swiperList.value = records.map(item => item.bannerUrl)
     }
@@ -36,9 +43,9 @@
         })
     }
 
-    const JumpClassify = (index) => {
+    const JumpClassify = (typeId) => {
         uni.navigateTo({
-            url: `/pagesA/pages/classify/index?index=${index}`
+            url: `/pagesA/pages/classify/index?typeId=${typeId}`
         })
     }
 
@@ -48,8 +55,10 @@
         })
     }
 
+    const typeStore = useTypeStore()
     onMounted(async () => {
         await getSwiperList()
+        await typeStore.getProductTypeList()
         await getRecommendProducts()
         await getSpecialProducts()
         uni.hideLoading()
@@ -84,22 +93,14 @@
                 icon="volume-fill"
             ></u-notice-bar>
         </view>
-        <view class="flex justify-center gap-6 py-6 bg-#fff">
-            <view class="flex flex-col gap-6">
-                <button class="nav" @click="JumpClassify(0)">
-                    <image class="w-12 h-12" src="@/static/nav/hf.png" mode="aspectFit" />
-                    <text class="font-600 text-4.5">汉服专区</text>
-                </button>
-                <button class="nav" @click="JumpClassify(2)">
-                    <image class="w-12 h-12" src="@/static/nav/fan.png" mode="aspectFit" />
-                    <text class="font-600 text-4.5">配饰周边</text>
-                </button>
-            </view>
-            <view class="flex flex-col gap-6">
-                <button class="nav px-10" @click="JumpClassify(1)">
-                    <image class="w-12 h-12" src="@/static/nav/hy.png" mode="aspectFit" />
-                    <text class="font-600 text-4.5">汉元素</text>
-                </button>
+        <view class="flex justify-center py-6 px-2 bg-#fff">
+            <view class="flex flex-wrap gap-3">
+                <template v-for="item of typeStore.productTypeList" :key="item.id">
+                    <button class="nav" @click="JumpClassify(item.id)">
+                        <image class="w-12 h-12" :src="`/static/nav/${item.icon}.png`" mode="aspectFit" />
+                        <text class="font-600 text-4.5">{{ item.type }}</text>
+                    </button>
+                </template>
                 <button class="nav" @click="JumpAllProduct">
                     <image class="w-12 h-12" src="@/static/nav/all.png" mode="aspectFit" />
                     <text class="font-600 text-4.5">全部商品</text>
@@ -129,7 +130,7 @@
                         class="goods_item bg-hotpink"
                         @click="toDetail(item.productId)"
                     >
-                        <view class="p-3 max-w-38">
+                        <view class="p-3 max-w-40 flex flex-col">
                             <image  
                                 v-if="item.attribute.carouselUrl"
                                 :src="item.attribute.carouselUrl" 

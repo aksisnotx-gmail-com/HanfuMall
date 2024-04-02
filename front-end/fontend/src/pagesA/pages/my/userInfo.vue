@@ -2,12 +2,13 @@
     import { useUserStore } from '@/store/modules/user'
     import { loginApi } from '@/api/auth'
 
+
     const userStore = useUserStore()
 
     const { userInfo } = storeToRefs(userStore)
 
-    const onChooseAvatar = (e) => {
-        userInfo.value.avatar = e.detail.avatarUrl
+    const onChooseAvatar = async (e) => {
+       userInfo.value.avatar = e.detail.avatarUrl
         
         uni.setStorage({
             key: 'avatar',
