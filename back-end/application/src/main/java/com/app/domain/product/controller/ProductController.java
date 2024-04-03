@@ -2,12 +2,14 @@ package com.app.domain.product.controller;
 
 import com.app.controller.Controller;
 import com.app.domain.base.Entity;
+import com.app.domain.product.entity.ProductDetailsEntity;
 import com.app.domain.product.entity.ProductSkuEntity;
 import com.app.domain.product.entity.ProductTypeEntity;
 import com.app.domain.product.param.ProductDetailModifyParam;
 import com.app.domain.product.param.ProductDetailParam;
 import com.app.domain.product.param.ProductSizeModifyParam;
 import com.app.domain.product.param.vo.ProductVO;
+import com.app.domain.product.param.vo.RecommendProductVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.sdk.resp.RespEntity;
@@ -106,8 +108,8 @@ public class ProductController extends Controller {
     }
 
     @GetMapping("/recommendProducts")
-    @Operation(summary = "推荐商品")
-    public RespEntity<Page<ProductSkuEntity>> getRecommendProducts() {
+    @Operation(summary = "推荐商品 - [修改 - 2024/04/03]")
+    public RespEntity<Page<RecommendProductVO>> getRecommendProducts() {
         return RespEntity.success(productDetailsService.getRecommendProducts());
     }
 

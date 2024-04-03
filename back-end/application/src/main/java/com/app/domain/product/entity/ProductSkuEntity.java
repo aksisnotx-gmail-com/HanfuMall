@@ -27,6 +27,10 @@ import java.util.List;
 @TableName(value = "sys_product_sku",autoResultMap = true)
 public class ProductSkuEntity extends Entity {
 
+    private static final Integer UN_RECOMMEND = 0;
+
+    private static final Integer UN_SPECIAL = 0;
+
     @Serial
     private static final long serialVersionUID = -7506305583161118362L;
 
@@ -80,6 +84,9 @@ public class ProductSkuEntity extends Entity {
         BeanUtil.copyProperties(sku,entity);
         entity.setAttribute(sku.getStyle());
         entity.setPrice(sku.getStyle().getPrice());
+        entity.setIsRecommend(UN_RECOMMEND);
+        entity.setIsSpecial(UN_SPECIAL);
+        entity.setSpecialPrice(BigDecimal.ZERO);
         return entity;
     }
 }

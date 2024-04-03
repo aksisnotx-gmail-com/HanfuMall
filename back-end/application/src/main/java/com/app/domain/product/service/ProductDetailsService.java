@@ -11,6 +11,7 @@ import com.app.domain.product.param.ProductDetailModifyParam;
 import com.app.domain.product.param.ProductDetailParam;
 import com.app.domain.product.param.ProductSizeModifyParam;
 import com.app.domain.product.param.vo.ProductVO;
+import com.app.domain.product.param.vo.RecommendProductVO;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sdk.util.asserts.AssertUtils;
@@ -152,8 +153,18 @@ public class ProductDetailsService extends AbstractService<ProductDetailsMapper,
         return skuService.lambdaQuery().eq(ProductSkuEntity::getIsSpecial,IS_SPECIAL).page(CommonPageRequestUtils.defaultPage());
     }
 
-    public Page<ProductSkuEntity> getRecommendProducts() {
-        return skuService.lambdaQuery().eq(ProductSkuEntity::getIsRecommend,IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
+    public Page<RecommendProductVO> getRecommendProducts() {
+        Page<ProductSkuEntity> page = skuService.lambdaQuery().eq(ProductSkuEntity::getIsRecommend, IS_RECOMMEND).page(CommonPageRequestUtils.defaultPage());
+        List<RecommendProductVO> list = page.getRecords().stream().map(t -> {
+            ProductDetailsEntity productDetails = this.getById(t.getProductId());
+            return RecommendProductVO.create(t, productDetails);
+        }).toList();
+
+        //转换为VO
+        Page<RecommendProductVO> productDetailsEntityPage = new Page<>();
+        BeanUtil.copyProperties(page,productDetailsEntityPage);
+        productDetailsEntityPage.setRecords(list);
+        return productDetailsEntityPage;
     }
 
     private Page<ProductVO> entityPageToVoPage(Page<ProductDetailsEntity> page) {
