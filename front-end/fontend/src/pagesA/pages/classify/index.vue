@@ -162,10 +162,10 @@
 													<image class="item-menu-image" :src="product.carouselUrl" mode="aspectFit"></image>
 													<view class="ml-3 h-100% flex flex-col justify-between font-600">
 														<text>{{ product.desc }}</text>
-														<text class="color-#FF0000 text-4.5">¥ {{ product.price }}</text>
+														<text class="color-#FF0000 text-4.5">¥ {{ product.specialPrice ? product.specialPrice : product.price }}</text>
 													</view>
 												</view>
-											</template>
+											</template>                                
 										</template>
 									</template>
 								</template>

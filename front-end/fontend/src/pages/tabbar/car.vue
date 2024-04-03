@@ -24,8 +24,8 @@
 			name: item.productMap.SKU.attribute.desc,
 			size: item.size,
 			count: item.number,
-			price: item.productMap.SKU.price,
-			sumPrice: item.number * item.productMap.SKU.price,
+			price: item.productMap.SKU.specialPrice ? item.productMap.SKU.specialPrice : item.productMap.SKU.price,
+			sumPrice: item.number * (item.productMap.SKU.specialPrice ? item.productMap.SKU.specialPrice : item.productMap.SKU.price),
 		})) ]
 	}
 

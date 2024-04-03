@@ -57,12 +57,17 @@
 
     const typeStore = useTypeStore()
     onMounted(async () => {
+        await fetchFn()
+        uni.hideLoading()
+
+    })
+
+    const fetchFn = async () => {
         await getSwiperList()
         await typeStore.getProductTypeList()
         await getRecommendProducts()
         await getSpecialProducts()
-        uni.hideLoading()
-    })
+    }
 
     onLoad(() => {
         uni.showLoading({
@@ -70,6 +75,15 @@
         });
     })
 
+    onPullDownRefresh(async () => {
+		uni.showLoading({
+            title: '加载中'
+        });
+        await fetchFn()
+        
+		uni.stopPullDownRefresh()
+		uni.hideLoading()
+	})
 
 </script>
 
@@ -141,8 +155,8 @@
                                 {{ item.attribute.desc }}
                             </text>
                             <view class="flex justify-between">
-                                <text class="color-#DC143C font-600">¥ {{ item.price }}</text>
-                                <text class="old_price">¥ {{ item.specialPrice }}</text>
+                                <text class="color-#DC143C font-600">¥ {{ item.specialPrice }}</text>
+                                <text class="old_price">¥ {{ item.price }}</text>
                             </view>
                         </view>
                     </view>
@@ -160,16 +174,16 @@
                 </u-empty>
             </template>
             <template v-else>
-                <template v-for="item of recommendProducts" :key="item.id">
+                <template v-for="item of recommendProducts" :key="item.product.id">
                     <view class="mt-5">
-                        <view class="hot_card layout-items-center" @click="toDetail(item.productId)">
-                            <image :src="item.attribute.carouselUrl" mode="aspectFit" class="w-30 h-30" />
+                        <view class="hot_card layout-items-center gap-2" @click="toDetail(item.product.id)">
+                            <image :src="item.sku.attribute.carouselUrl" mode="aspectFit" class="w-30 h-30" />
                             <view class="flex flex-col">
                                 <text class="color-#999 content">
-                                    {{ item.attribute.desc }}
+                                    {{ item.product.productName }}
                                 </text>
                                 <text class="color-#DC143C font-600">
-                                    ¥ {{ item.price }}
+                                    ¥ {{ item.sku.specialPrice ? item.sku.specialPrice : item.sku.price }}
                                 </text>
                             </view>
                         </view>

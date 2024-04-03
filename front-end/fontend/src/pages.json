@@ -8,7 +8,12 @@
 		}
 	},
 	"pages": [
-		{ "path": "pages/home/index" },
+		{ 
+			"path": "pages/home/index",
+			"style": {
+				"enablePullDownRefresh": true
+			}
+		},
 		{ 
 			"path": "pages/tabbar/watch",
 			"style": {

@@ -42,7 +42,9 @@
 		} else {
 			productList.value.forEach(item => {
 				item.specCombinationList.sort((a, b) => {
-				    return b.price - a.price
+					const priceA = !a.specialPrice ? a.specialPrice : a.price
+					const priceB = !b.specialPrice ? b.specialPrice : b.price
+				    return priceB - priceA
 				})
 			})
 		}
@@ -188,7 +190,7 @@
 										class="w-100% h-25"
 									/>
 									<text class="mb-2">{{ product.desc }}</text>
-									<text class="color-#DC143C font-600">¥ {{ product.price }}</text>
+									<text class="color-#DC143C font-600">¥ {{ product.specialPrice ? product.specialPrice : product.price }}</text>
 								</view>
 							</view>
 						</template>

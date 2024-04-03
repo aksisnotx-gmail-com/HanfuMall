@@ -151,9 +151,12 @@
         skuList.value = [ ...skuData.value ];
 
         const a = properties.value[1].attributes
-        const priceList = a.map(item => item.price)
+        const priceList = a.map(item => item.specialPrice ? item.specialPrice : item.price)
 
-        initPrice.value = Math.min(...priceList) + ' - ' + Math.max(...priceList)
+        const minPrice = Math.min(...priceList)
+        const maxPrice = Math.max(...priceList)
+        
+        initPrice.value = minPrice == maxPrice ? minPrice : `${minPrice} - ${maxPrice}`
         initEmptyAdjMatrix();
         setAdjMatrixValue();
     }
@@ -432,7 +435,20 @@
                   <view class="thumb-box">
                       <image class="item-menu-image" :src="selected[1]?.img" mode="aspectFit"></image>
                       <view class="ml-3 h-25 flex flex-col justify-around font-600">
-                        <text class="color-#FF0000 text-4.5" v-if="selected[1] && selected[1].price">¥ {{ selected[1].price }}</text>
+                        <!-- <text 
+                          class="color-#FF0000 text-4.5" 
+                          v-if="selected[1] && selected[1].price"
+                        >¥ {{ selected[1].price }}</text> -->
+                        <template v-if="selected[1] && selected[1].specialPrice">
+                          <text 
+                          class="color-#FF0000 text-4.5" 
+                          >¥ {{ selected[1].specialPrice }}</text>
+                        </template>
+                        <template v-else-if="selected[1] && selected[1].price">
+                          <text 
+                          class="color-#FF0000 text-4.5" 
+                          >¥ {{ selected[1].price }}</text>
+                        </template>
                         <view class="color-#999">
                             <text>已选: </text>
                             <text>{{ selected[0]?.value }}, </text>
@@ -484,7 +500,6 @@
                                   v-if="property.name === '样式'"
                                 />
                                 <text>{{ attribute.value }}</text>
-                                <text class="color-#FF0000" v-if="attribute.price">¥ {{ attribute.price }}</text>
                               </view>
                           </view>
                       </template>

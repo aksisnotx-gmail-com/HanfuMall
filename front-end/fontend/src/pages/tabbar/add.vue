@@ -62,15 +62,15 @@
             })
             return
         }
-        if(!img.length) {
-            uni.showToast({
-                title: '请上传图片',
-                icon: 'error',
-                mask: true,
-                duration: 3000
-            })
-            return
-        }
+        // if(!img.length) {
+        //     uni.showToast({
+        //         title: '请上传图片',
+        //         icon: 'error',
+        //         mask: true,
+        //         duration: 3000
+        //     })
+        //     return
+        // }
 
         const objParam = {
             descText,

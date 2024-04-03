@@ -61,7 +61,7 @@ export const useGoodsStore = defineStore('goods', {
 function calculatePriceRange(specCombinationList) {
   if (!Array.isArray(specCombinationList) || !specCombinationList.length) return
 
-  const prices = specCombinationList.map(item => item.price)
+  const prices = specCombinationList.map(item => item.specialPrice ? item.specialPrice : item.price)
 
   if (prices.length === 1) {
     // 如果数组中所有价格相同，则只返回这一个价格
@@ -97,6 +97,7 @@ function getUniqueFlatArray(twoDimensionalArray) {
  * @returns 
  */
 function getStyleList (productList) {
+  console.log(productList, 'p');
   if(!productList.length) return
 
   return productList.map(item => 
@@ -104,6 +105,7 @@ function getStyleList (productList) {
       value: item.desc, 
       img: item.carouselUrl,
       price: item.price,
+      specialPrice: item.specialPrice,
       stock: item.stock,
       productSkuId: item.id,
       isActive: false, 
