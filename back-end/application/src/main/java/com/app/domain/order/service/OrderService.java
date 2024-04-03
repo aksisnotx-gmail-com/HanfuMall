@@ -10,6 +10,7 @@ import com.app.domain.product.service.ProductDetailsService;
 import com.app.domain.product.service.ProductSkuService;
 import com.app.domain.user.entity.UserEntity;
 import com.app.domain.user.enums.Role;
+import com.app.domain.user.service.UserService;
 import com.app.domain.wallet.service.WalletService;
 import com.app.toolkit.web.CommonPageRequestUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
@@ -41,6 +42,8 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
     private final OrderAction orderAction;
 
     private final WalletService walletService;
+
+    private final UserService userService;
 
     /**
      * 查看用户是否买了这个商品中
@@ -127,7 +130,7 @@ public class OrderService extends AbstractService<OrderMapper, OrderEntity> {
         //获取账单总余额
         BigDecimal price = one.getTotalPrice();
         //余额 + 商品总价钱
-        walletService.recharge(price, user);
+        walletService.recharge(price,userService.getById(one.getUserId()));
         //更新订单 && 钱包 && 更新商品
         return this.updateById(one);
     }
